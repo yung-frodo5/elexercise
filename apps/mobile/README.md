@@ -25,6 +25,21 @@ You do not need an Apple Developer account to run on the Simulator. You'll
 need one ($99/yr) only when you want to install on a physical iPhone or
 submit to the App Store.
 
+## Configure Supabase (auth + profiles)
+
+The app reads its Supabase connection from env vars at startup and throws if
+they're missing. Copy `.env.example` to `.env` and set:
+
+| Var | Value |
+|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | project URL, or `http://127.0.0.1:54321` for the local stack |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | matching anon key |
+
+For the local stack, run `supabase start` then `supabase db reset` (applies
+`supabase/migrations/`) and use the URL + anon key it prints. Only
+`EXPO_PUBLIC_`-prefixed vars reach the app, and Expo reads them at startup, so
+restart the dev server after changes.
+
 ## Running it
 
 From the repo root:
