@@ -12,7 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 type Mode = "signIn" | "signUp";
 
 export default function LoginScreen() {
-  const { signInWithPassword, signUpWithPassword } = useAuth();
+  const { signInWithPassword, signUpWithPassword, signInWithGoogle } = useAuth();
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +32,19 @@ export default function LoginScreen() {
         await signUpWithPassword(email.trim(), password, displayName.trim() || undefined);
         setInfo("Account created. If email confirmation is required, check your inbox.");
       }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitGoogle() {
+    setError(null);
+    setInfo(null);
+    setBusy(true);
+    try {
+      await signInWithGoogle();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -80,6 +93,7 @@ export default function LoginScreen() {
         onPress={submit}
         disabled={busy}
       />
+      <Button title="Continue with Google" onPress={submitGoogle} disabled={busy} />
       <Button
         title={mode === "signIn" ? "Need an account? Create one" : "Have an account? Sign in"}
         onPress={() => {

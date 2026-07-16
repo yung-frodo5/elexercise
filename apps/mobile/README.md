@@ -40,18 +40,38 @@ For the local stack, run `supabase start` then `supabase db reset` (applies
 `EXPO_PUBLIC_`-prefixed vars reach the app, and Expo reads them at startup, so
 restart the dev server after changes.
 
+## Configure Google sign-in
+
+"Continue with Google" uses the native `@react-native-google-signin` flow into
+`supabase.auth.signInWithIdToken`. It needs two **public** OAuth client IDs from
+Google Cloud Console — a Web client and an iOS client (the Web ID is what
+Supabase validates the token against):
+
+| Var (`.env`) | Value |
+|---|---|
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | the **Web application** client ID |
+| `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | the **iOS** client ID |
+
+Also set the google-signin plugin's `iosUrlScheme` in `app.json` to the iOS
+client ID **reversed** (`com.googleusercontent.apps.<id>`), and in the Supabase
+dashboard (Authentication → Providers → Google): enable it, put both client IDs
+in **Authorized Client IDs** (web first), and turn on **Skip nonce check**.
+
+Because it's a native module, Google sign-in only works in a **dev build**
+(below), not Expo Go.
+
 ## Running it
 
-From the repo root:
+Google sign-in is a native module, so this app runs as an Expo **dev build**,
+not Expo Go. Install once from the repo root (`npm install`), then from
+`apps/mobile`:
 
 ```bash
-npm install          # if you haven't already, links this app into the workspace
-npm run dev:mobile   # starts the Expo dev server
+npx expo run:ios     # first run builds the native app (~minutes); later runs are fast
 ```
 
-Then press `i` in the terminal to launch the iOS Simulator, or scan the QR
-code with the Expo Go app on a physical iPhone (same Wi-Fi network as your
-Mac).
+This builds the dev client into the iOS Simulator and starts Metro. Only rebuild
+with `run:ios` when native config changes — JS edits hot-reload.
 
 ## Talking to the local API
 
@@ -73,10 +93,10 @@ Mac's firewall isn't blocking incoming connections on port 3001.
   `@exercise-tracker/shared-types` from `packages/`. If you add another
   shared package later, no config change needed — it already watches
   everything under the repo root.
-- This is a standard Expo-managed app (not "bare") — you get the simulator
-  workflow above without touching native iOS/Android project files. If you
-  eventually need a native module Expo doesn't support, `npx expo prebuild`
-  generates the native projects without switching frameworks.
+- Expo-managed with Continuous Native Generation: `npx expo prebuild` (run
+  automatically by `expo run:ios`) generates the `ios/` and `android/` projects
+  from `app.json` + config plugins, so they stay gitignored and are never
+  hand-edited. Regenerate them any time with `npx expo prebuild --clean`.
 
 ## Adding Android later
 

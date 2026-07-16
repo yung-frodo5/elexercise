@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { getGoogleIdToken } from "../lib/google";
 
 export interface Profile {
   id: string;
@@ -27,6 +28,7 @@ interface AuthContextValue {
     password: string,
     displayName?: string,
   ) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -94,6 +96,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: displayName ? { data: { display_name: displayName } } : undefined,
+      });
+      if (error) throw error;
+    },
+    async signInWithGoogle() {
+      // Native Google sheet -> ID token -> Supabase session. The same DB trigger
+      // creates the profiles row for OAuth users on first sign-in.
+      const token = await getGoogleIdToken();
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token,
       });
       if (error) throw error;
     },
