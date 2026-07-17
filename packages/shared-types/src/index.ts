@@ -38,3 +38,6 @@ export type NewWorkout = Omit<Workout, "id" | "createdAt" | "updatedAt">;
 
 // Partial update payload.
 export type WorkoutUpdate = Partial<Omit<Workout, "id" | "userId">>;
+
+// Machine/Session/PowerSample model — see session.ts for naming rationale.
+export * from "./session.js";
