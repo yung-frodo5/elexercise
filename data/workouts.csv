@@ -1,2 +1,0 @@
-id,userId,date,notes,setsJson,createdAt,updatedAt
-example-1,demo-user,2026-07-01,"first logged workout","[{""id"":""s1"",""exerciseId"":""back-squat"",""reps"":5,""weightKg"":100}]",2026-07-01T12:00:00.000Z,2026-07-01T12:00:00.000Z

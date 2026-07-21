@@ -1,40 +1,55 @@
 // Core domain types shared across api, web, and mobile.
 // Changing a field here is a contract change for every app — bump thoughtfully.
+//
+// Machine/Workout/Session/PowerSample model for power-generating exercise
+// equipment. SQL tables live in supabase/migrations/0002_machine_session_schema.sql.
 
-export type ExerciseCategory =
-  | "strength"
-  | "cardio"
-  | "mobility"
-  | "other";
+export type MachineStatus = "available" | "in_use" | "offline";
 
-export interface Exercise {
+export interface Machine {
   id: string;
-  name: string;
-  category: ExerciseCategory;
+  type: string;
+  model: string;
+  serial: string;
+  scanToken: string;
+  status: MachineStatus;
+  lastSeenAt?: string; // ISO 8601 timestamp
 }
 
-export interface ExerciseSet {
-  id: string;
-  exerciseId: string;
-  reps?: number;
-  weightKg?: number;
-  durationSeconds?: number;
-  distanceMeters?: number;
-  rpe?: number; // rate of perceived exertion, 1-10
-}
+export type WorkoutStatus = "in_progress" | "completed";
 
 export interface Workout {
   id: string;
   userId: string;
-  date: string; // ISO 8601 date string, e.g. "2026-07-09"
-  notes?: string;
-  sets: ExerciseSet[];
+  startedAt: string; // ISO 8601 timestamp
+  endedAt?: string; // ISO 8601 timestamp
+  status: WorkoutStatus;
   createdAt: string; // ISO 8601 timestamp
-  updatedAt: string; // ISO 8601 timestamp
 }
 
-// Shape used when creating a workout — server assigns id/createdAt/updatedAt.
-export type NewWorkout = Omit<Workout, "id" | "createdAt" | "updatedAt">;
+export type SessionSource = "machine" | "manual";
+export type SessionStatus = "in_progress" | "completed";
 
-// Partial update payload.
-export type WorkoutUpdate = Partial<Omit<Workout, "id" | "userId">>;
+export interface Session {
+  id: string;
+  workoutId: string;
+  machineId?: string; // present only when source === "machine"
+  source: SessionSource;
+  activityType: string;
+  startedAt: string; // ISO 8601 timestamp
+  endedAt?: string; // ISO 8601 timestamp
+  status: SessionStatus;
+  avgPowerW?: number;
+  peakPowerW?: number;
+  totalEnergyJoules?: number;
+  durationS?: number;
+}
+
+export interface PowerSample {
+  sessionId: string;
+  tMs: number;
+  powerW: number;
+}
+
+// A workout with its sessions attached — the shape returned by GET /workouts/:id.
+export type WorkoutWithSessions = Workout & { sessions: Session[] };
