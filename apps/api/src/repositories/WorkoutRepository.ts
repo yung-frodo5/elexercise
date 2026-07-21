@@ -1,24 +1,58 @@
-import type { Workout, NewWorkout, WorkoutUpdate } from "@exercise-tracker/shared-types";
+import type { Machine, Session, Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 
 /**
- * Storage-agnostic contract for workout persistence.
+ * Storage-agnostic contract for the Machine/Workout/Session model.
  *
- * Route handlers and business logic depend ONLY on this interface, never on
- * a concrete implementation. Swapping CsvWorkoutRepository for
- * PostgresWorkoutRepository later should require changing exactly one line
- * (the place where the repository is instantiated) and nothing else.
+ * Every method that touches a specific workout/session takes `userId` and
+ * scopes the query by it — the concrete implementation may run on a
+ * privileged connection (e.g. a service-role key that bypasses RLS), so
+ * ownership has to be enforced here explicitly rather than assumed.
  */
 export interface WorkoutRepository {
-  getWorkouts(userId: string): Promise<Workout[]>;
-  getWorkoutById(id: string): Promise<Workout | null>;
-  addWorkout(workout: NewWorkout): Promise<Workout>;
-  updateWorkout(id: string, updates: WorkoutUpdate): Promise<Workout>;
-  deleteWorkout(id: string): Promise<void>;
+  getMachineByScanToken(scanToken: string): Promise<Machine | null>;
+
+  // Starts (or attaches to) an in-progress workout for the user and creates
+  // a machine-sourced session on it.
+  startMachineSession(
+    userId: string,
+    scanToken: string
+  ): Promise<{ workout: Workout; session: Session }>;
+
+  // Starts (or attaches to) an in-progress workout for the user and creates
+  // a manually-logged session on it.
+  startManualSession(
+    userId: string,
+    activityType: string
+  ): Promise<{ workout: Workout; session: Session }>;
+
+  endSession(userId: string, sessionId: string): Promise<Session>;
+
+  endWorkout(userId: string, workoutId: string): Promise<Workout>;
+
+  getCurrentWorkout(userId: string): Promise<Workout | null>;
+
+  getWorkoutById(userId: string, workoutId: string): Promise<WorkoutWithSessions | null>;
+
+  listWorkouts(userId: string): Promise<Workout[]>;
+}
+
+export class MachineNotFoundError extends Error {
+  constructor(scanToken: string) {
+    super(`Machine not found for scan token: ${scanToken}`);
+    this.name = "MachineNotFoundError";
+  }
 }
 
 export class WorkoutNotFoundError extends Error {
   constructor(id: string) {
     super(`Workout not found: ${id}`);
     this.name = "WorkoutNotFoundError";
+  }
+}
+
+export class SessionNotFoundError extends Error {
+  constructor(id: string) {
+    super(`Session not found: ${id}`);
+    this.name = "SessionNotFoundError";
   }
 }

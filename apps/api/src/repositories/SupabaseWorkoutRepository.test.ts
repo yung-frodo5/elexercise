@@ -1,30 +1,30 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
-import { SupabaseSessionRepository } from "./SupabaseSessionRepository.js";
-import { MachineNotFoundError } from "./SessionRepository.js";
+import { SupabaseWorkoutRepository } from "./SupabaseWorkoutRepository.js";
+import { MachineNotFoundError, WorkoutNotFoundError, SessionNotFoundError } from "./WorkoutRepository.js";
 
-// Integration tests against a real local Supabase Postgres instance — same
-// philosophy as CsvWorkoutRepository.test.ts (hit the real backend, don't
-// mock storage). Requires `supabase start` to be running first (see
-// supabase/config.toml). Defaults match local `supabase status` output;
-// override via env if needed. Skipped automatically when no service-role
-// key is available (e.g. CI without the stack running).
+// Integration tests against a real local Supabase Postgres instance — hit
+// the real backend, don't mock storage. Requires `supabase start` to be
+// running first (see supabase/config.toml). Defaults match local `supabase
+// status` output; override via env if needed. Skipped automatically when no
+// service-role key is available (e.g. CI without the stack running).
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "http://127.0.0.1:54321";
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const describeIfConfigured = SERVICE_ROLE_KEY ? describe : describe.skip;
 
-describeIfConfigured("SupabaseSessionRepository", () => {
+describeIfConfigured("SupabaseWorkoutRepository", () => {
   let admin: SupabaseClient;
-  let repo: SupabaseSessionRepository;
+  let repo: SupabaseWorkoutRepository;
   let userId: string;
+  let otherUserId: string;
   let scanToken: string;
   let machineId: string;
 
   beforeEach(async () => {
     admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
-    repo = new SupabaseSessionRepository(SUPABASE_URL, SERVICE_ROLE_KEY!);
+    repo = new SupabaseWorkoutRepository(SUPABASE_URL, SERVICE_ROLE_KEY!);
 
     const { data: userData, error: userError } = await admin.auth.admin.createUser({
       email: `test-${randomUUID()}@example.com`,
@@ -32,6 +32,13 @@ describeIfConfigured("SupabaseSessionRepository", () => {
     });
     if (userError) throw userError;
     userId = userData.user!.id;
+
+    const { data: otherUserData, error: otherUserError } = await admin.auth.admin.createUser({
+      email: `test-${randomUUID()}@example.com`,
+      email_confirm: true,
+    });
+    if (otherUserError) throw otherUserError;
+    otherUserId = otherUserData.user!.id;
 
     scanToken = randomUUID();
     const { data: machineData, error: machineError } = await admin
@@ -44,8 +51,9 @@ describeIfConfigured("SupabaseSessionRepository", () => {
   });
 
   afterEach(async () => {
-    // Deleting the user cascades to workouts -> sessions -> power_samples.
+    // Deleting the users cascades to workouts -> sessions -> power_samples.
     await admin.auth.admin.deleteUser(userId);
+    await admin.auth.admin.deleteUser(otherUserId);
     await admin.from("machines").delete().eq("id", machineId);
   });
 
@@ -91,9 +99,26 @@ describeIfConfigured("SupabaseSessionRepository", () => {
 
   it("ends a session", async () => {
     const { session } = await repo.startManualSession(userId, "run");
-    const ended = await repo.endSession(session.id);
+    const ended = await repo.endSession(userId, session.id);
     expect(ended.status).toBe("completed");
     expect(ended.endedAt).toBeTruthy();
+  });
+
+  it("throws SessionNotFoundError when ending another user's session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await expect(repo.endSession(otherUserId, session.id)).rejects.toThrow(SessionNotFoundError);
+  });
+
+  it("ends a workout", async () => {
+    const { workout } = await repo.startManualSession(userId, "run");
+    const ended = await repo.endWorkout(userId, workout.id);
+    expect(ended.status).toBe("completed");
+    expect(ended.endedAt).toBeTruthy();
+  });
+
+  it("throws WorkoutNotFoundError when ending another user's workout", async () => {
+    const { workout } = await repo.startManualSession(userId, "run");
+    await expect(repo.endWorkout(otherUserId, workout.id)).rejects.toThrow(WorkoutNotFoundError);
   });
 
   it("gets the current in-progress workout for a user", async () => {
@@ -108,12 +133,31 @@ describeIfConfigured("SupabaseSessionRepository", () => {
 
   it("gets a workout by id with its sessions", async () => {
     const { workout, session } = await repo.startMachineSession(userId, scanToken);
-    const fetched = await repo.getWorkoutById(workout.id);
+    const fetched = await repo.getWorkoutById(userId, workout.id);
     expect(fetched?.id).toBe(workout.id);
     expect(fetched?.sessions.map((s) => s.id)).toContain(session.id);
   });
 
   it("returns null for an unknown workout id", async () => {
-    expect(await repo.getWorkoutById(randomUUID())).toBeNull();
+    expect(await repo.getWorkoutById(userId, randomUUID())).toBeNull();
+  });
+
+  it("returns null when fetching another user's workout by id", async () => {
+    const { workout } = await repo.startMachineSession(userId, scanToken);
+    expect(await repo.getWorkoutById(otherUserId, workout.id)).toBeNull();
+  });
+
+  it("lists a user's workouts, most recent first", async () => {
+    const { workout: first } = await repo.startManualSession(userId, "run");
+    await repo.endWorkout(userId, first.id);
+    const { workout: second } = await repo.startManualSession(userId, "bike");
+
+    const workouts = await repo.listWorkouts(userId);
+    expect(workouts.map((w) => w.id)).toEqual([second.id, first.id]);
+  });
+
+  it("does not list another user's workouts", async () => {
+    await repo.startManualSession(userId, "run");
+    expect(await repo.listWorkouts(otherUserId)).toEqual([]);
   });
 });

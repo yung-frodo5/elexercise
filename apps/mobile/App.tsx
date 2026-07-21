@@ -11,19 +11,21 @@ import ProfileScreen from "./screens/ProfileScreen";
 // e.g. "http://192.168.1.23:3001" (find it via `ipconfig getifaddr en0`).
 const API_URL = "http://localhost:3001";
 
-function WorkoutsScreen({ userId }: { userId: string }) {
+function WorkoutsScreen({ accessToken }: { accessToken: string }) {
   const [workouts, setWorkouts] = useState<Workout[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/workouts?userId=${encodeURIComponent(userId)}`)
+    fetch(`${API_URL}/api/workouts`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
       .then((res) => {
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         return res.json();
       })
       .then(setWorkouts)
       .catch((err) => setError(err.message));
-  }, [userId]);
+  }, [accessToken]);
 
   return (
     <View style={styles.container}>
@@ -41,8 +43,8 @@ function WorkoutsScreen({ userId }: { userId: string }) {
           ListEmptyComponent={<Text>No workouts yet.</Text>}
           renderItem={({ item }) => (
             <View style={styles.row}>
-              <Text style={styles.rowDate}>{item.date}</Text>
-              <Text style={styles.rowSets}>{item.sets.length} set(s)</Text>
+              <Text style={styles.rowDate}>{new Date(item.startedAt).toLocaleString()}</Text>
+              <Text style={styles.rowSets}>{item.status}</Text>
             </View>
           )}
         />
@@ -53,11 +55,11 @@ function WorkoutsScreen({ userId }: { userId: string }) {
 
 type Tab = "profile" | "workouts";
 
-function AuthedApp({ userId }: { userId: string }) {
+function AuthedApp({ accessToken }: { accessToken: string }) {
   const [tab, setTab] = useState<Tab>("profile");
   return (
     <View style={styles.flex}>
-      {tab === "profile" ? <ProfileScreen /> : <WorkoutsScreen userId={userId} />}
+      {tab === "profile" ? <ProfileScreen /> : <WorkoutsScreen accessToken={accessToken} />}
       <View style={styles.tabBar}>
         <Button title="Profile" onPress={() => setTab("profile")} />
         <Button title="Workouts" onPress={() => setTab("workouts")} />
@@ -80,7 +82,7 @@ function Root() {
   return (
     <View style={styles.flex}>
       <StatusBar style="auto" />
-      {session ? <AuthedApp userId={session.user.id} /> : <LoginScreen />}
+      {session ? <AuthedApp accessToken={session.access_token} /> : <LoginScreen />}
     </View>
   );
 }

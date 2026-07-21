@@ -1,14 +1,15 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Machine, Session, SessionWorkout } from "@exercise-tracker/shared-types";
+import type { Machine, Session, Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import {
-  SessionRepository,
+  WorkoutRepository,
   MachineNotFoundError,
+  WorkoutNotFoundError,
   SessionNotFoundError,
-} from "./SessionRepository.js";
+} from "./WorkoutRepository.js";
 
 // Row shapes as they come back from Postgres (snake_case) — mapped to the
-// camelCase shared-types shapes below, same "row mapping" pattern as
-// CsvWorkoutRepository.
+// camelCase shared-types shapes below, same "row mapping" pattern the old
+// CsvWorkoutRepository used.
 interface MachineRow {
   id: string;
   type: string;
@@ -24,7 +25,7 @@ interface WorkoutRow {
   user_id: string;
   started_at: string;
   ended_at: string | null;
-  status: SessionWorkout["status"];
+  status: Workout["status"];
   created_at: string;
 }
 
@@ -55,7 +56,7 @@ function rowToMachine(row: MachineRow): Machine {
   };
 }
 
-function rowToWorkout(row: WorkoutRow): SessionWorkout {
+function rowToWorkout(row: WorkoutRow): Workout {
   return {
     id: row.id,
     userId: row.user_id,
@@ -84,13 +85,13 @@ function rowToSession(row: SessionRow): Session {
 }
 
 /**
- * Supabase-backed implementation of SessionRepository.
+ * Supabase-backed implementation of WorkoutRepository.
  *
  * Constructed with the service-role key — it bypasses RLS, so every query
  * here filters by userId explicitly. RLS in the migration is defense-in-depth
  * for any future direct-from-client access, not the only gate.
  */
-export class SupabaseSessionRepository implements SessionRepository {
+export class SupabaseWorkoutRepository implements WorkoutRepository {
   private client: SupabaseClient;
 
   constructor(supabaseUrl: string, serviceRoleKey: string) {
@@ -151,7 +152,7 @@ export class SupabaseSessionRepository implements SessionRepository {
   async startMachineSession(
     userId: string,
     scanToken: string
-  ): Promise<{ workout: SessionWorkout; session: Session }> {
+  ): Promise<{ workout: Workout; session: Session }> {
     const machine = await this.getMachineByScanToken(scanToken);
     if (!machine) throw new MachineNotFoundError(scanToken);
 
@@ -168,7 +169,7 @@ export class SupabaseSessionRepository implements SessionRepository {
   async startManualSession(
     userId: string,
     activityType: string
-  ): Promise<{ workout: SessionWorkout; session: Session }> {
+  ): Promise<{ workout: Workout; session: Session }> {
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: null,
@@ -179,19 +180,42 @@ export class SupabaseSessionRepository implements SessionRepository {
     return { workout: rowToWorkout(workoutRow), session: rowToSession(sessionRow) };
   }
 
-  async endSession(sessionId: string): Promise<Session> {
+  async endSession(userId: string, sessionId: string): Promise<Session> {
+    // Sessions don't carry user_id directly — ownership is verified through
+    // the parent workout via an inner join before allowing the mutation.
+    const { data: owned, error: ownedError } = await this.client
+      .from("sessions")
+      .select("id, workouts!inner(user_id)")
+      .eq("id", sessionId)
+      .eq("workouts.user_id", userId)
+      .maybeSingle();
+    if (ownedError) throw ownedError;
+    if (!owned) throw new SessionNotFoundError(sessionId);
+
     const { data, error } = await this.client
       .from("sessions")
       .update({ status: "completed", ended_at: new Date().toISOString() })
       .eq("id", sessionId)
       .select("*")
-      .maybeSingle();
+      .single();
     if (error) throw error;
-    if (!data) throw new SessionNotFoundError(sessionId);
     return rowToSession(data as SessionRow);
   }
 
-  async getCurrentWorkout(userId: string): Promise<SessionWorkout | null> {
+  async endWorkout(userId: string, workoutId: string): Promise<Workout> {
+    const { data, error } = await this.client
+      .from("workouts")
+      .update({ status: "completed", ended_at: new Date().toISOString() })
+      .eq("id", workoutId)
+      .eq("user_id", userId)
+      .select("*")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new WorkoutNotFoundError(workoutId);
+    return rowToWorkout(data as WorkoutRow);
+  }
+
+  async getCurrentWorkout(userId: string): Promise<Workout | null> {
     const { data, error } = await this.client
       .from("workouts")
       .select("*")
@@ -204,13 +228,12 @@ export class SupabaseSessionRepository implements SessionRepository {
     return data ? rowToWorkout(data as WorkoutRow) : null;
   }
 
-  async getWorkoutById(
-    workoutId: string
-  ): Promise<(SessionWorkout & { sessions: Session[] }) | null> {
+  async getWorkoutById(userId: string, workoutId: string): Promise<WorkoutWithSessions | null> {
     const { data: workoutRow, error: workoutError } = await this.client
       .from("workouts")
       .select("*")
       .eq("id", workoutId)
+      .eq("user_id", userId)
       .maybeSingle();
     if (workoutError) throw workoutError;
     if (!workoutRow) return null;
@@ -226,5 +249,15 @@ export class SupabaseSessionRepository implements SessionRepository {
       ...rowToWorkout(workoutRow as WorkoutRow),
       sessions: ((sessionRows ?? []) as SessionRow[]).map(rowToSession),
     };
+  }
+
+  async listWorkouts(userId: string): Promise<Workout[]> {
+    const { data, error } = await this.client
+      .from("workouts")
+      .select("*")
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false });
+    if (error) throw error;
+    return ((data ?? []) as WorkoutRow[]).map(rowToWorkout);
   }
 }

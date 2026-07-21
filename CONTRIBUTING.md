@@ -6,6 +6,12 @@
 npm install
 ```
 
+The API needs a Supabase project (local via the Supabase CLI, or hosted) —
+see `apps/api/.env.example` for the required env vars
+(`SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`SUPABASE_ANON_KEY`) and
+`apps/web/.env.example`/`apps/mobile/.env.example` for the client-side
+equivalents.
+
 ## Running things locally
 
 ```bash
@@ -28,8 +34,10 @@ The web app talks to the API via `NEXT_PUBLIC_API_URL` (defaults to
 If you change anything in `packages/shared-types`, that's a contract change
 for every app. In your PR:
 1. Update the type in `shared-types`.
-2. Update the CSV repository's row mapping if it affects storage
-   (`apps/api/src/repositories/CsvWorkoutRepository.ts`).
+2. If it affects storage, add a new migration under `supabase/migrations/`
+   (never edit an already-applied one) and update
+   `SupabaseWorkoutRepository`'s row mapping
+   (`apps/api/src/repositories/SupabaseWorkoutRepository.ts`).
 3. Update any affected route validation.
 4. Flag it clearly in the PR description so mobile/web folks notice.
 
@@ -37,9 +45,11 @@ for every app. In your PR:
 
 All persistence goes through the `WorkoutRepository` interface
 (`apps/api/src/repositories/WorkoutRepository.ts`). Never import
-`CsvWorkoutRepository` (or any future concrete implementation) directly into
-route handlers or business logic — only `server.ts` should instantiate a
-concrete repository.
+`SupabaseWorkoutRepository` (or any future concrete implementation) directly
+into route handlers or business logic — only `server.ts` should instantiate a
+concrete repository. Every repository method takes `userId` and scopes its
+query by it — the repository runs on the service-role key (bypasses RLS), so
+ownership has to be enforced in the repository itself, not assumed.
 
 ## Before opening a PR
 
