@@ -97,6 +97,31 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(second.workout.id).toBe(first.workout.id);
   });
 
+  it("starting a new session closes whatever session was previously open", async () => {
+    const first = await repo.startManualSession(userId, "run");
+    const second = await repo.startManualSession(userId, "bike");
+
+    const workout = await repo.getWorkoutById(userId, first.workout.id);
+    const firstSession = workout!.sessions.find((s) => s.id === first.session.id)!;
+    const secondSession = workout!.sessions.find((s) => s.id === second.session.id)!;
+
+    expect(firstSession.status).toBe("completed");
+    expect(firstSession.endedAt).toBeTruthy();
+    expect(secondSession.status).toBe("in_progress");
+    expect(secondSession.endedAt).toBeUndefined();
+  });
+
+  it("starting a machine session closes a previously open manual session", async () => {
+    const manual = await repo.startManualSession(userId, "run");
+    const machine = await repo.startMachineSession(userId, scanToken);
+
+    const workout = await repo.getWorkoutById(userId, manual.workout.id);
+    const manualSession = workout!.sessions.find((s) => s.id === manual.session.id)!;
+
+    expect(manualSession.status).toBe("completed");
+    expect(machine.session.status).toBe("in_progress");
+  });
+
   it("ends a session", async () => {
     const { session } = await repo.startManualSession(userId, "run");
     const ended = await repo.endSession(userId, session.id);
