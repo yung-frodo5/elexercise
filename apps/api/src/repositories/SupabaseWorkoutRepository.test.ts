@@ -97,6 +97,31 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(second.workout.id).toBe(first.workout.id);
   });
 
+  it("starting a new session closes whatever session was previously open", async () => {
+    const first = await repo.startManualSession(userId, "run");
+    const second = await repo.startManualSession(userId, "bike");
+
+    const workout = await repo.getWorkoutById(userId, first.workout.id);
+    const firstSession = workout!.sessions.find((s) => s.id === first.session.id)!;
+    const secondSession = workout!.sessions.find((s) => s.id === second.session.id)!;
+
+    expect(firstSession.status).toBe("completed");
+    expect(firstSession.endedAt).toBeTruthy();
+    expect(secondSession.status).toBe("in_progress");
+    expect(secondSession.endedAt).toBeUndefined();
+  });
+
+  it("starting a machine session closes a previously open manual session", async () => {
+    const manual = await repo.startManualSession(userId, "run");
+    const machine = await repo.startMachineSession(userId, scanToken);
+
+    const workout = await repo.getWorkoutById(userId, manual.workout.id);
+    const manualSession = workout!.sessions.find((s) => s.id === manual.session.id)!;
+
+    expect(manualSession.status).toBe("completed");
+    expect(machine.session.status).toBe("in_progress");
+  });
+
   it("ends a session", async () => {
     const { session } = await repo.startManualSession(userId, "run");
     const ended = await repo.endSession(userId, session.id);
@@ -114,6 +139,31 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     const ended = await repo.endWorkout(userId, workout.id);
     expect(ended.status).toBe("completed");
     expect(ended.endedAt).toBeTruthy();
+  });
+
+  it("ending a workout also ends its still in-progress sessions", async () => {
+    const { workout } = await repo.startManualSession(userId, "run");
+    await repo.startManualSession(userId, "bike"); // second session on the same workout
+
+    await repo.endWorkout(userId, workout.id);
+
+    const fetched = await repo.getWorkoutById(userId, workout.id);
+    expect(fetched?.sessions).toHaveLength(2);
+    for (const s of fetched!.sessions) {
+      expect(s.status).toBe("completed");
+      expect(s.endedAt).toBeTruthy();
+    }
+  });
+
+  it("does not touch a session the user already ended before ending the workout", async () => {
+    const { workout, session } = await repo.startManualSession(userId, "run");
+    const alreadyEnded = await repo.endSession(userId, session.id);
+
+    await repo.endWorkout(userId, workout.id);
+
+    const fetched = await repo.getWorkoutById(userId, workout.id);
+    const stillThere = fetched!.sessions.find((s) => s.id === session.id)!;
+    expect(stillThere.endedAt).toBe(alreadyEnded.endedAt);
   });
 
   it("throws WorkoutNotFoundError when ending another user's workout", async () => {

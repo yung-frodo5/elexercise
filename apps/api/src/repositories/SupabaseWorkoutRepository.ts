@@ -149,6 +149,18 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     return data as SessionRow;
   }
 
+  // Only one session is ever open at a time. Called before inserting a new
+  // one (so starting a session closes whatever was previously open) and
+  // when ending a workout (so nothing is left dangling in_progress).
+  private async closeOpenSessions(workoutId: string, endedAt: string): Promise<void> {
+    const { error } = await this.client
+      .from("sessions")
+      .update({ status: "completed", ended_at: endedAt })
+      .eq("workout_id", workoutId)
+      .eq("status", "in_progress");
+    if (error) throw error;
+  }
+
   async startMachineSession(
     userId: string,
     scanToken: string
@@ -157,6 +169,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     if (!machine) throw new MachineNotFoundError(scanToken);
 
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
+    await this.closeOpenSessions(workoutRow.id, new Date().toISOString());
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: machine.id,
       source: "machine",
@@ -171,6 +184,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     activityType: string
   ): Promise<{ workout: Workout; session: Session }> {
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
+    await this.closeOpenSessions(workoutRow.id, new Date().toISOString());
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: null,
       source: "manual",
@@ -203,15 +217,20 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
   }
 
   async endWorkout(userId: string, workoutId: string): Promise<Workout> {
+    const endedAt = new Date().toISOString();
+
     const { data, error } = await this.client
       .from("workouts")
-      .update({ status: "completed", ended_at: new Date().toISOString() })
+      .update({ status: "completed", ended_at: endedAt })
       .eq("id", workoutId)
       .eq("user_id", userId)
       .select("*")
       .maybeSingle();
     if (error) throw error;
     if (!data) throw new WorkoutNotFoundError(workoutId);
+
+    await this.closeOpenSessions(workoutId, endedAt);
+
     return rowToWorkout(data as WorkoutRow);
   }
 

@@ -12,14 +12,16 @@ export interface WorkoutRepository {
   getMachineByScanToken(scanToken: string): Promise<Machine | null>;
 
   // Starts (or attaches to) an in-progress workout for the user and creates
-  // a machine-sourced session on it.
+  // a machine-sourced session on it. Only one session is ever open at a
+  // time, so this ends whatever session was previously in_progress first.
   startMachineSession(
     userId: string,
     scanToken: string
   ): Promise<{ workout: Workout; session: Session }>;
 
   // Starts (or attaches to) an in-progress workout for the user and creates
-  // a manually-logged session on it.
+  // a manually-logged session on it. Only one session is ever open at a
+  // time, so this ends whatever session was previously in_progress first.
   startManualSession(
     userId: string,
     activityType: string
@@ -27,6 +29,9 @@ export interface WorkoutRepository {
 
   endSession(userId: string, sessionId: string): Promise<Session>;
 
+  // Also ends any of the workout's sessions that are still in_progress —
+  // implementations must not leave a "completed" workout with a session
+  // stuck in_progress.
   endWorkout(userId: string, workoutId: string): Promise<Workout>;
 
   getCurrentWorkout(userId: string): Promise<Workout | null>;
