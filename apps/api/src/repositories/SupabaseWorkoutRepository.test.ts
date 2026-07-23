@@ -116,6 +116,31 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(ended.endedAt).toBeTruthy();
   });
 
+  it("ending a workout also ends its still in-progress sessions", async () => {
+    const { workout } = await repo.startManualSession(userId, "run");
+    await repo.startManualSession(userId, "bike"); // second session on the same workout
+
+    await repo.endWorkout(userId, workout.id);
+
+    const fetched = await repo.getWorkoutById(userId, workout.id);
+    expect(fetched?.sessions).toHaveLength(2);
+    for (const s of fetched!.sessions) {
+      expect(s.status).toBe("completed");
+      expect(s.endedAt).toBeTruthy();
+    }
+  });
+
+  it("does not touch a session the user already ended before ending the workout", async () => {
+    const { workout, session } = await repo.startManualSession(userId, "run");
+    const alreadyEnded = await repo.endSession(userId, session.id);
+
+    await repo.endWorkout(userId, workout.id);
+
+    const fetched = await repo.getWorkoutById(userId, workout.id);
+    const stillThere = fetched!.sessions.find((s) => s.id === session.id)!;
+    expect(stillThere.endedAt).toBe(alreadyEnded.endedAt);
+  });
+
   it("throws WorkoutNotFoundError when ending another user's workout", async () => {
     const { workout } = await repo.startManualSession(userId, "run");
     await expect(repo.endWorkout(otherUserId, workout.id)).rejects.toThrow(WorkoutNotFoundError);

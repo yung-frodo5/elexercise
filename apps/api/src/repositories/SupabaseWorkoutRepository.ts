@@ -203,15 +203,28 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
   }
 
   async endWorkout(userId: string, workoutId: string): Promise<Workout> {
+    const endedAt = new Date().toISOString();
+
     const { data, error } = await this.client
       .from("workouts")
-      .update({ status: "completed", ended_at: new Date().toISOString() })
+      .update({ status: "completed", ended_at: endedAt })
       .eq("id", workoutId)
       .eq("user_id", userId)
       .select("*")
       .maybeSingle();
     if (error) throw error;
     if (!data) throw new WorkoutNotFoundError(workoutId);
+
+    // Ending a workout ends whatever sessions on it are still open — a user
+    // shouldn't be left with a "completed" workout containing a session
+    // that's stuck in_progress forever.
+    const { error: sessionsError } = await this.client
+      .from("sessions")
+      .update({ status: "completed", ended_at: endedAt })
+      .eq("workout_id", workoutId)
+      .eq("status", "in_progress");
+    if (sessionsError) throw sessionsError;
+
     return rowToWorkout(data as WorkoutRow);
   }
 

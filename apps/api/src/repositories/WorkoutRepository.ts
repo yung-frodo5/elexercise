@@ -27,6 +27,9 @@ export interface WorkoutRepository {
 
   endSession(userId: string, sessionId: string): Promise<Session>;
 
+  // Also ends any of the workout's sessions that are still in_progress —
+  // implementations must not leave a "completed" workout with a session
+  // stuck in_progress.
   endWorkout(userId: string, workoutId: string): Promise<Workout>;
 
   getCurrentWorkout(userId: string): Promise<Workout | null>;
