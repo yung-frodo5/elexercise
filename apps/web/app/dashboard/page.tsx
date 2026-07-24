@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
-import { endWorkout, getCurrentWorkout, getWorkout, listWorkouts, startManualSession } from "../../lib/api";
+import {
+  endSession,
+  endWorkout,
+  getCurrentWorkout,
+  getWorkout,
+  listWorkouts,
+  startMachineSession,
+  startManualSession,
+} from "../../lib/api";
 
 const ACTIVITY_PRESETS = ["Run", "Bike", "Row", "Strength", "Walk"];
 
@@ -40,6 +48,31 @@ function StartActivityForm({
   );
 }
 
+function StartMachineForm({ onStart, busy }: { onStart: (scanToken: string) => void; busy: boolean }) {
+  const [machineId, setMachineId] = useState("");
+
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}>
+      <input
+        placeholder="Machine ID"
+        value={machineId}
+        onChange={(e) => setMachineId(e.target.value)}
+        style={{ width: 160 }}
+      />
+      <button
+        onClick={() => {
+          if (!machineId.trim()) return;
+          onStart(machineId.trim());
+          setMachineId("");
+        }}
+        disabled={busy || !machineId.trim()}
+      >
+        Connect
+      </button>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { session, loading } = useSupabaseSession();
   const router = useRouter();
@@ -47,6 +80,7 @@ export default function DashboardPage() {
   const [currentWorkout, setCurrentWorkout] = useState<WorkoutWithSessions | null>(null);
   const [history, setHistory] = useState<Workout[]>([]);
   const [expanded, setExpanded] = useState<Record<string, WorkoutWithSessions | undefined>>({});
+  const [dataLoading, setDataLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,6 +97,14 @@ export default function DashboardPage() {
       setHistory(all.filter((w) => w.id !== current?.id));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load workouts");
+    } finally {
+      // Only matters for the first load — the empty/start-a-workout state
+      // is only accurate once we've actually heard back from the API. The
+      // API can take 20-30s to respond on a cold start (Render free tier),
+      // and without this, that whole window renders as "no workouts" /
+      // "start a workout" — indistinguishable from a genuinely empty
+      // account, which reads as broken/missing features rather than slow.
+      setDataLoading(false);
     }
   }, [session]);
 
@@ -79,6 +121,34 @@ export default function DashboardPage() {
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start activity");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleStartMachine(scanToken: string) {
+    if (!session) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await startMachineSession(session.access_token, scanToken);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to connect to machine");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleStopSession(sessionId: string) {
+    if (!session) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await endSession(session.access_token, sessionId);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to stop activity");
     } finally {
       setBusy(false);
     }
@@ -116,6 +186,17 @@ export default function DashboardPage() {
     );
   }
 
+  if (dataLoading) {
+    return (
+      <main style={{ padding: 24, fontFamily: "sans-serif" }}>
+        <p>Loading your workouts…</p>
+        <p style={{ color: "#666", fontSize: 14 }}>
+          First load can take up to 30 seconds if the API has been idle.
+        </p>
+      </main>
+    );
+  }
+
   return (
     <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 480 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -131,13 +212,24 @@ export default function DashboardPage() {
             <h2>Workout in progress</h2>
             <ul>
               {currentWorkout.sessions.map((s) => (
-                <li key={s.id}>
-                  {s.activityType} — {s.status}
+                <li key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>
+                    {s.activityType} — {s.status}
+                  </span>
+                  {s.status === "in_progress" && (
+                    <button onClick={() => void handleStopSession(s.id)} disabled={busy}>
+                      Stop
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
             <p>Add another activity:</p>
             <StartActivityForm onStart={handleStart} busy={busy} />
+            <p style={{ marginTop: 8 }}>
+              Or connect to a machine (stand-in for scanning, until that's built):
+            </p>
+            <StartMachineForm onStart={handleStartMachine} busy={busy} />
             <button onClick={() => void handleEnd()} disabled={busy} style={{ marginTop: 8 }}>
               End workout
             </button>
@@ -146,6 +238,10 @@ export default function DashboardPage() {
           <>
             <h2>Start a workout</h2>
             <StartActivityForm onStart={handleStart} busy={busy} />
+            <p style={{ marginTop: 8 }}>
+              Or connect to a machine (stand-in for scanning, until that's built):
+            </p>
+            <StartMachineForm onStart={handleStartMachine} busy={busy} />
           </>
         )}
       </section>

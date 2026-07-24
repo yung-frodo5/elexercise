@@ -46,6 +46,31 @@ export async function startManualSession(
   return res.json();
 }
 
+// scanToken is what identifies a machine (matches machines.scan_token —
+// what a real QR/NFC scan would read). Manual entry stands in for that
+// until real scanning is built.
+export async function startMachineSession(
+  accessToken: string,
+  scanToken: string
+): Promise<{ workout: Workout; session: WorkoutSession }> {
+  const res = await fetch(`${API_URL}/api/sessions`, {
+    method: "POST",
+    headers: { ...authHeaders(accessToken), "Content-Type": "application/json" },
+    body: JSON.stringify({ scanToken }),
+  });
+  if (!res.ok) throw new Error(`Failed to connect to machine (${res.status})`);
+  return res.json();
+}
+
+export async function endSession(accessToken: string, id: string): Promise<WorkoutSession> {
+  const res = await fetch(`${API_URL}/api/sessions/${id}/end`, {
+    method: "POST",
+    headers: authHeaders(accessToken),
+  });
+  if (!res.ok) throw new Error(`Failed to end session (${res.status})`);
+  return res.json();
+}
+
 export async function endWorkout(accessToken: string, id: string): Promise<Workout> {
   const res = await fetch(`${API_URL}/api/workouts/${id}/end`, {
     method: "POST",

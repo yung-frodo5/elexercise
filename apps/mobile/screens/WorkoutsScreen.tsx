@@ -10,7 +10,15 @@ import {
   View,
 } from "react-native";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { endWorkout, getCurrentWorkout, getWorkout, listWorkouts, startManualSession } from "../lib/api";
+import {
+  endSession,
+  endWorkout,
+  getCurrentWorkout,
+  getWorkout,
+  listWorkouts,
+  startMachineSession,
+  startManualSession,
+} from "../lib/api";
 
 const ACTIVITY_PRESETS = ["Run", "Bike", "Row", "Strength", "Walk"];
 
@@ -38,6 +46,36 @@ function StartActivityForm({
           if (!other.trim()) return;
           onStart(other.trim());
           setOther("");
+        }}
+      />
+    </View>
+  );
+}
+
+function StartMachineForm({
+  onStart,
+  busy,
+}: {
+  onStart: (scanToken: string) => void;
+  busy: boolean;
+}) {
+  const [machineId, setMachineId] = useState("");
+
+  return (
+    <View style={styles.machineRow}>
+      <TextInput
+        style={styles.input}
+        placeholder="Machine ID"
+        value={machineId}
+        onChangeText={setMachineId}
+      />
+      <Button
+        title="Connect"
+        disabled={busy || !machineId.trim()}
+        onPress={() => {
+          if (!machineId.trim()) return;
+          onStart(machineId.trim());
+          setMachineId("");
         }}
       />
     </View>
@@ -77,6 +115,32 @@ export default function WorkoutsScreen({ accessToken }: { accessToken: string })
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start activity");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleStartMachine(scanToken: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      await startMachineSession(accessToken, scanToken);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to connect to machine");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleStopSession(sessionId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      await endSession(accessToken, sessionId);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to stop activity");
     } finally {
       setBusy(false);
     }
@@ -123,18 +187,27 @@ export default function WorkoutsScreen({ accessToken }: { accessToken: string })
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Workout in progress</Text>
           {currentWorkout.sessions.map((s) => (
-            <Text key={s.id}>
-              {s.activityType} — {s.status}
-            </Text>
+            <View key={s.id} style={styles.sessionRow}>
+              <Text>
+                {s.activityType} — {s.status}
+              </Text>
+              {s.status === "in_progress" && (
+                <Button title="Stop" onPress={() => void handleStopSession(s.id)} disabled={busy} />
+              )}
+            </View>
           ))}
           <Text style={styles.label}>Add another activity:</Text>
           <StartActivityForm onStart={handleStart} busy={busy} />
+          <Text style={styles.label}>Or connect to a machine (stand-in for scanning, until that's built):</Text>
+          <StartMachineForm onStart={handleStartMachine} busy={busy} />
           <Button title="End workout" onPress={() => void handleEnd()} disabled={busy} />
         </View>
       ) : (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Start a workout</Text>
           <StartActivityForm onStart={handleStart} busy={busy} />
+          <Text style={styles.label}>Or connect to a machine (stand-in for scanning, until that's built):</Text>
+          <StartMachineForm onStart={handleStartMachine} busy={busy} />
         </View>
       )}
 
@@ -196,9 +269,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     color: "#666",
   },
+  sessionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 4,
+  },
   presetRow: {
     flexDirection: "row",
     flexWrap: "wrap",
+    gap: 8,
+    alignItems: "center",
+  },
+  machineRow: {
+    flexDirection: "row",
     gap: 8,
     alignItems: "center",
   },
