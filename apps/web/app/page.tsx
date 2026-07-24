@@ -1,82 +1,73 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import type { Session } from "@supabase/supabase-js";
-import type { Workout } from "@exercise-tracker/shared-types";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import { useSupabaseSession } from "../lib/useSession";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+type Mode = "signIn" | "signUp";
 
-function LoginForm() {
+export default function LandingPage() {
+  const { session, loading } = useSupabaseSession();
+  const router = useRouter();
+
+  const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session) router.replace("/dashboard");
+  }, [session, router]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
+    setInfo(null);
+    if (mode === "signIn") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) setError(error.message);
+    } else {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) setError(error.message);
+      else setInfo("Account created. If email confirmation is required, check your inbox.");
+    }
+  }
+
+  if (loading || session) {
+    return (
+      <main style={{ padding: 24, fontFamily: "sans-serif" }}>
+        <p>Loading…</p>
+      </main>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 8, maxWidth: 280 }}>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {error && <p style={{ color: "#b00020" }}>{error}</p>}
-      <button type="submit">Sign in</button>
-    </form>
-  );
-}
-
-function WorkoutList({ accessToken }: { accessToken: string }) {
-  const [workouts, setWorkouts] = useState<Workout[] | null>(null);
-
-  useEffect(() => {
-    fetch(`${API_URL}/api/workouts`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      cache: "no-store",
-    })
-      .then((res) => (res.ok ? res.json() : []))
-      .then(setWorkouts);
-  }, [accessToken]);
-
-  if (workouts === null) return <p>Loading…</p>;
-  if (workouts.length === 0) return <p>No workouts yet.</p>;
-
-  return (
-    <ul>
-      {workouts.map((w) => (
-        <li key={w.id}>
-          {new Date(w.startedAt).toLocaleString()} — {w.status}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-export default function HomePage() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => setSession(next));
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
-  return (
-    <main style={{ padding: 24, fontFamily: "sans-serif" }}>
+    <main style={{ padding: 24, fontFamily: "sans-serif", maxWidth: 360 }}>
       <h1>Exercise Tracker</h1>
-      {loading ? <p>Loading…</p> : session ? <WorkoutList accessToken={session.access_token} /> : <LoginForm />}
+      <p>{mode === "signIn" ? "Sign in to continue" : "Create an account"}</p>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {error && <p style={{ color: "#b00020" }}>{error}</p>}
+        {info && <p>{info}</p>}
+        <button type="submit">{mode === "signIn" ? "Sign in" : "Create account"}</button>
+      </form>
+      <button
+        onClick={() => {
+          setMode(mode === "signIn" ? "signUp" : "signIn");
+          setError(null);
+          setInfo(null);
+        }}
+      >
+        {mode === "signIn" ? "Need an account? Create one" : "Have an account? Sign in"}
+      </button>
     </main>
   );
 }
