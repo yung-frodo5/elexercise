@@ -33,6 +33,23 @@ verifies that token and resolves it to a user id before any route handler runs.
 
 See `CONTRIBUTING.md` for local setup and PR conventions.
 
+## Deployment
+
+The app is live at [elexercise.org](https://elexercise.org) (redirects to
+`https://www.elexercise.org`):
+
+| Service | Role | Notes |
+|---|---|---|
+| **Vercel** | Hosts `apps/web` (Next.js) | Root Directory is `apps/web`; auto-deploys on push to `main`. Build requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` as build-time env vars (see `apps/web/.env.example`). |
+| **Render** | Hosts `apps/api` (Express) at `https://elexercise-api.onrender.com` | Deployed from the root `render.yaml` blueprint; auto-deploys on push to `main`. Needs `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, `ALLOWED_ORIGIN` set in the Render dashboard (see `apps/api/.env.example`). |
+| **Supabase** | Postgres database + auth (production project) | Separate from local/dev Supabase; the env vars above point the web app and API at it. |
+| **Squarespace Domains** | Registrar/DNS for `elexercise.org` | DNS records point the apex and `www` at Vercel, which issues and manages TLS. |
+
+The web app calls the API cross-origin, so the API's `ALLOWED_ORIGIN` env var
+must list every origin allowed to call it (currently `elexercise.org` and
+`www.elexercise.org`) — add a new one there before pointing a new frontend
+origin at the API.
+
 ## Quick start
 
 ```bash

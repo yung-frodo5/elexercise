@@ -8,8 +8,8 @@ npm install
 
 The API needs a Supabase project (local via the Supabase CLI, or hosted) —
 see `apps/api/.env.example` for the required env vars
-(`SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`SUPABASE_ANON_KEY`) and
-`apps/web/.env.example`/`apps/mobile/.env.example` for the client-side
+(`SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`/`SUPABASE_ANON_KEY`/`ALLOWED_ORIGIN`)
+and `apps/web/.env.example`/`apps/mobile/.env.example` for the client-side
 equivalents.
 
 ## Running things locally
@@ -50,6 +50,24 @@ into route handlers or business logic — only `server.ts` should instantiate a
 concrete repository. Every repository method takes `userId` and scopes its
 query by it — the repository runs on the service-role key (bypasses RLS), so
 ownership has to be enforced in the repository itself, not assumed.
+
+## Deployment
+
+`apps/web` deploys to **Vercel** and `apps/api` deploys to **Render**
+(via the root `render.yaml` blueprint); both are connected to this GitHub
+repo and auto-deploy on push to `main` — there's no manual deploy step.
+
+A few things that trip people up:
+- `NEXT_PUBLIC_*` vars are inlined into the Vercel build at build time.
+  Changing one in the Vercel dashboard doesn't take effect until you trigger
+  a new deployment (Deployments tab → "..." → Redeploy).
+- The API has no CORS allowance by default. `ALLOWED_ORIGIN` on Render
+  (comma-separated list) controls which origins may call it — add a new
+  entry there before pointing any new frontend origin (e.g. a preview
+  deployment) at the API.
+- Production secrets (Supabase service-role key, etc.) live only in the
+  Vercel/Render dashboards. Never commit real values — `.env.example` files
+  should stay placeholder-only.
 
 ## Before opening a PR
 
