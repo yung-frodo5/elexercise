@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import { requireAuth } from "./middleware/auth.js";
 import { createSessionRouter } from "./routes/sessions.js";
@@ -9,7 +10,12 @@ const repo = new SupabaseWorkoutRepository(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const allowedOrigins = process.env.ALLOWED_ORIGIN
+  ? process.env.ALLOWED_ORIGIN.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000"];
+
 const app = express();
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
