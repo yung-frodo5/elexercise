@@ -11,8 +11,8 @@ exercise-tracker/
 │   ├── mobile/    # Expo / React Native iOS app (see apps/mobile/README.md)
 │   └── api/       # Express API, storage-backend-agnostic
 ├── packages/
-│   ├── shared-types/   # TS types shared by api, web, and mobile
-│   └── design-tokens/  # colors/typography/spacing/icons shared by web and mobile
+│   ├── shared-types/   # TS types shared by api, web, and mobile (see packages/shared-types/README.md)
+│   └── design-tokens/  # colors/typography/spacing/icons shared by web and mobile (see packages/design-tokens/README.md)
 └── supabase/      # Postgres schema (migrations), RLS policies
 ```
 
