@@ -12,7 +12,7 @@ exercise-tracker/
 │   └── api/       # Express API, storage-backend-agnostic
 ├── packages/
 │   ├── shared-types/   # TS types shared by api, web, and mobile
-│   └── design-tokens/  # colors/typography/spacing shared by web and mobile
+│   └── design-tokens/  # colors/typography/spacing/icons shared by web and mobile
 └── supabase/      # Postgres schema (migrations), RLS policies
 ```
 
@@ -34,13 +34,17 @@ verifies that token and resolves it to a user id before any route handler runs.
 
 ## Visual design tokens
 
-Colors, typography, and spacing are centralized in `packages/design-tokens`
-(same plain-TS, no-build-step conventions as `packages/shared-types`) and
-re-exported as a single `theme` object, imported by both `apps/web` (inline
-`style={{}}` props) and `apps/mobile` (`StyleSheet.create`). Never hardcode a
-hex color, font size/weight, or spacing value in a component — add or reuse a
-token in `packages/design-tokens/src/` instead, so a visual change only has
-to happen in one place.
+Colors, typography, spacing, and icons are centralized in
+`packages/design-tokens` (same plain-TS, no-build-step conventions as
+`packages/shared-types`) and re-exported as a single `theme` object, imported
+by both `apps/web` (inline `style={{}}` props) and `apps/mobile`
+(`StyleSheet.create`). Icons are plain Unicode/emoji glyphs rather than a
+vector icon font or component set, so they render identically with a plain
+`<span>`/`<Text>` on either platform with no extra dependency or native
+linking required. Never hardcode a hex color, font size/weight, spacing
+value, or icon glyph in a component — add or reuse a token in
+`packages/design-tokens/src/` instead, so a visual change only has to happen
+in one place.
 
 See `CONTRIBUTING.md` for local setup and PR conventions.
 
