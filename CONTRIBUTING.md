@@ -43,15 +43,18 @@ for every app. In your PR:
 
 ## Visual styling changes
 
-Colors, typography, and spacing live in `packages/design-tokens`
-(`colors.ts`, `typography.ts`, `spacing.ts`, combined into a single `theme`
-export). Both `apps/web` and `apps/mobile` import `theme` from
-`@exercise-tracker/design-tokens` rather than hardcoding values.
+Colors, typography, spacing, and icons live in `packages/design-tokens`
+(`colors.ts`, `typography.ts`, `spacing.ts`, `icons.ts`, combined into a
+single `theme` export). Both `apps/web` and `apps/mobile` import `theme` from
+`@exercise-tracker/design-tokens` rather than hardcoding values. Icons are
+plain Unicode/emoji glyphs (e.g. `theme.icons.profile`), not a vector icon
+font — keep new icons in that same form so they stay dependency-free on both
+platforms.
 
-- Adding a new color/size/spacing value? Add it to the relevant file under
-  `packages/design-tokens/src/` and reference it via `theme.colors.*` /
-  `theme.typography.*` / `theme.spacing.*` — don't inline a new literal in a
-  component.
+- Adding a new color/size/spacing/icon value? Add it to the relevant file
+  under `packages/design-tokens/src/` and reference it via `theme.colors.*` /
+  `theme.typography.*` / `theme.spacing.*` / `theme.icons.*` — don't inline a
+  new literal in a component.
 - Changing an existing value (e.g. rebranding a color)? Change it once in
   `packages/design-tokens` — every consumer picks it up automatically.
 - Colors reflect real design decisions and should only change with explicit

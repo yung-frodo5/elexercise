@@ -81,7 +81,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             color: theme.colors.textPrimary,
           }}
         >
-          ✕
+          {theme.icons.close}
         </button>
         <h1 style={{ margin: 0, color: theme.colors.textPrimary }}>Exercise Tracker</h1>
         <p style={{ color: theme.colors.textMuted }}>
