@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { theme } from "@exercise-tracker/design-tokens";
 import { SiteHeader, HEADER_HEIGHT } from "../components/nav/SiteHeader";
+import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Exercise Tracker",
@@ -19,8 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
       >
         <SiteHeader />
-        {/* Header is position:fixed (out of flow) so content needs matching top padding. */}
-        <div style={{ paddingTop: HEADER_HEIGHT }}>{children}</div>
+        {/* Header/footer are position:fixed (out of flow) so content needs matching padding. */}
+        <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>{children}</div>
+        <SiteFooter />
       </body>
     </html>
   );
