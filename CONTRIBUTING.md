@@ -26,7 +26,7 @@ The web app talks to the API via `NEXT_PUBLIC_API_URL` (defaults to
 
 - Branch off `main`: `feature/<short-description>` or `fix/<short-description>`.
 - Keep branches short-lived — rebase/merge `main` in frequently to avoid big
-  conflicts, especially in `packages/shared-types`.
+  conflicts, especially in `packages/shared-types` and `packages/design-tokens`.
 - Open a PR early (draft is fine) so others can see what's in flight.
 
 ## Data model changes
@@ -40,6 +40,23 @@ for every app. In your PR:
    (`apps/api/src/repositories/SupabaseWorkoutRepository.ts`).
 3. Update any affected route validation.
 4. Flag it clearly in the PR description so mobile/web folks notice.
+
+## Visual styling changes
+
+Colors, typography, and spacing live in `packages/design-tokens`
+(`colors.ts`, `typography.ts`, `spacing.ts`, combined into a single `theme`
+export). Both `apps/web` and `apps/mobile` import `theme` from
+`@exercise-tracker/design-tokens` rather than hardcoding values.
+
+- Adding a new color/size/spacing value? Add it to the relevant file under
+  `packages/design-tokens/src/` and reference it via `theme.colors.*` /
+  `theme.typography.*` / `theme.spacing.*` — don't inline a new literal in a
+  component.
+- Changing an existing value (e.g. rebranding a color)? Change it once in
+  `packages/design-tokens` — every consumer picks it up automatically.
+- Colors reflect real design decisions and should only change with explicit
+  sign-off; typography/spacing should stay a small, reusable scale rather
+  than one-off numbers per component.
 
 ## Storage backend
 
