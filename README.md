@@ -11,7 +11,8 @@ exercise-tracker/
 │   ├── mobile/    # Expo / React Native iOS app (see apps/mobile/README.md)
 │   └── api/       # Express API, storage-backend-agnostic
 ├── packages/
-│   └── shared-types/   # TS types shared by api, web, and mobile
+│   ├── shared-types/   # TS types shared by api, web, and mobile
+│   └── design-tokens/  # colors/typography/spacing shared by web and mobile
 └── supabase/      # Postgres schema (migrations), RLS policies
 ```
 
@@ -30,6 +31,16 @@ The Express API itself doesn't issue sessions — clients (web, mobile)
 authenticate directly against Supabase and pass the resulting JWT as
 `Authorization: Bearer <token>` on every request. `apps/api/src/middleware/auth.ts`
 verifies that token and resolves it to a user id before any route handler runs.
+
+## Visual design tokens
+
+Colors, typography, and spacing are centralized in `packages/design-tokens`
+(same plain-TS, no-build-step conventions as `packages/shared-types`) and
+re-exported as a single `theme` object, imported by both `apps/web` (inline
+`style={{}}` props) and `apps/mobile` (`StyleSheet.create`). Never hardcode a
+hex color, font size/weight, or spacing value in a component — add or reuse a
+token in `packages/design-tokens/src/` instead, so a visual change only has
+to happen in one place.
 
 See `CONTRIBUTING.md` for local setup and PR conventions.
 
