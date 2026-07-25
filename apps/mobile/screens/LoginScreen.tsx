@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { theme } from "@exercise-tracker/design-tokens";
 import { useAuth } from "../contexts/AuthContext";
 
 type Mode = "signIn" | "signUp";
@@ -92,8 +93,14 @@ export default function LoginScreen() {
         title={mode === "signIn" ? "Sign in" : "Create account"}
         onPress={submit}
         disabled={busy}
+        color={theme.colors.primaryGreen}
       />
-      <Button title="Continue with Google" onPress={submitGoogle} disabled={busy} />
+      <Button
+        title="Continue with Google"
+        onPress={submitGoogle}
+        disabled={busy}
+        color={theme.colors.primaryGreen}
+      />
       <Button
         title={mode === "signIn" ? "Need an account? Create one" : "Have an account? Sign in"}
         onPress={() => {
@@ -110,18 +117,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 24,
-    gap: 12,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.md,
   },
   title: {
-    fontSize: 32,
-    fontWeight: "700",
+    fontSize: theme.typography.size.xxl,
+    fontWeight: theme.typography.weight.bold,
+    color: theme.colors.textPrimary,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    padding: theme.spacing.md,
+    fontSize: theme.typography.size.md,
   },
 });

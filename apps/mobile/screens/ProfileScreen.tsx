@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { theme } from "@exercise-tracker/design-tokens";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 
@@ -66,10 +67,10 @@ export default function ProfileScreen() {
       />
 
       {saving && <ActivityIndicator />}
-      <Button title="Save" onPress={save} disabled={saving} />
+      <Button title="Save" onPress={save} disabled={saving} color={theme.colors.primaryGreen} />
       {status && <Text>{status}</Text>}
 
-      <Button title="Sign out" onPress={() => void signOut()} />
+      <Button title="Sign out" onPress={() => void signOut()} color={theme.colors.primaryGreen} />
     </View>
   );
 }
@@ -78,29 +79,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 72,
-    paddingHorizontal: 24,
-    gap: 8,
+    paddingHorizontal: theme.spacing.xl,
+    gap: theme.spacing.sm,
+    backgroundColor: theme.colors.background,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: theme.colors.background,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginBottom: 16,
+    fontSize: theme.typography.size.xl,
+    fontWeight: theme.typography.weight.bold,
+    marginBottom: theme.spacing.lg,
+    color: theme.colors.textPrimary,
   },
   label: {
-    fontSize: 13,
-    color: "#888",
-    marginTop: 12,
+    fontSize: theme.typography.size.xs,
+    color: theme.colors.textMuted,
+    marginTop: theme.spacing.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    padding: theme.spacing.md,
+    fontSize: theme.typography.size.md,
   },
 });

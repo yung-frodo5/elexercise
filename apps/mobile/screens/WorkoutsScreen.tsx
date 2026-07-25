@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import { theme } from "@exercise-tracker/design-tokens";
 import {
   endSession,
   endWorkout,
@@ -35,7 +36,7 @@ function StartActivityForm({
     <View style={styles.presetRow}>
       {ACTIVITY_PRESETS.map((preset) => (
         <View key={preset} style={styles.presetButton}>
-          <Button title={preset} onPress={() => onStart(preset)} disabled={busy} />
+          <Button title={preset} onPress={() => onStart(preset)} disabled={busy} color={theme.colors.primaryGreen} />
         </View>
       ))}
       <TextInput style={styles.input} placeholder="Other…" value={other} onChangeText={setOther} />
@@ -47,6 +48,7 @@ function StartActivityForm({
           onStart(other.trim());
           setOther("");
         }}
+        color={theme.colors.primaryGreen}
       />
     </View>
   );
@@ -77,6 +79,7 @@ function StartMachineForm({
           onStart(machineId.trim());
           setMachineId("");
         }}
+        color={theme.colors.primaryGreen}
       />
     </View>
   );
@@ -192,7 +195,12 @@ export default function WorkoutsScreen({ accessToken }: { accessToken: string })
                 {s.activityType} — {s.status}
               </Text>
               {s.status === "in_progress" && (
-                <Button title="Stop" onPress={() => void handleStopSession(s.id)} disabled={busy} />
+                <Button
+                  title="Stop"
+                  onPress={() => void handleStopSession(s.id)}
+                  disabled={busy}
+                  color={theme.colors.secondaryGreen}
+                />
               )}
             </View>
           ))}
@@ -200,7 +208,12 @@ export default function WorkoutsScreen({ accessToken }: { accessToken: string })
           <StartActivityForm onStart={handleStart} busy={busy} />
           <Text style={styles.label}>Or connect to a machine (stand-in for scanning, until that's built):</Text>
           <StartMachineForm onStart={handleStartMachine} busy={busy} />
-          <Button title="End workout" onPress={() => void handleEnd()} disabled={busy} />
+          <Button
+            title="End workout"
+            onPress={() => void handleEnd()}
+            disabled={busy}
+            color={theme.colors.secondaryGreen}
+          />
         </View>
       ) : (
         <View style={styles.section}>
@@ -242,58 +255,60 @@ export default function WorkoutsScreen({ accessToken }: { accessToken: string })
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     paddingTop: 60,
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.spacing.lg,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 16,
+    fontSize: theme.typography.size.lg,
+    fontWeight: theme.typography.weight.semibold,
+    marginBottom: theme.spacing.lg,
+    color: theme.colors.textPrimary,
   },
   error: {
-    color: "#b00020",
-    marginBottom: 12,
+    color: theme.colors.error,
+    marginBottom: theme.spacing.md,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 8,
-    marginBottom: 8,
+    fontSize: theme.typography.size.md,
+    fontWeight: theme.typography.weight.semibold,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.textPrimary,
   },
   label: {
-    marginTop: 8,
-    marginBottom: 4,
-    color: "#666",
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.xs,
+    color: theme.colors.textMuted,
   },
   sessionRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 4,
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.xs,
   },
   presetRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: theme.spacing.sm,
     alignItems: "center",
   },
   machineRow: {
     flexDirection: "row",
-    gap: 8,
+    gap: theme.spacing.sm,
     alignItems: "center",
   },
   presetButton: {
-    marginRight: 4,
+    marginRight: theme.spacing.xs,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    padding: 8,
+    padding: theme.spacing.sm,
     minWidth: 100,
   },
   list: {
@@ -304,21 +319,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: theme.colors.border,
   },
   rowDate: {
-    fontWeight: "500",
+    fontWeight: theme.typography.weight.medium,
+    color: theme.colors.textPrimary,
   },
   rowSets: {
-    color: "#666",
+    color: theme.colors.textMuted,
   },
   expandedList: {
-    paddingLeft: 12,
-    paddingBottom: 8,
+    paddingLeft: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: theme.colors.background,
   },
 });
