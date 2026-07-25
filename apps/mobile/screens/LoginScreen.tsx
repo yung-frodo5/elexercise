@@ -12,7 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 type Mode = "signIn" | "signUp";
 
-export default function LoginScreen() {
+export default function LoginScreen({ message }: { message?: string }) {
   const { signInWithPassword, signUpWithPassword, signInWithGoogle } = useAuth();
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
@@ -54,7 +54,13 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.outer}>
+      {message && (
+        <View style={styles.messageBanner}>
+          <Text style={styles.message}>{message}</Text>
+        </View>
+      )}
+      <View style={styles.container}>
       <Text style={styles.title}>Elexercise</Text>
       <Text>{mode === "signIn" ? "Sign in to continue" : "Create your account"}</Text>
 
@@ -109,11 +115,24 @@ export default function LoginScreen() {
           setInfo(null);
         }}
       />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  outer: {
+    flex: 1,
+  },
+  messageBanner: {
+    paddingTop: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+  },
+  message: {
+    textAlign: "center",
+    color: theme.colors.textMuted,
+    fontSize: theme.typography.size.sm,
+  },
   container: {
     flex: 1,
     justifyContent: "center",

@@ -58,7 +58,7 @@ export function SiteHeader() {
             fontSize: theme.typography.size.md,
           }}
         >
-          <span aria-hidden>☰</span>
+          <span aria-hidden>{theme.icons.menu}</span>
           <span>Drop-down menu</span>
         </button>
 
@@ -139,7 +139,7 @@ export function SiteHeader() {
                     fontSize: theme.typography.size.md,
                   }}
                 >
-                  <span aria-hidden>👤</span>
+                  <span aria-hidden>{theme.icons.profile}</span>
                   <span>{displayName ?? session.user.email}</span>
                 </button>
 
@@ -201,7 +201,7 @@ export function SiteHeader() {
                   fontSize: theme.typography.size.md,
                 }}
               >
-                <span aria-hidden>🔒</span>
+                <span aria-hidden>{theme.icons.login}</span>
                 <span>User / Login</span>
               </button>
             )}

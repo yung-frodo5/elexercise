@@ -1,29 +1,21 @@
 import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, ActivityIndicator, Button } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { theme } from "@exercise-tracker/design-tokens";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { Header } from "./components/nav/Header";
+import { Footer, type Tab } from "./components/nav/Footer";
+import LandingScreen from "./screens/LandingScreen";
 import LoginScreen from "./screens/LoginScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import WorkoutsScreen from "./screens/WorkoutsScreen";
+import ExerciseDashboardScreen from "./screens/ExerciseDashboardScreen";
 
-type Tab = "profile" | "workouts";
-
-function AuthedApp({ accessToken }: { accessToken: string }) {
-  const [tab, setTab] = useState<Tab>("profile");
-  return (
-    <View style={styles.flex}>
-      {tab === "profile" ? <ProfileScreen /> : <WorkoutsScreen accessToken={accessToken} />}
-      <View style={styles.tabBar}>
-        <Button title="Profile" onPress={() => setTab("profile")} color={theme.colors.primaryGreen} />
-        <Button title="Workouts" onPress={() => setTab("workouts")} color={theme.colors.primaryGreen} />
-      </View>
-    </View>
-  );
-}
-
+// Header/footer are always present, even signed out — Home (the landing
+// screen) needs no auth, while Dashboard/Profile fall back to LoginScreen
+// in place of their content until a session exists.
 function Root() {
   const { session, loading } = useAuth();
+  const [tab, setTab] = useState<Tab>("home");
 
   if (loading) {
     return (
@@ -36,7 +28,23 @@ function Root() {
   return (
     <View style={styles.flex}>
       <StatusBar style="auto" />
-      {session ? <AuthedApp accessToken={session.access_token} /> : <LoginScreen />}
+      <Header onPressProfile={() => setTab("profile")} />
+      <View style={styles.flex}>
+        {tab === "home" ? (
+          <LandingScreen />
+        ) : tab === "dashboard" ? (
+          session ? (
+            <ExerciseDashboardScreen accessToken={session.access_token} />
+          ) : (
+            <LoginScreen message="Exercise dashboard is only available when logged in" />
+          )
+        ) : session ? (
+          <ProfileScreen />
+        ) : (
+          <LoginScreen />
+        )}
+      </View>
+      <Footer tab={tab} onSelect={setTab} />
     </View>
   );
 }
@@ -59,10 +67,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: theme.colors.background,
-  },
-  tabBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: theme.spacing.sm,
   },
 });

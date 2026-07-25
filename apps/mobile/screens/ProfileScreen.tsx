@@ -78,7 +78,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 72,
+    paddingTop: theme.spacing.lg,
     paddingHorizontal: theme.spacing.xl,
     gap: theme.spacing.sm,
     backgroundColor: theme.colors.background,
