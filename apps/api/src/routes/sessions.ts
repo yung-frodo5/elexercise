@@ -1,4 +1,5 @@
 import { Router } from "express";
+import type { SessionDetails } from "@exercise-tracker/shared-types";
 import type { WorkoutRepository } from "../repositories/WorkoutRepository.js";
 import { MachineNotFoundError, SessionNotFoundError } from "../repositories/WorkoutRepository.js";
 
@@ -31,8 +32,9 @@ export function createSessionRouter(repo: WorkoutRepository): Router {
   });
 
   router.post("/sessions/:id/end", async (req, res) => {
+    const { details } = req.body as { details?: SessionDetails };
     try {
-      const session = await repo.endSession(req.userId!, req.params.id);
+      const session = await repo.endSession(req.userId!, req.params.id, details);
       res.json(session);
     } catch (err) {
       if (err instanceof SessionNotFoundError) return res.status(404).json({ error: err.message });

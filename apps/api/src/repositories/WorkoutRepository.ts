@@ -1,4 +1,10 @@
-import type { Machine, Session, Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import type {
+  Machine,
+  Session,
+  SessionDetails,
+  Workout,
+  WorkoutWithSessions,
+} from "@exercise-tracker/shared-types";
 
 /**
  * Storage-agnostic contract for the Machine/Workout/Session model.
@@ -27,7 +33,9 @@ export interface WorkoutRepository {
     activityType: string
   ): Promise<{ workout: Workout; session: Session }>;
 
-  endSession(userId: string, sessionId: string): Promise<Session>;
+  // details is optional freeform data (duration, weight, reps, etc.) —
+  // usually only known once the activity is actually done.
+  endSession(userId: string, sessionId: string, details?: SessionDetails): Promise<Session>;
 
   // Also ends any of the workout's sessions that are still in_progress —
   // implementations must not leave a "completed" workout with a session

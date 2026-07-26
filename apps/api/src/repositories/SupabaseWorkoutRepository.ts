@@ -1,5 +1,11 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Machine, Session, Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import type {
+  Machine,
+  Session,
+  SessionDetails,
+  Workout,
+  WorkoutWithSessions,
+} from "@exercise-tracker/shared-types";
 import {
   WorkoutRepository,
   MachineNotFoundError,
@@ -42,6 +48,7 @@ interface SessionRow {
   peak_power_w: number | null;
   total_energy_joules: number | null;
   duration_s: number | null;
+  details: SessionDetails | null;
 }
 
 function rowToMachine(row: MachineRow): Machine {
@@ -81,6 +88,7 @@ function rowToSession(row: SessionRow): Session {
     peakPowerW: row.peak_power_w ?? undefined,
     totalEnergyJoules: row.total_energy_joules ?? undefined,
     durationS: row.duration_s ?? undefined,
+    details: row.details ?? undefined,
   };
 }
 
@@ -194,7 +202,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     return { workout: rowToWorkout(workoutRow), session: rowToSession(sessionRow) };
   }
 
-  async endSession(userId: string, sessionId: string): Promise<Session> {
+  async endSession(userId: string, sessionId: string, details?: SessionDetails): Promise<Session> {
     // Sessions don't carry user_id directly — ownership is verified through
     // the parent workout via an inner join before allowing the mutation.
     const { data: owned, error: ownedError } = await this.client
@@ -208,7 +216,11 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
 
     const { data, error } = await this.client
       .from("sessions")
-      .update({ status: "completed", ended_at: new Date().toISOString() })
+      .update({
+        status: "completed",
+        ended_at: new Date().toISOString(),
+        ...(details ? { details } : {}),
+      })
       .eq("id", sessionId)
       .select("*")
       .single();

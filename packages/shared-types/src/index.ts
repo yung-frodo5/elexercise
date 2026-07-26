@@ -30,6 +30,19 @@ export interface Workout {
 export type SessionSource = "machine" | "manual";
 export type SessionStatus = "in_progress" | "completed";
 
+// Freeform fitness details, captured when a session ends. Named fields for
+// type guidance on the common cases; still stored as jsonb, so the schema
+// doesn't need a migration every time a new field shows up.
+export interface SessionDetails {
+  durationMinutes?: number;
+  weightKg?: number;
+  reps?: number;
+  sets?: number;
+  distanceKm?: number;
+  calories?: number;
+  notes?: string;
+}
+
 export interface Session {
   id: string;
   workoutId: string;
@@ -43,6 +56,7 @@ export interface Session {
   peakPowerW?: number;
   totalEnergyJoules?: number;
   durationS?: number;
+  details?: SessionDetails;
 }
 
 export interface PowerSample {
