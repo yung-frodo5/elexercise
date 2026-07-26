@@ -134,6 +134,26 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     await expect(repo.endSession(otherUserId, session.id)).rejects.toThrow(SessionNotFoundError);
   });
 
+  it("persists details when ending a session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    const ended = await repo.endSession(userId, session.id, {
+      durationMinutes: 32,
+      distanceKm: 5.2,
+      notes: "felt good",
+    });
+    expect(ended.details).toEqual({ durationMinutes: 32, distanceKm: 5.2, notes: "felt good" });
+
+    const fetched = await repo.getWorkoutById(userId, session.workoutId);
+    const fetchedSession = fetched!.sessions.find((s) => s.id === session.id)!;
+    expect(fetchedSession.details).toEqual({ durationMinutes: 32, distanceKm: 5.2, notes: "felt good" });
+  });
+
+  it("leaves details undefined when ending a session without any", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    const ended = await repo.endSession(userId, session.id);
+    expect(ended.details).toBeUndefined();
+  });
+
   it("ends a workout", async () => {
     const { workout } = await repo.startManualSession(userId, "run");
     const ended = await repo.endWorkout(userId, workout.id);
