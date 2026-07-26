@@ -161,6 +161,19 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     if (error) throw error;
   }
 
+  // A machine only ever has one active session, across ALL users -- not
+  // just the current one. Physically only one person can be on a machine
+  // at a time, so scanning into one someone else is actively on ends
+  // their session (but not their workout -- they might resume manually).
+  private async closeActiveSessionsOnMachine(machineId: string, endedAt: string): Promise<void> {
+    const { error } = await this.client
+      .from("sessions")
+      .update({ status: "completed", ended_at: endedAt })
+      .eq("machine_id", machineId)
+      .eq("status", "in_progress");
+    if (error) throw error;
+  }
+
   async startMachineSession(
     userId: string,
     scanToken: string
@@ -169,7 +182,9 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     if (!machine) throw new MachineNotFoundError(scanToken);
 
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
-    await this.closeOpenSessions(workoutRow.id, new Date().toISOString());
+    const endedAt = new Date().toISOString();
+    await this.closeOpenSessions(workoutRow.id, endedAt);
+    await this.closeActiveSessionsOnMachine(machine.id, endedAt);
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: machine.id,
       source: "machine",

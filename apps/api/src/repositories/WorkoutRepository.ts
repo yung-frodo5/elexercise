@@ -14,6 +14,9 @@ export interface WorkoutRepository {
   // Starts (or attaches to) an in-progress workout for the user and creates
   // a machine-sourced session on it. Only one session is ever open at a
   // time, so this ends whatever session was previously in_progress first.
+  // Machines are also exclusive across users: if someone else has an
+  // active session on this machine, it gets ended too (their session only
+  // — not their workout, which they might resume manually).
   startMachineSession(
     userId: string,
     scanToken: string

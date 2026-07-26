@@ -122,6 +122,44 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(machine.session.status).toBe("in_progress");
   });
 
+  it("starting a session on a machine closes another user's active session on that same machine", async () => {
+    const userA = await repo.startMachineSession(userId, scanToken);
+    const userB = await repo.startMachineSession(otherUserId, scanToken);
+
+    const userAWorkout = await repo.getWorkoutById(userId, userA.workout.id);
+    const userASession = userAWorkout!.sessions.find((s) => s.id === userA.session.id)!;
+
+    expect(userASession.status).toBe("completed");
+    expect(userASession.endedAt).toBeTruthy();
+    // Only the session ends — the workout itself is untouched, same as any
+    // other closeOpenSessions/closeActiveSessionsOnMachine call.
+    expect(userAWorkout!.status).toBe("in_progress");
+    expect(userB.session.status).toBe("in_progress");
+  });
+
+  it("regression: a user's own active session on a different machine still closes when they scan a new one", async () => {
+    const otherScanToken = randomUUID();
+    const { data: otherMachine, error: otherMachineError } = await admin
+      .from("machines")
+      .insert({ type: "rower", model: "Test Rower 3000", serial: randomUUID(), scan_token: otherScanToken })
+      .select("id")
+      .single();
+    if (otherMachineError) throw otherMachineError;
+
+    try {
+      const first = await repo.startMachineSession(userId, scanToken);
+      const second = await repo.startMachineSession(userId, otherScanToken);
+
+      const workout = await repo.getWorkoutById(userId, first.workout.id);
+      const firstSession = workout!.sessions.find((s) => s.id === first.session.id)!;
+
+      expect(firstSession.status).toBe("completed");
+      expect(second.session.status).toBe("in_progress");
+    } finally {
+      await admin.from("machines").delete().eq("id", (otherMachine as { id: string }).id);
+    }
+  });
+
   it("ends a session", async () => {
     const { session } = await repo.startManualSession(userId, "run");
     const ended = await repo.endSession(userId, session.id);
