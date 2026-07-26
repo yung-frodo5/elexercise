@@ -53,3 +53,32 @@ export interface PowerSample {
 
 // A workout with its sessions attached — the shape returned by GET /workouts/:id.
 export type WorkoutWithSessions = Workout & { sessions: Session[] };
+
+// Profile/Badge types are snake_case, unlike everything above — profiles
+// and badges are queried directly from Supabase by clients (see
+// apps/mobile/contexts/AuthContext.tsx), not mediated through apps/api's
+// repository layer, so there's no snake_case -> camelCase mapping step.
+// This matches the actual wire shape, not the rest of this file's convention.
+
+export interface Profile {
+  id: string;
+  display_name: string;
+  avatar_url: string | null;
+  home_region: string;
+  level: number;
+  elexir: number;
+  created_at: string;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  criteria: string;
+  created_at: string;
+}
+
+export interface UserBadge {
+  user_id: string;
+  badge_id: string;
+  earned_at: string;
+}
