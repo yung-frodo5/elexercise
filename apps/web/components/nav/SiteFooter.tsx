@@ -17,10 +17,10 @@ export function SiteFooter() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: theme.colors.border,
+        backgroundColor: theme.colors.primaryGreen,
       }}
     >
-      <p style={{ margin: 0, color: "#ffffff" }}>TODO: polish footer</p>
+      <p style={{ margin: 0, color: theme.colors.textPrimary }}>TODO: polish footer</p>
     </footer>
   );
 }

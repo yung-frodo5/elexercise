@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.primaryGreen,
   },
   title: {
-    color: "#ffffff",
+    color: theme.colors.textPrimary,
     fontFamily: theme.typography.fontFamily.native,
     fontSize: theme.typography.size.lg,
   },
