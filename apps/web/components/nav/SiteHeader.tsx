@@ -36,15 +36,15 @@ export function SiteHeader() {
         right: 0,
         zIndex: 100,
         height: HEADER_HEIGHT,
-        display: "flex",
-        justifyContent: "space-between",
+        display: "grid",
+        gridTemplateColumns: "1fr auto 1fr",
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: theme.colors.border,
+        backgroundColor: theme.colors.primaryGreen,
       }}
     >
-      <div>
+      <div style={{ justifySelf: "start" }}>
         <button
           onClick={() => setMenuOpen((open) => !open)}
           style={{
@@ -54,7 +54,7 @@ export function SiteHeader() {
             background: "none",
             border: "none",
             cursor: "pointer",
-            color: "#ffffff",
+            color: theme.colors.textPrimary,
             fontSize: theme.typography.size.md,
           }}
         >
@@ -112,16 +112,17 @@ export function SiteHeader() {
         href="/"
         style={{
           margin: 0,
-          color: "#ffffff",
+          color: theme.colors.textPrimary,
           fontFamily: theme.typography.fontFamily.mono,
           fontSize: theme.typography.size.lg,
           textDecoration: "none",
+          justifySelf: "center",
         }}
       >
         elexercise!
       </Link>
 
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", justifySelf: "end" }}>
         {!loading && (
           <>
             {session ? (
@@ -135,7 +136,7 @@ export function SiteHeader() {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "#ffffff",
+                    color: theme.colors.textPrimary,
                     fontSize: theme.typography.size.md,
                   }}
                 >
@@ -197,7 +198,7 @@ export function SiteHeader() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#ffffff",
+                  color: theme.colors.textPrimary,
                   fontSize: theme.typography.size.md,
                 }}
               >
