@@ -109,6 +109,12 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(firstSession.endedAt).toBeTruthy();
     expect(secondSession.status).toBe("in_progress");
     expect(secondSession.endedAt).toBeUndefined();
+    expect(second.closedSessionIds).toEqual([first.session.id]);
+  });
+
+  it("reports no closedSessionIds when there was nothing previously open", async () => {
+    const first = await repo.startManualSession(userId, "run");
+    expect(first.closedSessionIds).toBeUndefined();
   });
 
   it("starting a machine session closes a previously open manual session", async () => {
@@ -120,6 +126,7 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
 
     expect(manualSession.status).toBe("completed");
     expect(machine.session.status).toBe("in_progress");
+    expect(machine.closedSessionIds).toEqual([manual.session.id]);
   });
 
   it("starting a session on a machine closes another user's active session on that same machine", async () => {
@@ -135,6 +142,7 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     // other closeOpenSessions/closeActiveSessionsOnMachine call.
     expect(userAWorkout!.status).toBe("in_progress");
     expect(userB.session.status).toBe("in_progress");
+    expect(userB.closedSessionIds).toEqual([userA.session.id]);
   });
 
   it("regression: a user's own active session on a different machine still closes when they scan a new one", async () => {
@@ -192,18 +200,61 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(ended.details).toBeUndefined();
   });
 
+  it("computes avg/peak/energy/duration when ending a session with recorded power samples", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await repo.insertPowerSample(session.id, 0, 100);
+    await repo.insertPowerSample(session.id, 1000, 100);
+    await repo.insertPowerSample(session.id, 2000, 300); // peak
+
+    const ended = await repo.endSession(userId, session.id);
+
+    // Trapezoidal: (0-1s at 100W) + (1-2s ramping 100->300W, avg 200W) = 100 + 200 = 300 J.
+    // avgPowerW is energy / elapsed time (150 W over 2s), not a plain mean of the three sample values.
+    expect(ended.avgPowerW).toBeCloseTo(150, 5);
+    expect(ended.peakPowerW).toBe(300);
+    expect(ended.totalEnergyJoules).toBeCloseTo(300, 5);
+    expect(ended.durationS).toBeGreaterThanOrEqual(0);
+  });
+
+  it("leaves avg/peak/energy undefined but still sets duration when ending a session with no power samples", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    const ended = await repo.endSession(userId, session.id);
+
+    expect(ended.avgPowerW).toBeUndefined();
+    expect(ended.peakPowerW).toBeUndefined();
+    expect(ended.totalEnergyJoules).toBeUndefined();
+    expect(ended.durationS).toBeGreaterThanOrEqual(0);
+  });
+
+  it("computes stats for a session auto-closed by starting a new one, not just an explicit Stop", async () => {
+    const first = await repo.startManualSession(userId, "run");
+    await repo.insertPowerSample(first.session.id, 0, 150);
+    await repo.insertPowerSample(first.session.id, 1000, 250);
+
+    await repo.startManualSession(userId, "bike");
+
+    const workout = await repo.getWorkoutById(userId, first.workout.id);
+    const firstSession = workout!.sessions.find((s) => s.id === first.session.id)!;
+    expect(firstSession.status).toBe("completed");
+    expect(firstSession.avgPowerW).toBeCloseTo(200, 5);
+    expect(firstSession.peakPowerW).toBe(250);
+    expect(firstSession.totalEnergyJoules).toBeCloseTo(200, 5);
+    expect(firstSession.durationS).toBeGreaterThanOrEqual(0);
+  });
+
   it("ends a workout", async () => {
-    const { workout } = await repo.startManualSession(userId, "run");
+    const { workout, session } = await repo.startManualSession(userId, "run");
     const ended = await repo.endWorkout(userId, workout.id);
     expect(ended.status).toBe("completed");
     expect(ended.endedAt).toBeTruthy();
+    expect(ended.closedSessionIds).toEqual([session.id]);
   });
 
   it("ending a workout also ends its still in-progress sessions", async () => {
     const { workout } = await repo.startManualSession(userId, "run");
-    await repo.startManualSession(userId, "bike"); // second session on the same workout
+    const { session: bikeSession } = await repo.startManualSession(userId, "bike"); // second session on the same workout
 
-    await repo.endWorkout(userId, workout.id);
+    const ended = await repo.endWorkout(userId, workout.id);
 
     const fetched = await repo.getWorkoutById(userId, workout.id);
     expect(fetched?.sessions).toHaveLength(2);
@@ -211,17 +262,21 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
       expect(s.status).toBe("completed");
       expect(s.endedAt).toBeTruthy();
     }
+    // Only "bike" was still in_progress by the time endWorkout ran — "run"
+    // was already closed when "bike" started.
+    expect(ended.closedSessionIds).toEqual([bikeSession.id]);
   });
 
   it("does not touch a session the user already ended before ending the workout", async () => {
     const { workout, session } = await repo.startManualSession(userId, "run");
     const alreadyEnded = await repo.endSession(userId, session.id);
 
-    await repo.endWorkout(userId, workout.id);
+    const ended = await repo.endWorkout(userId, workout.id);
 
     const fetched = await repo.getWorkoutById(userId, workout.id);
     const stillThere = fetched!.sessions.find((s) => s.id === session.id)!;
     expect(stillThere.endedAt).toBe(alreadyEnded.endedAt);
+    expect(ended.closedSessionIds).toBeUndefined();
   });
 
   it("throws WorkoutNotFoundError when ending another user's workout", async () => {
@@ -267,5 +322,37 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
   it("does not list another user's workouts", async () => {
     await repo.startManualSession(userId, "run");
     expect(await repo.listWorkouts(otherUserId)).toEqual([]);
+  });
+
+  it("inserts a power sample for a session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+
+    await repo.insertPowerSample(session.id, 500, 210.5);
+
+    const { data, error } = await admin
+      .from("power_samples")
+      .select("*")
+      .eq("session_id", session.id)
+      .order("t_ms");
+    if (error) throw error;
+    expect(data).toEqual([{ session_id: session.id, t_ms: 500, power_w: 210.5 }]);
+  });
+
+  it("inserts multiple power samples for the same session in order", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+
+    await repo.insertPowerSample(session.id, 500, 100);
+    await repo.insertPowerSample(session.id, 1000, 120);
+
+    const { data, error } = await admin
+      .from("power_samples")
+      .select("t_ms, power_w")
+      .eq("session_id", session.id)
+      .order("t_ms");
+    if (error) throw error;
+    expect(data).toEqual([
+      { t_ms: 500, power_w: 100 },
+      { t_ms: 1000, power_w: 120 },
+    ]);
   });
 });

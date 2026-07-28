@@ -54,7 +54,9 @@ create table public.sessions (
   )
 );
 
--- PowerSample: 1Hz telemetry stream, machine-sourced sessions only.
+-- PowerSample: telemetry stream, machine-sourced sessions only. Sampling
+-- rate is a concern of whatever's writing the stream (simulated or real
+-- hardware), not the schema -- not fixed here.
 -- PK (session_id, t_ms) already gives us a btree index with session_id as
 -- the leading column, so "all samples for a session" is index-backed for
 -- free — no separate index needed.
