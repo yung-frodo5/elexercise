@@ -208,9 +208,10 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
 
     const ended = await repo.endSession(userId, session.id);
 
-    expect(ended.avgPowerW).toBeCloseTo((100 + 100 + 300) / 3, 5);
-    expect(ended.peakPowerW).toBe(300);
     // Trapezoidal: (0-1s at 100W) + (1-2s ramping 100->300W, avg 200W) = 100 + 200 = 300 J.
+    // avgPowerW is energy / elapsed time (150 W over 2s), not a plain mean of the three sample values.
+    expect(ended.avgPowerW).toBeCloseTo(150, 5);
+    expect(ended.peakPowerW).toBe(300);
     expect(ended.totalEnergyJoules).toBeCloseTo(300, 5);
     expect(ended.durationS).toBeGreaterThanOrEqual(0);
   });

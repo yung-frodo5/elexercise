@@ -39,4 +39,20 @@ describe("computeSessionStats", () => {
     // Constant 100W regardless of spacing -> energy = 100 * total elapsed seconds.
     expect(stats?.totalEnergyJoules).toBeCloseTo(300, 5);
   });
+
+  it("weights avgPowerW by time, not by sample count, when spacing is uneven", () => {
+    // Two closely-spaced 0W samples followed by a sparse 300W sample far
+    // later. A plain mean of the three values would give 100W, but nearly
+    // all of the elapsed time was actually spent near 0W.
+    const samples = [
+      { tMs: 0, powerW: 0 },
+      { tMs: 100, powerW: 0 },
+      { tMs: 3000, powerW: 300 },
+    ];
+    const stats = computeSessionStats(samples);
+    // Trapezoidal energy: (0-0.1s at 0W) + (0.1-3s ramping 0->300W, avg 150W over 2.9s) = 435 J.
+    expect(stats?.totalEnergyJoules).toBeCloseTo(435, 5);
+    // avgPowerW = energy / elapsed time = 435 / 3 = 145 W, not the naive mean of 100 W.
+    expect(stats?.avgPowerW).toBeCloseTo(145, 5);
+  });
 });

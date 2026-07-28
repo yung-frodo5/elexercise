@@ -12,7 +12,6 @@ export function computeSessionStats(samples: { tMs: number; powerW: number }[]):
   if (samples.length === 0) return null;
 
   const powers = samples.map((s) => s.powerW);
-  const avgPowerW = powers.reduce((sum, p) => sum + p, 0) / powers.length;
   const peakPowerW = Math.max(...powers);
 
   let totalEnergyJoules = 0;
@@ -21,6 +20,13 @@ export function computeSessionStats(samples: { tMs: number; powerW: number }[]):
     const avgPowerOverStep = (samples[i - 1].powerW + samples[i].powerW) / 2;
     totalEnergyJoules += avgPowerOverStep * dtSeconds;
   }
+
+  // Energy = power x time, so dividing back out gives the physically
+  // consistent time-weighted average power. A plain mean of sample values
+  // would over-weight whichever stretch of the session happened to be
+  // sampled more densely, which matters once samples aren't evenly spaced.
+  const elapsedSeconds = (samples[samples.length - 1].tMs - samples[0].tMs) / 1000;
+  const avgPowerW = elapsedSeconds > 0 ? totalEnergyJoules / elapsedSeconds : powers[0];
 
   return { avgPowerW, peakPowerW, totalEnergyJoules };
 }
