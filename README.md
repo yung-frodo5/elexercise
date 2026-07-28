@@ -12,7 +12,8 @@ exercise-tracker/
 │   └── api/       # Express API, storage-backend-agnostic
 ├── packages/
 │   ├── shared-types/   # TS types shared by api, web, and mobile (see packages/shared-types/README.md)
-│   └── design-tokens/  # colors/typography/spacing/icons shared by web and mobile (see packages/design-tokens/README.md)
+│   ├── design-tokens/  # colors/typography/spacing/icons shared by web and mobile (see packages/design-tokens/README.md)
+│   └── content/        # article/rich-text content shared by web and mobile (see packages/content/README.md)
 └── supabase/      # Postgres schema (migrations), RLS policies
 ```
 
@@ -55,6 +56,22 @@ linking required. Never hardcode a hex color, font size/weight, spacing
 value, or icon glyph in a component — add or reuse a token in
 `packages/design-tokens/src/` instead, so a visual change only has to happen
 in one place.
+
+## Shared content model
+
+Article content (title, author(s), and an ordered body of paragraphs,
+subtitles, and graphics) for screens like the landing page is centralized in
+`packages/content` (same plain-TS, no-build-step conventions as
+`packages/shared-types`/`packages/design-tokens`) so it's authored once and
+consumed by both `apps/web` and `apps/mobile` — copy and article-integral
+imagery belong there, not hardcoded per app. Rich text is a flat run —
+`{ text, bold?, italic?, underline?, href? }` — rather than a variant tag, so
+a single run can be bold *and* italic *and* a link at once. Graphics are
+referenced by a logical key only, never a binary or a URL: each app keeps
+its own actual image file (any format or crop) and maps the key to it in its
+own `lib/content/graphicAssets.ts`. See `packages/content/README.md` and
+`CONTRIBUTING.md` ("Content changes") for the full model, asset conventions,
+and the one narrow exception for web-only decorative images.
 
 See `CONTRIBUTING.md` for local setup and PR conventions.
 

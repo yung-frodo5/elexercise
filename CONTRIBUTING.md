@@ -61,6 +61,69 @@ platforms.
   sign-off; typography/spacing should stay a small, reusable scale rather
   than one-off numbers per component.
 
+## Content changes
+
+Article content (title, author(s), and an ordered body of paragraphs,
+subtitles, and graphics) lives in `packages/content` (`src/types.ts` for the
+model, one file per article, e.g. `src/landing.ts`, combined via
+`src/index.ts`). Both `apps/web` and `apps/mobile` import the same data —
+**author content once, here — don't hardcode copy or duplicate it per app.**
+
+**Rich text.** A `RichTextNode` is a flat run — `{ text, bold?, italic?,
+underline?, href? }` — not a variant tag, so a single run can be bold *and*
+italic *and* a link at once (a variant tag can't express that without a
+combinatorial explosion of cases). `href` implies the run is a link
+(rendered underlined). Adding a new style (e.g. `strikethrough`)? Add the
+optional flag to `RichTextNode` in `src/types.ts`, then handle it in **both**
+platforms' `RichText.tsx` (`apps/web/components/content/RichText.tsx`,
+`apps/mobile/components/content/RichText.tsx`).
+
+**Block types.** An article `body` is an ordered list of `Paragraph`,
+`Subtitle` (identical to a `Paragraph` but rendered larger — e.g. a tagline
+directly under the title), and `Graphic` blocks. Adding a new block type?
+Add the interface in `src/types.ts`, add it to the `ArticleBodyBlock` union,
+then add a matching case to **both** platforms' `ArticleView.tsx` — they
+switch exhaustively (a `never` check), so a block type missed on one
+platform is a compile error, not silently-dropped content.
+
+**Assets.** Graphics are referenced by a logical `GraphicKey` only (a
+string-literal union in `src/types.ts`) — this package never stores or knows
+about a binary image or a URL. Each app:
+1. Stores its own actual image file under `apps/<app>/assets/...` (e.g.
+   `apps/web/assets/images/landing-hero.svg`,
+   `apps/mobile/assets/landing/landing-hero.jpg`).
+2. Maps every `GraphicKey` to that file in
+   `apps/<app>/lib/content/graphicAssets.ts`, typed `Record<GraphicKey, ...>`
+   — adding a key in the shared package without a matching entry on both
+   platforms fails typecheck there.
+
+Each platform is free to use a different file, format, or crop for the same
+key — a wide landscape banner on web vs. a taller portrait crop on mobile,
+an SVG on one platform vs. a raster photo on another — the shared package
+has no opinion on this.
+
+On web specifically: Next's built-in image loader treats a `.svg` import the
+same as a raster import (the default export is an object
+`{ src, width, height, ... }`, not a plain URL string), and `next/image`'s
+Optimization API rejects SVGs unless `images.dangerouslyAllowSVG` is set in
+`next.config.js`. Rather than adding that config, SVG graphics render via a
+plain `<img src={asset.src}>` (`apps/web/components/content/FramedImage.tsx`),
+not `next/image`.
+
+- Editing existing copy? Change the relevant fields in the article's file
+  under `packages/content/src/`.
+- Adding a graphic? See "Assets" above.
+- Adding a new article? Add a new `packages/content/src/<name>.ts` file
+  exporting an `Article`, re-export it from `packages/content/src/index.ts`,
+  and wire it into the relevant screen/page in each app.
+- A purely decorative, page-layout image that's web-only and not yet
+  confirmed for mobile may live directly in `apps/web` (imported straight
+  into the page/component, clearly commented as web-only — see the
+  `landing-hero-2`/`what-is-elexercise` imports in `apps/web/app/page.tsx`)
+  instead of going through `packages/content`. This is a narrow, deliberate
+  exception, not a default — if it's part of what the article actually says
+  (copy, an illustrative diagram), it belongs in `packages/content`.
+
 ## Storage backend
 
 All persistence goes through the `WorkoutRepository` interface
