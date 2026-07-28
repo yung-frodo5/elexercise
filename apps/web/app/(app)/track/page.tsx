@@ -15,6 +15,7 @@ import {
 import { StartActivityForm } from "../../../components/workout/StartActivityForm";
 import { StartMachineForm } from "../../../components/workout/StartMachineForm";
 import { SessionList } from "../../../components/workout/SessionList";
+import { LivePowerChart } from "../../../components/workout/LivePowerChart";
 
 export default function TrackPage() {
   const { session } = useSupabaseSession();
@@ -113,6 +114,8 @@ export default function TrackPage() {
     );
   }
 
+  const inProgressSession = currentWorkout?.sessions.find((s) => s.status === "in_progress");
+
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 480 }}>
       <h1>Track</h1>
@@ -132,10 +135,11 @@ export default function TrackPage() {
                 padding: theme.spacing.md,
               }}
             >
-              <h3>Live power</h3>
-              <p style={{ color: theme.colors.textMuted }}>
-                TODO: live power/telemetry chart (1Hz PowerSample stream) — not wired up yet
-              </p>
+              {inProgressSession ? (
+                <LivePowerChart sessionId={inProgressSession.id} activityType={inProgressSession.activityType} />
+              ) : (
+                <p style={{ color: theme.colors.textMuted }}>No active session — start one to see live power.</p>
+              )}
             </section>
 
             <p style={{ marginTop: theme.spacing.lg }}>Add another activity:</p>

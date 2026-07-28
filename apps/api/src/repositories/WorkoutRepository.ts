@@ -22,11 +22,14 @@ export interface WorkoutRepository {
   // time, so this ends whatever session was previously in_progress first.
   // Machines are also exclusive across users: if someone else has an
   // active session on this machine, it gets ended too (their session only
-  // — not their workout, which they might resume manually).
+  // — not their workout, which they might resume manually). closedSessionIds
+  // lists every session this call just ended (the caller's own previous
+  // session, and/or another user's session on the same machine), so callers
+  // can react to those sessions no longer being in_progress.
   startMachineSession(
     userId: string,
     scanToken: string
-  ): Promise<{ workout: Workout; session: Session }>;
+  ): Promise<{ workout: Workout; session: Session; closedSessionIds?: string[] }>;
 
   // Starts (or attaches to) an in-progress workout for the user and creates
   // a manually-logged session on it. Only one session is ever open at a
@@ -34,7 +37,7 @@ export interface WorkoutRepository {
   startManualSession(
     userId: string,
     activityType: string
-  ): Promise<{ workout: Workout; session: Session }>;
+  ): Promise<{ workout: Workout; session: Session; closedSessionIds?: string[] }>;
 
   // details is optional freeform data (duration, weight, reps, etc.) —
   // usually only known once the activity is actually done.
@@ -42,14 +45,19 @@ export interface WorkoutRepository {
 
   // Also ends any of the workout's sessions that are still in_progress —
   // implementations must not leave a "completed" workout with a session
-  // stuck in_progress.
-  endWorkout(userId: string, workoutId: string): Promise<Workout>;
+  // stuck in_progress. closedSessionIds lists those sessions.
+  endWorkout(userId: string, workoutId: string): Promise<Workout & { closedSessionIds?: string[] }>;
 
   getCurrentWorkout(userId: string): Promise<Workout | null>;
 
   getWorkoutById(userId: string, workoutId: string): Promise<WorkoutWithSessions | null>;
 
   listWorkouts(userId: string): Promise<Workout[]>;
+
+  // Plain storage write for one telemetry point. Used both by the fake
+  // telemetry simulator today and, eventually, by real hardware ingestion —
+  // this method itself has no idea which one called it.
+  insertPowerSample(sessionId: string, tMs: number, powerW: number): Promise<void>;
 }
 
 export class MachineNotFoundError extends Error {

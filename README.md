@@ -32,6 +32,16 @@ authenticate directly against Supabase and pass the resulting JWT as
 `Authorization: Bearer <token>` on every request. `apps/api/src/middleware/auth.ts`
 verifies that token and resolves it to a user id before any route handler runs.
 
+There's no real hardware telemetry pipeline yet, so the API fills
+`power_samples` with **simulated** data instead: while a session is
+`in_progress`, `apps/api/src/services/fakePowerSimulator.ts` writes one fake
+`PowerSample` every 500ms (via `apps/api/src/services/fakePowerProfile.ts`,
+which shapes plausible power curves per activity — steadier for cardio,
+spike-and-decay reps for strength), stopping the moment that session stops
+being `in_progress`. Everything with "fake" in its name is this simulation
+only; `WorkoutRepository.insertPowerSample` itself is a plain storage write
+that a future real-telemetry ingestion path would reuse unchanged.
+
 ## Visual design tokens
 
 Colors, typography, spacing, and icons are centralized in

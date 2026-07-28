@@ -1,6 +1,7 @@
 import { Router } from "express";
 import type { WorkoutRepository } from "../repositories/WorkoutRepository.js";
 import { WorkoutNotFoundError } from "../repositories/WorkoutRepository.js";
+import { stopFakePowerGeneration } from "../services/fakePowerSimulator.js";
 
 // Routes depend on the interface, injected in — not on any concrete
 // repository. Mounted behind requireAuth, so req.userId is always set.
@@ -26,7 +27,8 @@ export function createWorkoutRouter(repo: WorkoutRepository): Router {
 
   router.post("/workouts/:id/end", async (req, res) => {
     try {
-      const workout = await repo.endWorkout(req.userId!, req.params.id);
+      const { closedSessionIds, ...workout } = await repo.endWorkout(req.userId!, req.params.id);
+      for (const id of closedSessionIds ?? []) stopFakePowerGeneration(id);
       res.json(workout);
     } catch (err) {
       if (err instanceof WorkoutNotFoundError) return res.status(404).json({ error: err.message });

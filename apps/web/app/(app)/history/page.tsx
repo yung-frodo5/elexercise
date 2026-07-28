@@ -5,7 +5,9 @@ import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-type
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
 import { getWorkout, listWorkouts } from "../../../lib/api";
-import { SessionList } from "../../../components/workout/SessionList";
+import { aggregateWorkoutStats } from "../../../lib/aggregateWorkoutStats";
+import { CondensedStats } from "../../../components/workout/CondensedStats";
+import { SessionLogList } from "../../../components/workout/SessionLogList";
 
 export default function HistoryPage() {
   const { session } = useSupabaseSession();
@@ -64,27 +66,30 @@ export default function HistoryPage() {
           <p>No past workouts yet.</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0 }}>
-            {history.map((w) => (
-              <li
-                key={w.id}
-                style={{ borderBottom: `1px solid ${theme.colors.border}`, padding: `${theme.spacing.sm}px 0` }}
-              >
-                <button
-                  onClick={() => void toggleExpand(w.id)}
-                  style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", width: "100%" }}
+            {history.map((w) => {
+              const detail = expanded[w.id];
+              return (
+                <li
+                  key={w.id}
+                  style={{ borderBottom: `1px solid ${theme.colors.border}`, padding: `${theme.spacing.sm}px 0` }}
                 >
-                  {new Date(w.startedAt).toLocaleString()} — {w.status}
-                </button>
-                {expanded[w.id] && (
-                  <>
-                    <SessionList sessions={expanded[w.id]!.sessions} />
-                    <p style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
-                      TODO: show duration/power/energy per session
-                    </p>
-                  </>
-                )}
-              </li>
-            ))}
+                  <button
+                    onClick={() => void toggleExpand(w.id)}
+                    style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", width: "100%" }}
+                  >
+                    {new Date(w.startedAt).toLocaleString()} — {w.status}
+                  </button>
+                  {detail && (
+                    <>
+                      <div style={{ marginTop: theme.spacing.xs }}>
+                        <CondensedStats {...aggregateWorkoutStats(detail)} />
+                      </div>
+                      <SessionLogList sessions={detail.sessions} />
+                    </>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
