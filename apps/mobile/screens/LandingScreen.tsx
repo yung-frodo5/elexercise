@@ -1,16 +1,18 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { theme } from "@exercise-tracker/design-tokens";
+import { landingArticle } from "@exercise-tracker/content";
+import { ArticleView } from "../components/content/ArticleView";
+import { Graphic } from "../components/content/Graphic";
 
 export default function LandingScreen() {
+  const [hero, ...rest] = landingArticle.body;
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.hero}>
-        <Text style={styles.heroText}>TODO: update hero image</Text>
-      </View>
+      <View style={styles.hero}>{hero.type === "graphic" && <Graphic graphic={hero} />}</View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>What is elexercise?</Text>
-        <Text style={styles.sectionBody}>TODO: add content for landing page</Text>
+        <ArticleView article={{ ...landingArticle, body: rest }} />
       </View>
     </ScrollView>
   );
@@ -23,26 +25,10 @@ const styles = StyleSheet.create({
   },
   hero: {
     backgroundColor: theme.colors.primaryGreen,
-    paddingVertical: theme.spacing.xxl,
-    paddingHorizontal: theme.spacing.xl,
-    alignItems: "center",
-  },
-  heroText: {
-    color: theme.colors.textPrimary,
   },
   section: {
     backgroundColor: "#ffffff",
     paddingVertical: theme.spacing.xxl,
     paddingHorizontal: theme.spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: theme.typography.size.lg,
-    fontWeight: theme.typography.weight.bold,
-    color: theme.colors.textPrimary,
-  },
-  sectionBody: {
-    marginTop: theme.spacing.xl,
-    textAlign: "center",
-    color: theme.colors.textMuted,
   },
 });
