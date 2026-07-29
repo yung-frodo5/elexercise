@@ -26,8 +26,13 @@ export function computeCostPerWorkout(inputs: CalculatorInputs): CalculatorResul
 
   const totalCostPerWorkout = costPerWorkoutExercise + costPerWorkoutElectricity + costPerWorkoutCarbon;
 
-  const valueRatioElectricityToExercise = -costPerWorkoutElectricity / costPerWorkoutExercise;
-  const valueRatioCarbonToExercise = -costPerWorkoutCarbon / costPerWorkoutExercise;
+  // Guard against division by zero when there's no equipment/subscription
+  // cost to compare against (e.g. free equipment) — the ratio is undefined,
+  // so show 0 rather than Infinity/NaN.
+  const valueRatioElectricityToExercise =
+    costPerWorkoutExercise === 0 ? 0 : -costPerWorkoutElectricity / costPerWorkoutExercise;
+  const valueRatioCarbonToExercise =
+    costPerWorkoutExercise === 0 ? 0 : -costPerWorkoutCarbon / costPerWorkoutExercise;
 
   const electricityGeneratedLifetimeKwh = inputs.lifespanYears * (inputs.powerGenWh / 1000) * yearlyWorkouts;
   const carbonOffsetPerWorkoutGrams = (inputs.powerGenWh / 1000) * inputs.gridCarbonIntensityGPerKwh;

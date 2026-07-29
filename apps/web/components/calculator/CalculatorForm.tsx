@@ -69,7 +69,13 @@ function NumberField({
         value={value}
         min={min}
         step={step}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => {
+          const parsed = Number(e.target.value);
+          // The `min` attribute is only a spinner/form-submit hint — nothing
+          // stops the user from typing a lower value directly, so clamp here
+          // too (e.g. a lifespan of 0 would divide by zero downstream).
+          onChange(min !== undefined ? Math.max(min, parsed) : parsed);
+        }}
         style={inputStyle}
       />
     </label>
@@ -137,7 +143,10 @@ export function CalculatorForm({
       />
       <NumberField
         label="Annualized discount factor (%)"
-        value={Math.round(inputs.discountFactor * 1000) / 10}
+        // Rounded to 6 decimal places purely to clean up float noise from the
+        // *100 conversion (e.g. 0.07 -> 7.000000000000001) — far finer than a
+        // 1-decimal round, so it doesn't clip precision the user actually typed.
+        value={Math.round(inputs.discountFactor * 1e8) / 1e6}
         min={0}
         step={0.1}
         onChange={(percent) => onChange({ discountFactor: percent / 100 })}

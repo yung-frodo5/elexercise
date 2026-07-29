@@ -89,4 +89,25 @@ describe("computeCostPerWorkout", () => {
     // Carbon offset per workout doesn't depend on usage rate or lifespan.
     expect(publicRate.carbonOffsetPerWorkoutGrams).toBe(sporadic.carbonOffsetPerWorkoutGrams);
   });
+
+  it("returns zero value ratios instead of Infinity/NaN when there's no equipment/subscription cost", () => {
+    const freeAndSilent = computeCostPerWorkout({
+      ...DEFAULT_CALCULATOR_INPUTS,
+      capitalCost: 0,
+      subscriptionFeeMonthly: 0,
+      powerGenWh: 0,
+    });
+    expect(freeAndSilent.costPerWorkoutExercise).toBe(0);
+    expect(freeAndSilent.valueRatioElectricityToExercise).toBe(0);
+    expect(freeAndSilent.valueRatioCarbonToExercise).toBe(0);
+
+    const freeWithPower = computeCostPerWorkout({
+      ...DEFAULT_CALCULATOR_INPUTS,
+      capitalCost: 0,
+      subscriptionFeeMonthly: 0,
+    });
+    expect(freeWithPower.costPerWorkoutExercise).toBe(0);
+    expect(freeWithPower.valueRatioElectricityToExercise).toBe(0);
+    expect(freeWithPower.valueRatioCarbonToExercise).toBe(0);
+  });
 });
