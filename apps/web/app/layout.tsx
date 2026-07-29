@@ -4,7 +4,7 @@ import { SiteHeader, HEADER_HEIGHT } from "../components/nav/SiteHeader";
 import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Exercise Tracker",
+  title: "elexercise",
   description: "Track live workouts and review your workout history.",
 };
 
