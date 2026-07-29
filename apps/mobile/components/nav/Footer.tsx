@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.xl,
-    backgroundColor: theme.colors.primaryGreen,
+    backgroundColor: theme.colors.bannerBackground,
   },
   tab: {
     flex: 1,

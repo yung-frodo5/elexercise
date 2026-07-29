@@ -4,7 +4,11 @@
 export const colors = {
   primaryGreen: "#6a994e",
   secondaryGreen: "#386641",
-  background: "#f2e8cf",
+  // Lighter than primaryGreen for better contrast against textPrimary in the
+  // header/footer banners specifically — kept separate from primaryGreen so
+  // it doesn't also relighten mobile buttons/backgrounds that reuse that token.
+  bannerBackground: "#95c07c",
+  background: "#f0e9e9",
   error: "#bc4749",
   textPrimary: "#111d13",
   textMuted: "#283f3b",

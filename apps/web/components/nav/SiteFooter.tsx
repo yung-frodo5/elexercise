@@ -16,11 +16,19 @@ export function SiteFooter() {
         height: FOOTER_HEIGHT,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.colors.primaryGreen,
+        justifyContent: "space-between",
+        paddingLeft: theme.spacing.lg,
+        paddingRight: theme.spacing.lg,
+        backgroundColor: theme.colors.bannerBackground,
       }}
     >
-      <p style={{ margin: 0, color: theme.colors.textPrimary }}>TODO: polish footer</p>
+      <span style={{ color: theme.colors.textPrimary }}>Est. 2026</span>
+      <a
+        href="mailto:noah.c.korotzer@gmail.com"
+        style={{ color: theme.colors.secondaryGreen, textDecoration: "underline" }}
+      >
+        Contact Us
+      </a>
     </footer>
   );
 }

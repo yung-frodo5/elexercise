@@ -12,6 +12,7 @@ export function ArticleHeader({ article }: { article: Article }) {
       <p
         style={{
           marginTop: theme.spacing.xs,
+          marginBottom: 0,
           color: theme.colors.textMuted,
           fontSize: theme.typography.size.sm,
         }}

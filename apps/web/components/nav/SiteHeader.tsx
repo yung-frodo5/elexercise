@@ -41,7 +41,7 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: theme.colors.primaryGreen,
+        backgroundColor: theme.colors.bannerBackground,
       }}
     >
       <div style={{ justifySelf: "start" }}>
