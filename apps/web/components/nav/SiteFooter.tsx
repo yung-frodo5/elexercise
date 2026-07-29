@@ -17,8 +17,8 @@ export function SiteFooter() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingLeft: theme.spacing.lg * 4,
-        paddingRight: theme.spacing.lg * 4,
+        paddingLeft: theme.spacing.lg,
+        paddingRight: theme.spacing.lg,
         backgroundColor: theme.colors.bannerBackground,
       }}
     >
