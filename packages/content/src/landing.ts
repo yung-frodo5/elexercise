@@ -11,13 +11,6 @@ export const landingArticle: Article = {
       alt: "elexercise (ee · lek · sr · size): the act of producing electricity through exercise",
     },
     {
-      type: "subtitle",
-      content: [
-        { text: "elexercise (ee · lek · sr · size)", bold: true, underline: true },
-        { text: ": the act of producing electricity through exercise" },
-      ],
-    },
-    {
       type: "paragraph",
       content: [
         { text: "Elexercise takes aim at a global-scale absurdity: " },
