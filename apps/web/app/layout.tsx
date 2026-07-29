@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { theme } from "@exercise-tracker/design-tokens";
-import { SiteHeader, HEADER_HEIGHT } from "../components/nav/SiteHeader";
+import { SiteHeader } from "../components/nav/SiteHeader";
 import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
+import { HEADER_HEIGHT } from "../lib/layoutConstants";
 
 export const metadata: Metadata = {
   title: "elexercise",

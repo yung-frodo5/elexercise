@@ -9,10 +9,7 @@ import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
 import { LoginModal } from "../auth/LoginModal";
 import logo from "../../assets/images/logo.png";
-
-// Fixed pixel height so the root layout can reserve matching space below it
-// (a fixed-position element is out of flow and would otherwise overlap content).
-export const HEADER_HEIGHT = 64;
+import { HEADER_HEIGHT } from "../../lib/layoutConstants";
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();

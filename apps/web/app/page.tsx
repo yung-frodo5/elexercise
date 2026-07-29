@@ -3,15 +3,12 @@
 import { theme } from "@exercise-tracker/design-tokens";
 import { landingArticle } from "@exercise-tracker/content";
 import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
+import { Graphic } from "../components/content/Graphic";
 import { FramedImage } from "../components/content/FramedImage";
-import { graphicAssets } from "../lib/content/graphicAssets";
+import { HEADER_HEIGHT } from "../lib/layoutConstants";
 // Web-only image — not part of the shared `packages/content` article data,
 // since it isn't confirmed for mobile yet.
 import articleDiagram from "../assets/images/what-is-elexercise.svg";
-
-// The hero graphic is a wide banner (not the ~16:9 shape HERO_HEIGHT was
-// tuned for), so it gets its own shorter frame here instead of Graphic.tsx's.
-const HERO_BANNER_HEIGHT = 140;
 
 export default function LandingPage() {
   const [hero, ...rest] = landingArticle.body;
@@ -21,29 +18,41 @@ export default function LandingPage() {
       <section
         style={{
           backgroundColor: theme.colors.background,
-          height: HERO_BANNER_HEIGHT,
           paddingTop: theme.spacing.lg,
           paddingBottom: theme.spacing.lg,
-          boxSizing: "content-box",
+          paddingLeft: theme.spacing.xxl,
+          paddingRight: theme.spacing.xxl,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        {hero.type === "graphic" && (
-          <FramedImage src={graphicAssets[hero.key].src} alt={hero.alt} />
-        )}
+        {hero.type === "graphic" && <Graphic graphic={hero} />}
       </section>
 
       <section style={{ backgroundColor: "#ffffff", padding: theme.spacing.xxl }}>
         <ArticleHeader article={landingArticle} />
 
-        <div style={{ display: "flex", gap: theme.spacing.xxl, alignItems: "flex-start" }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: theme.spacing.xxl,
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ flex: "2 1 320px", minWidth: 240 }}>
             <ArticleBody article={{ ...landingArticle, body: rest }} />
           </div>
-          <div style={{ flexShrink: 0, width: 720 }}>
-            <FramedImage src={articleDiagram.src} alt="TODO: describe this diagram" />
+          <div
+            style={{
+              flex: "1 1 320px",
+              minWidth: 280,
+              position: "sticky",
+              top: HEADER_HEIGHT + theme.spacing.xxl,
+            }}
+          >
+            <FramedImage image={articleDiagram} alt="TODO: describe this diagram" maxWidth={720} />
           </div>
         </div>
       </section>
