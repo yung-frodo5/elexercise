@@ -142,14 +142,14 @@ export function CalculatorForm({
         onChange={(electricityPricePerKwh) => onChange({ electricityPricePerKwh })}
       />
       <NumberField
-        label="Annualized discount factor (%)"
         // Rounded to 6 decimal places purely to clean up float noise from the
-        // *100 conversion (e.g. 0.07 -> 7.000000000000001) — far finer than a
-        // 1-decimal round, so it doesn't clip precision the user actually typed.
-        value={Math.round(inputs.discountFactor * 1e8) / 1e6}
+        // *100 conversion (e.g. 0.07 -> 7.000000000000001) when displayed as
+        // a percent in the label.
+        label={`Annualized discount factor: ${Math.round(inputs.discountFactor * 1e8) / 1e6}%`}
+        value={inputs.discountFactor}
         min={0}
-        step={0.1}
-        onChange={(percent) => onChange({ discountFactor: percent / 100 })}
+        step={0.01}
+        onChange={(discountFactor) => onChange({ discountFactor })}
       />
 
       <details>
