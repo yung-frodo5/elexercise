@@ -104,6 +104,28 @@ export function SiteHeader() {
                 </div>
               </>
             )}
+
+            <p
+              style={{
+                fontWeight: theme.typography.weight.bold,
+                margin: 0,
+                marginTop: theme.spacing.sm,
+                marginBottom: theme.spacing.xs,
+              }}
+            >
+              <Link href="/resources" onClick={() => setMenuOpen(false)} style={{ color: theme.colors.textPrimary }}>
+                Resources
+              </Link>
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs }}>
+              <Link
+                href="/resources/calculator"
+                onClick={() => setMenuOpen(false)}
+                style={{ color: theme.colors.textPrimary }}
+              >
+                elexercise calculator
+              </Link>
+            </div>
           </div>
         )}
       </div>

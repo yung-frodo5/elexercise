@@ -11,4 +11,5 @@ export const icons = {
   login: "🔒",
   settings: "⚙️",
   close: "✕",
+  calculator: "🧮",
 } as const;
