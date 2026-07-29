@@ -20,7 +20,12 @@ export function SiteFooter() {
         backgroundColor: theme.colors.bannerBackground,
       }}
     >
-      <p style={{ margin: 0, color: theme.colors.textPrimary }}>TODO: polish footer</p>
+      <a
+        href="mailto:noah.c.korotzer@gmail.com"
+        style={{ color: theme.colors.secondaryGreen, textDecoration: "underline" }}
+      >
+        Contact Us
+      </a>
     </footer>
   );
 }
