@@ -1,6 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { theme } from "@exercise-tracker/design-tokens";
@@ -11,6 +19,145 @@ import { LoginModal } from "../auth/LoginModal";
 import logo from "../../assets/images/logo.png";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
 
+const menuItemStyle: CSSProperties = {
+  display: "block",
+  width: "100%",
+  boxSizing: "border-box",
+  padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+  borderRadius: 6,
+  color: theme.colors.textPrimary,
+  fontSize: theme.typography.size.md,
+  textDecoration: "none",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  textAlign: "left",
+  fontFamily: "inherit",
+  lineHeight: 1.35,
+  transition: "background-color 120ms ease, color 120ms ease",
+};
+
+const menuSectionLabelStyle: CSSProperties = {
+  margin: 0,
+  padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+  fontSize: theme.typography.size.xs,
+  fontWeight: theme.typography.weight.semibold,
+  color: theme.colors.textMuted,
+  letterSpacing: "0.04em",
+  textTransform: "uppercase",
+};
+
+function MenuItemLink({
+  href,
+  onClick,
+  children,
+}: {
+  href: string;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...menuItemStyle,
+        backgroundColor: hovered ? "rgba(106, 153, 78, 0.16)" : "transparent",
+        fontWeight: theme.typography.weight.medium,
+      }}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function MenuItemButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...menuItemStyle,
+        backgroundColor: hovered ? "rgba(106, 153, 78, 0.16)" : "transparent",
+        fontWeight: theme.typography.weight.medium,
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function useDismissOnOutsideOrEscape(
+  open: boolean,
+  onClose: () => void,
+  containerRef: RefObject<HTMLElement | null>
+) {
+  useEffect(() => {
+    if (!open) return;
+
+    function onPointerDown(event: MouseEvent) {
+      const node = containerRef.current;
+      if (node && !node.contains(event.target as Node)) onClose();
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose, containerRef]);
+}
+
+function DropdownPanel({
+  open,
+  align,
+  labelledBy,
+  children,
+}: {
+  open: boolean;
+  align: "left" | "right";
+  labelledBy: string;
+  children: ReactNode;
+}) {
+  if (!open) return null;
+
+  return (
+    <div
+      role="menu"
+      aria-labelledby={labelledBy}
+      style={{
+        position: "absolute",
+        top: "100%",
+        ...(align === "left" ? { left: 0 } : { right: 0 }),
+        marginTop: theme.spacing.sm,
+        minWidth: 220,
+        padding: theme.spacing.sm,
+        overflow: "hidden",
+        backgroundColor: theme.colors.background,
+        border: "1px solid rgba(91, 70, 43, 0.28)",
+        borderRadius: 10,
+        boxShadow: "0 10px 28px rgba(17, 29, 19, 0.1)",
+        zIndex: 2,
+        animation: "elexNavMenuIn 160ms ease-out",
+        transformOrigin: align === "left" ? "top left" : "top right",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
   const { displayName } = useProfile(session?.user.id);
@@ -19,10 +166,28 @@ export function SiteHeader() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
+  const navMenuRef = useRef<HTMLDivElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const navMenuButtonId = useId();
+  const profileMenuButtonId = useId();
+
+  useDismissOnOutsideOrEscape(menuOpen, () => setMenuOpen(false), navMenuRef);
+  useDismissOnOutsideOrEscape(profileMenuOpen, () => setProfileMenuOpen(false), profileMenuRef);
+
   async function handleSignOut() {
     setProfileMenuOpen(false);
     await supabase.auth.signOut();
     router.replace("/");
+  }
+
+  function toggleNavMenu() {
+    setProfileMenuOpen(false);
+    setMenuOpen((open) => !open);
+  }
+
+  function toggleProfileMenu() {
+    setMenuOpen(false);
+    setProfileMenuOpen((open) => !open);
   }
 
   return (
@@ -42,90 +207,66 @@ export function SiteHeader() {
         backgroundColor: theme.colors.bannerBackground,
       }}
     >
-      <div style={{ justifySelf: "start" }}>
+      <style>{`
+        @keyframes elexNavMenuIn {
+          from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
+
+      <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start" }}>
         <button
-          onClick={() => setMenuOpen((open) => !open)}
+          id={navMenuButtonId}
+          type="button"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          onClick={toggleNavMenu}
           style={{
             display: "flex",
             alignItems: "center",
-            gap: theme.spacing.xs,
-            background: "none",
+            justifyContent: "center",
+            width: 40,
+            height: 40,
+            borderRadius: 8,
+            background: menuOpen ? "rgba(17, 29, 19, 0.08)" : "transparent",
             border: "none",
             cursor: "pointer",
             color: theme.colors.textPrimary,
-            fontSize: theme.typography.size.md,
+            fontSize: theme.typography.size.lg,
+            transition: "background-color 120ms ease",
           }}
         >
-          <span aria-hidden>{theme.icons.menu}</span>
-          <span>Drop-down menu</span>
+          <span aria-hidden>{menuOpen ? theme.icons.close : theme.icons.menu}</span>
         </button>
 
-        {menuOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              marginTop: theme.spacing.xs,
-              backgroundColor: theme.colors.background,
-              border: `1px solid ${theme.colors.border}`,
-              padding: theme.spacing.md,
-              minWidth: 200,
-              zIndex: 1,
-            }}
-          >
-            <Link
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                display: "block",
-                fontWeight: theme.typography.weight.bold,
-                color: theme.colors.textPrimary,
-                marginBottom: theme.spacing.xs,
-              }}
-            >
-              Home
-            </Link>
+        <DropdownPanel open={menuOpen} align="left" labelledBy={navMenuButtonId}>
+          <MenuItemLink href="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </MenuItemLink>
 
-            {session && (
-              <>
-                <p style={{ fontWeight: theme.typography.weight.bold, margin: 0, marginBottom: theme.spacing.xs }}>
-                  Exercise Dashboard
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs }}>
-                  <Link href="/track" onClick={() => setMenuOpen(false)} style={{ color: theme.colors.textPrimary }}>
-                    Current Workout
-                  </Link>
-                  <Link href="/history" onClick={() => setMenuOpen(false)} style={{ color: theme.colors.textPrimary }}>
-                    Workout Log
-                  </Link>
-                </div>
-              </>
-            )}
+          {session && (
+            <>
+              <div style={{ height: theme.spacing.xs }} />
+              <p style={menuSectionLabelStyle}>Exercise Dashboard</p>
+              <MenuItemLink href="/track" onClick={() => setMenuOpen(false)}>
+                Current Workout
+              </MenuItemLink>
+              <MenuItemLink href="/history" onClick={() => setMenuOpen(false)}>
+                Workout Log
+              </MenuItemLink>
+            </>
+          )}
 
-            <p
-              style={{
-                fontWeight: theme.typography.weight.bold,
-                margin: 0,
-                marginTop: theme.spacing.sm,
-                marginBottom: theme.spacing.xs,
-              }}
-            >
-              <Link href="/resources" onClick={() => setMenuOpen(false)} style={{ color: theme.colors.textPrimary }}>
-                Resources
-              </Link>
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs }}>
-              <Link
-                href="/resources/calculator"
-                onClick={() => setMenuOpen(false)}
-                style={{ color: theme.colors.textPrimary }}
-              >
-                elexercise calculator
-              </Link>
-            </div>
-          </div>
-        )}
+          <div style={{ height: theme.spacing.xs }} />
+          <p style={menuSectionLabelStyle}>Resources</p>
+          <MenuItemLink href="/resources" onClick={() => setMenuOpen(false)}>
+            Overview
+          </MenuItemLink>
+          <MenuItemLink href="/resources/calculator" onClick={() => setMenuOpen(false)}>
+            Calculator
+          </MenuItemLink>
+        </DropdownPanel>
       </div>
 
       <Link
@@ -146,79 +287,62 @@ export function SiteHeader() {
         elexercise!
       </Link>
 
-      <div style={{ position: "relative", justifySelf: "end" }}>
+      <div ref={profileMenuRef} style={{ position: "relative", justifySelf: "end" }}>
         {!loading && (
           <>
             {session ? (
               <>
                 <button
-                  onClick={() => setProfileMenuOpen((open) => !open)}
+                  id={profileMenuButtonId}
+                  type="button"
+                  aria-label="Account menu"
+                  aria-haspopup="menu"
+                  aria-expanded={profileMenuOpen}
+                  onClick={toggleProfileMenu}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: theme.spacing.xs,
-                    background: "none",
+                    maxWidth: 220,
+                    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+                    borderRadius: 8,
+                    background: profileMenuOpen ? "rgba(17, 29, 19, 0.08)" : "transparent",
                     border: "none",
                     cursor: "pointer",
                     color: theme.colors.textPrimary,
                     fontSize: theme.typography.size.md,
+                    transition: "background-color 120ms ease",
                   }}
                 >
                   <span aria-hidden>{theme.icons.profile}</span>
-                  <span>{displayName ?? session.user.email}</span>
-                </button>
-
-                {profileMenuOpen && (
-                  <div
+                  <span
                     style={{
-                      position: "absolute",
-                      top: "100%",
-                      right: 0,
-                      marginTop: theme.spacing.xs,
-                      backgroundColor: theme.colors.background,
-                      border: `1px solid ${theme.colors.border}`,
-                      padding: theme.spacing.md,
-                      minWidth: 160,
-                      zIndex: 1,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    <Link
-                      href="/profile"
-                      onClick={() => setProfileMenuOpen(false)}
-                      style={{
-                        display: "block",
-                        color: theme.colors.textPrimary,
-                        fontSize: theme.typography.size.md,
-                        marginBottom: theme.spacing.xs,
-                      }}
-                    >
-                      Profile
-                    </Link>
-                    <button
-                      onClick={() => void handleSignOut()}
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        textAlign: "left",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        color: theme.colors.textPrimary,
-                        fontSize: theme.typography.size.md,
-                      }}
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                )}
+                    {displayName ?? session.user.email}
+                  </span>
+                </button>
+
+                <DropdownPanel open={profileMenuOpen} align="right" labelledBy={profileMenuButtonId}>
+                  <MenuItemLink href="/profile" onClick={() => setProfileMenuOpen(false)}>
+                    Profile
+                  </MenuItemLink>
+                  <MenuItemButton onClick={() => void handleSignOut()}>Sign out</MenuItemButton>
+                </DropdownPanel>
               </>
             ) : (
               <button
+                type="button"
                 onClick={() => setLoginOpen(true)}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: theme.spacing.xs,
+                  padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+                  borderRadius: 8,
                   background: "none",
                   border: "none",
                   cursor: "pointer",
@@ -227,7 +351,7 @@ export function SiteHeader() {
                 }}
               >
                 <span aria-hidden>{theme.icons.login}</span>
-                <span>User / Login</span>
+                <span>Log in</span>
               </button>
             )}
           </>
