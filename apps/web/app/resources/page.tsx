@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { theme } from "@exercise-tracker/design-tokens";
 
-const RESOURCES: { href: string; title: string; description: string }[] = [
+const RESOURCES: { href: string; title: string }[] = [
   {
     href: "/resources/calculator",
     title: "elexercise calculator",
-    description: "Estimate the true cost per workout, including energy and carbon value.",
   },
 ];
 
@@ -21,7 +20,6 @@ export default function ResourcesPage() {
         {RESOURCES.map((resource) => (
           <Link key={resource.href} href={resource.href} style={{ color: theme.colors.textPrimary, textDecoration: "none" }}>
             <h2 style={{ fontSize: theme.typography.size.lg, margin: 0 }}>{resource.title}</h2>
-            <p style={{ color: theme.colors.textMuted, margin: 0 }}>{resource.description}</p>
           </Link>
         ))}
       </div>
