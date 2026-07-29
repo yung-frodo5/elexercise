@@ -17,7 +17,7 @@ export function SiteFooter() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: theme.colors.primaryGreen,
+        backgroundColor: theme.colors.bannerBackground,
       }}
     >
       <p style={{ margin: 0, color: theme.colors.textPrimary }}>TODO: polish footer</p>

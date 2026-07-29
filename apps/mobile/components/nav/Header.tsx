@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    backgroundColor: theme.colors.primaryGreen,
+    backgroundColor: theme.colors.bannerBackground,
   },
   title: {
     color: theme.colors.textPrimary,

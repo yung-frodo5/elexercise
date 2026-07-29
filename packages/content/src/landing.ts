@@ -8,7 +8,7 @@ export const landingArticle: Article = {
     {
       type: "graphic",
       key: "landing-hero",
-      alt: "TODO: describe the hero image",
+      alt: "elexercise (ee · lek · sr · size): the act of producing electricity through exercise",
     },
     {
       type: "subtitle",

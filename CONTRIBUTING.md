@@ -90,7 +90,7 @@ platform is a compile error, not silently-dropped content.
 string-literal union in `src/types.ts`) — this package never stores or knows
 about a binary image or a URL. Each app:
 1. Stores its own actual image file under `apps/<app>/assets/...` (e.g.
-   `apps/web/assets/images/landing-hero.svg`,
+   `apps/web/assets/images/landing-hero.png`,
    `apps/mobile/assets/landing/landing-hero.jpg`).
 2. Maps every `GraphicKey` to that file in
    `apps/<app>/lib/content/graphicAssets.ts`, typed `Record<GraphicKey, ...>`
@@ -119,8 +119,8 @@ not `next/image`.
 - A purely decorative, page-layout image that's web-only and not yet
   confirmed for mobile may live directly in `apps/web` (imported straight
   into the page/component, clearly commented as web-only — see the
-  `landing-hero-2`/`what-is-elexercise` imports in `apps/web/app/page.tsx`)
-  instead of going through `packages/content`. This is a narrow, deliberate
+  `what-is-elexercise` import in `apps/web/app/page.tsx`) instead of going
+  through `packages/content`. This is a narrow, deliberate
   exception, not a default — if it's part of what the article actually says
   (copy, an illustrative diagram), it belongs in `packages/content`.
 

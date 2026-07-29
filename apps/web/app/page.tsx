@@ -4,12 +4,14 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { landingArticle } from "@exercise-tracker/content";
 import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
 import { FramedImage } from "../components/content/FramedImage";
-import { HERO_HEIGHT } from "../components/content/Graphic";
 import { graphicAssets } from "../lib/content/graphicAssets";
-// Web-only images — not part of the shared `packages/content` article data,
-// since they aren't confirmed for mobile yet.
-import heroSecondary from "../assets/images/landing-hero-2.svg";
+// Web-only image — not part of the shared `packages/content` article data,
+// since it isn't confirmed for mobile yet.
 import articleDiagram from "../assets/images/what-is-elexercise.svg";
+
+// The hero graphic is a wide banner (not the ~16:9 shape HERO_HEIGHT was
+// tuned for), so it gets its own shorter frame here instead of Graphic.tsx's.
+const HERO_BANNER_HEIGHT = 140;
 
 export default function LandingPage() {
   const [hero, ...rest] = landingArticle.body;
@@ -19,20 +21,18 @@ export default function LandingPage() {
       <section
         style={{
           backgroundColor: theme.colors.background,
-          height: HERO_HEIGHT,
+          height: HERO_BANNER_HEIGHT,
           paddingTop: theme.spacing.lg,
           paddingBottom: theme.spacing.lg,
           boxSizing: "content-box",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: theme.spacing.xxl,
         }}
       >
         {hero.type === "graphic" && (
           <FramedImage src={graphicAssets[hero.key].src} alt={hero.alt} />
         )}
-        <FramedImage src={heroSecondary.src} alt="TODO: describe the second hero image" />
       </section>
 
       <section style={{ backgroundColor: "#ffffff", padding: theme.spacing.xxl }}>
