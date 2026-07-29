@@ -38,7 +38,7 @@ export default function LandingPage() {
       <section style={{ backgroundColor: "#ffffff", padding: theme.spacing.xxl }}>
         <ArticleHeader article={landingArticle} />
 
-        <div style={{ display: "flex", gap: theme.spacing.xxl, alignItems: "flex-start", marginTop: theme.spacing.xl }}>
+        <div style={{ display: "flex", gap: theme.spacing.xxl, alignItems: "flex-start" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <ArticleBody article={{ ...landingArticle, body: rest }} />
           </div>
