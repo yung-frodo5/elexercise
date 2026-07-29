@@ -8,7 +8,7 @@ export const colors = {
   // header/footer banners specifically — kept separate from primaryGreen so
   // it doesn't also relighten mobile buttons/backgrounds that reuse that token.
   bannerBackground: "#95c07c",
-  background: "#f2e8cf",
+  background: "#f0e9e9",
   error: "#bc4749",
   textPrimary: "#111d13",
   textMuted: "#283f3b",
