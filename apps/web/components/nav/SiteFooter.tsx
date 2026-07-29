@@ -29,6 +29,13 @@ export function SiteFooter() {
       >
         Contact Us
       </a>
+      <a
+        href="https://www.flaticon.com/free-icons/renewable-energy"
+        title="renewable energy icons"
+        style={{ color: theme.colors.textPrimary, fontSize: 12 }}
+      >
+        Icon by Indah Rusiati
+      </a>
     </footer>
   );
 }

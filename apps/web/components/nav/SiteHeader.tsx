@@ -8,6 +8,7 @@ import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
 import { LoginModal } from "../auth/LoginModal";
+import logo from "../../assets/images/logo.png";
 
 // Fixed pixel height so the root layout can reserve matching space below it
 // (a fixed-position element is out of flow and would otherwise overlap content).
@@ -134,6 +135,9 @@ export function SiteHeader() {
         href="/"
         style={{
           margin: 0,
+          display: "flex",
+          alignItems: "center",
+          gap: theme.spacing.xs,
           color: theme.colors.textPrimary,
           fontFamily: theme.typography.fontFamily.mono,
           fontSize: theme.typography.size.lg,
@@ -141,6 +145,7 @@ export function SiteHeader() {
           justifySelf: "center",
         }}
       >
+        <img src={logo.src} alt="" width={44} height={44} />
         elexercise!
       </Link>
 

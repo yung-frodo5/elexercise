@@ -1,10 +1,13 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { theme } from "@exercise-tracker/design-tokens";
 
 export function Header({ onPressProfile }: { onPressProfile: () => void }) {
   return (
     <View style={styles.bar}>
-      <Text style={styles.title}>elexercise!</Text>
+      <View style={styles.titleGroup}>
+        <Image source={require("../../assets/logo.png")} style={styles.logo} />
+        <Text style={styles.title}>elexercise!</Text>
+      </View>
       <TouchableOpacity onPress={onPressProfile} accessibilityLabel="Settings">
         <Text style={styles.icon}>{theme.icons.settings}</Text>
       </TouchableOpacity>
@@ -21,6 +24,15 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
     backgroundColor: theme.colors.bannerBackground,
+  },
+  titleGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.xs,
+  },
+  logo: {
+    width: 44,
+    height: 44,
   },
   title: {
     color: theme.colors.textPrimary,
