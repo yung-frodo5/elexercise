@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
 import { USAGE_RATE_OPTIONS } from "../../lib/calculator";
 import type { CalculatorInputs, UsageRate } from "../../lib/calculator";
+import { ExternalLink } from "../ui/ExternalLink";
 
 const labelStyle: CSSProperties = {
   display: "flex",
@@ -186,14 +187,12 @@ export function CalculatorForm({
             note={
               <>
                 Grid carbon intensity varies by time of day, season, regional grid makeup, and more. For reference (
-                <a
+                <ExternalLink
                   href="https://www.epa.gov/egrid/summary-data"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   style={{ color: theme.colors.textMuted }}
                 >
                   eGRID
-                </a>
+                </ExternalLink>
                 ): CAMX (California) is 195 gCO2e/kWh; HIOA (Hawaii) is 680 gCO2e/kWh.
               </>
             }

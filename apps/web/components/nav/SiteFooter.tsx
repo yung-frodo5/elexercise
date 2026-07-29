@@ -1,4 +1,5 @@
 import { theme } from "@exercise-tracker/design-tokens";
+import { ExternalLink } from "../ui/ExternalLink";
 
 // Fixed pixel height so the root layout can reserve matching space above it
 // (a fixed-position element is out of flow and would otherwise overlap content).
@@ -29,13 +30,13 @@ export function SiteFooter() {
       >
         Contact Us
       </a>
-      <a
+      <ExternalLink
         href="https://www.flaticon.com/free-icons/renewable-energy"
         title="renewable energy icons"
         style={{ color: theme.colors.textPrimary, fontSize: 12 }}
       >
         Icon by Indah Rusiati
-      </a>
+      </ExternalLink>
     </footer>
   );
 }

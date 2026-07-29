@@ -1,5 +1,6 @@
 import type { RichTextNode } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
+import { ExternalLink } from "../ui/ExternalLink";
 
 export function RichText({ nodes }: { nodes: RichTextNode[] }) {
   return (
@@ -12,9 +13,9 @@ export function RichText({ nodes }: { nodes: RichTextNode[] }) {
           textDecoration: node.href || node.underline ? "underline" : undefined,
         };
         return node.href ? (
-          <a key={index} href={node.href} style={style}>
+          <ExternalLink key={index} href={node.href} style={style}>
             {node.text}
-          </a>
+          </ExternalLink>
         ) : (
           <span key={index} style={style}>
             {node.text}
