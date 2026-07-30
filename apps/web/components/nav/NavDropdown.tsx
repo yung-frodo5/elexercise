@@ -5,6 +5,8 @@ import Link from "next/link";
 import { theme } from "@exercise-tracker/design-tokens";
 import { withAlpha } from "../../lib/color";
 
+export { withAlpha };
+
 const KEYFRAMES_ID = "elex-nav-dropdown-keyframes";
 
 function ensureKeyframes() {

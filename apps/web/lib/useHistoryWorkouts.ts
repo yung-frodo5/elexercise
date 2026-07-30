@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Session as AuthSession } from "@supabase/supabase-js";
 import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { getWorkout, listWorkouts } from "./api";
-import { isDevBypassAuth } from "./devAuth";
-import { loadDevHistoryMocks, loadDevWorkoutDetail } from "./devBypass";
 
 export function useHistoryWorkouts(authSession: AuthSession | null) {
   const [workouts, setWorkouts] = useState<WorkoutWithSessions[]>([]);
@@ -19,15 +17,6 @@ export function useHistoryWorkouts(authSession: AuthSession | null) {
     let cancelled = false;
 
     void (async () => {
-      const mocks = loadDevHistoryMocks();
-      if (mocks) {
-        if (!cancelled) {
-          setWorkouts(mocks);
-          setLoading(false);
-        }
-        return;
-      }
-
       if (!authSession) {
         if (!cancelled) setLoading(false);
         return;
@@ -66,15 +55,6 @@ export function useHistoryWorkouts(authSession: AuthSession | null) {
     async (workoutId: string) => {
       const existing = workoutsRef.current.find((w) => w.id === workoutId);
       if (existing && existing.sessions.length > 0) return;
-
-      if (isDevBypassAuth()) {
-        const detail = loadDevWorkoutDetail(workoutId);
-        if (detail) {
-          setWorkouts((prev) => prev.map((w) => (w.id === workoutId ? detail : w)));
-        }
-        return;
-      }
-
       if (!authSession) return;
 
       setLoadingWorkoutId(workoutId);

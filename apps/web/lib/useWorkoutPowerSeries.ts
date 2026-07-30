@@ -2,10 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Session, WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { isDevBypassAuth } from "./devAuth";
-import { loadDevPowerSamples } from "./devBypass";
 import { fetchPowerSamples } from "./fetchPowerSamples";
-import { sessionDurationS } from "./historySessions";
 import type { PowerSamplePoint } from "./usePowerSamples";
 
 export type SessionPowerSeries = {
@@ -48,14 +45,6 @@ export function useWorkoutPowerSeries(workout: WorkoutWithSessions | null): {
       try {
         const entries = await Promise.all(
           current.sessions.map(async (session) => {
-            if (isDevBypassAuth()) {
-              const mock = loadDevPowerSamples(
-                session.id,
-                sessionDurationS(session) || 1800,
-                session.avgPowerW ?? 180
-              );
-              return [session.id, mock ?? []] as const;
-            }
             const samples = await fetchPowerSamples(session.id);
             return [session.id, samples] as const;
           })
