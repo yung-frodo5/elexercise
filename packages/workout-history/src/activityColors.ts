@@ -1,6 +1,6 @@
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
-// Avoid `border` as a tag color — brown is hairline chrome; body ink is navy.
+// Avoid `border` as a tag color — reserved for hairline chrome.
 const TAG_PALETTE = [
   { fg: theme.colors.secondaryGreen, bg: withAlpha(theme.colors.primaryGreen, 0.22) },
   { fg: theme.colors.accentBlue, bg: withAlpha(theme.colors.accentBlueMuted, 0.18) },
@@ -26,17 +26,4 @@ export function sportTagColors(sport: string): { fg: string; bg: string } {
 /** Same foreground as the sport tag — used for chart series + activity toggles. */
 export function activityColorForSport(sport: string): string {
   return sportTagColors(sport).fg;
-}
-
-/** Compact sport glyph for feed rows (unicode, no icon font). */
-export function sportIcon(sport: string): string {
-  const key = sport.trim().toLowerCase();
-  if (key.includes("bike") || key.includes("cycl")) return "🚴";
-  if (key.includes("run") || key.includes("jog")) return "🏃";
-  if (key.includes("swim")) return "🏊";
-  if (key.includes("row")) return "🚣";
-  if (key.includes("walk") || key.includes("hik")) return "🚶";
-  if (key.includes("strength") || key.includes("lift") || key.includes("weight")) return "💪";
-  if (key.includes("yoga") || key.includes("stretch")) return "🧘";
-  return "⚡";
 }

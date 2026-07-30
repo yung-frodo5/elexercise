@@ -27,9 +27,5 @@ export {
   formatPowerW,
   formatWorkoutDate,
 } from "./format";
-export { sportTagColors, activityColorForSport, sportIcon } from "./activityColors";
-export {
-  HISTORY_COLUMNS,
-  HISTORY_COL_COUNT,
-  HISTORY_ROW_HOVER_BG,
-} from "./historyColumns";
+export { sportTagColors, activityColorForSport } from "./activityColors";
+export { HISTORY_COLUMNS, HISTORY_COL_COUNT } from "./historyColumns";

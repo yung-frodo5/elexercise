@@ -22,7 +22,7 @@ const PAD = { top: 10, right: 8, bottom: 28 };
 const CHART_H = 180;
 const INK = theme.colors.navy;
 
-/** Multi-activity power chart — same domain rules as web MultiPowerChart. */
+/** Multi-activity power chart using shared downsample / axis-max helpers. */
 export function MultiPowerChart({
   series,
   selectedIds,
@@ -82,7 +82,6 @@ export function MultiPowerChart({
     <View style={styles.wrap}>
       <Text style={styles.title}>Power Output</Text>
       <View style={[styles.chartRow, { height: CHART_H }]}>
-        {/* Dedicated strip so "Watts" never shares space with tick numbers. */}
         <View style={styles.yTitleCol}>
           <Text style={styles.yTitle}>Watts</Text>
         </View>

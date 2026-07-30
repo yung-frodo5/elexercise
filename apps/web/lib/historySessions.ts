@@ -11,4 +11,6 @@ export {
   filterAndSortHistoryWorkouts,
   nextSortState,
   toggleListItem,
+  HISTORY_COLUMNS,
+  HISTORY_COL_COUNT,
 } from "@exercise-tracker/workout-history";

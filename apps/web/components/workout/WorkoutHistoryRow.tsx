@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Session, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import { HISTORY_ROW_HOVER_BG } from "@exercise-tracker/workout-history";
 import { activityColorForSport } from "../../lib/activityColors";
 import { formatDurationHms, formatEnergy, formatPowerW, formatWorkoutDate } from "../../lib/format";
 import {
@@ -21,8 +20,8 @@ import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
 const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
-// Prefer shared token; value matches web's navy-tint hover on white rows.
-const ROW_HOVER_BG = HISTORY_ROW_HOVER_BG;
+/** Navy-tint hover/expanded fill on white rows (web table chrome). */
+const ROW_HOVER_BG = "#E6ECF2";
 
 function ensureRowStyles() {
   if (typeof document === "undefined") return;

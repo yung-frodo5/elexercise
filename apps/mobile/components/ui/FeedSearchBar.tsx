@@ -8,7 +8,7 @@ function padX(width: number): number {
   return theme.spacing.xl;
 }
 
-/** Full-width rounded search — Strava-style; navy ink on white (main palette). */
+/** Full-width rounded search field for the Workouts feed. */
 export function FeedSearchBar({
   value,
   onChange,

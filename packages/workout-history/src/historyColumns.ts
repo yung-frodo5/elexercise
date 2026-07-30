@@ -1,6 +1,6 @@
 import type { HistorySortKey } from "./historySessions";
 
-/** Shared Workout Log column definitions — web table headers + mobile sort/header. */
+/** Workout Log column definitions — web table headers; sort keys shared by both apps. */
 export const HISTORY_COLUMNS: {
   label: string;
   key: HistorySortKey;
@@ -16,6 +16,3 @@ export const HISTORY_COLUMNS: {
 ];
 
 export const HISTORY_COL_COUNT = HISTORY_COLUMNS.length;
-
-/** Hover / expanded highlight — navy-tint on white web rows (not sage). */
-export const HISTORY_ROW_HOVER_BG = "#E6ECF2";

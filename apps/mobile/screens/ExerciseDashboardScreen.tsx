@@ -11,7 +11,7 @@ const TABS: { id: SubTab; label: string }[] = [
   { id: "workouts", label: "Workouts" },
 ];
 
-/** Anchored top tabs — Strava-style underline; Workouts uses main’s white/navy. */
+/** Dashboard sub-tabs: Track (existing dark shell) and Workouts (white/navy feed). */
 export default function ExerciseDashboardScreen({ accessToken }: { accessToken: string }) {
   const [subTab, setSubTab] = useState<SubTab>("track");
   const onWorkouts = subTab === "workouts";

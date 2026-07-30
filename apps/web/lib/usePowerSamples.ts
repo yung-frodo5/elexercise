@@ -2,12 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { RealtimePostgresInsertPayload } from "@supabase/supabase-js";
+import type { PowerSamplePoint } from "@exercise-tracker/workout-history";
 import { supabase } from "./supabase";
 
-export interface PowerSamplePoint {
-  tMs: number;
-  powerW: number;
-}
+export type { PowerSamplePoint };
 
 interface PowerSampleRow {
   session_id: string;

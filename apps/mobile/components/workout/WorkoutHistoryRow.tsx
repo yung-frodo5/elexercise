@@ -19,7 +19,6 @@ import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
 import { SportTag } from "../ui/SportTag";
 import { MultiPowerChart } from "./MultiPowerChart";
 
-/** Match web history ink after design overhaul (navy on white). */
 const INK = theme.colors.navy;
 
 const METRICS = [
@@ -185,7 +184,6 @@ export function WorkoutHistoryRow({
         </View>
       </TouchableOpacity>
 
-      {/* One expand panel: activity toggles + chart (no nested metric boxes). */}
       {open && (
         <View style={[styles.expand, { paddingHorizontal: padX }]}>
           {workout.sessions.length > 0 && (
