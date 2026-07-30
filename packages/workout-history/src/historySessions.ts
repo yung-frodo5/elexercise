@@ -10,6 +10,23 @@ export type HistorySortKey =
   | "peakPower";
 export type HistorySortDir = "asc" | "desc";
 
+/** Web table headers; sort keys are shared by both apps. */
+export const HISTORY_COLUMNS: {
+  label: string;
+  key: HistorySortKey;
+  align?: "left" | "right";
+}[] = [
+  { label: "Title", key: "title" },
+  { label: "Date", key: "date" },
+  { label: "Workout", key: "sport" },
+  { label: "Time", key: "time", align: "right" },
+  { label: "Energy", key: "energy", align: "right" },
+  { label: "Avg. power", key: "avgPower", align: "right" },
+  { label: "Peak power", key: "peakPower", align: "right" },
+];
+
+export const HISTORY_COL_COUNT = HISTORY_COLUMNS.length;
+
 export function sessionDurationS(session: Session): number {
   if (session.durationS !== undefined) return Math.max(0, session.durationS);
   if (!session.endedAt) return 0;
@@ -113,13 +130,13 @@ function sortValue(workout: WorkoutWithSessions, key: HistorySortKey): string | 
 export function filterAndSortHistoryWorkouts(
   workouts: WorkoutWithSessions[],
   {
-    sports,
-    keywords,
+    sports = [],
+    keywords = "",
     sortKey,
     sortDir,
   }: {
-    sports: string[];
-    keywords: string;
+    sports?: string[];
+    keywords?: string;
     sortKey: HistorySortKey;
     sortDir: HistorySortDir;
   }

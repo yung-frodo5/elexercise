@@ -1,4 +1,7 @@
-import type { PowerSamplePoint } from "./powerSampleTypes";
+export type PowerSamplePoint = {
+  tMs: number;
+  powerW: number;
+};
 
 /** Cap chart points so chart renderers stay responsive on long sessions. */
 export const MAX_PLOTTED_POWER_POINTS = 400;

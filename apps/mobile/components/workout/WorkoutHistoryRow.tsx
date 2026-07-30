@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import type { Session, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
@@ -35,51 +35,6 @@ function rowPadX(width: number): number {
   return theme.spacing.xxl;
 }
 
-function ActivityToggle({
-  color,
-  on,
-  onToggle,
-  label,
-}: {
-  color: string;
-  on: boolean;
-  onToggle: () => void;
-  label: string;
-}) {
-  return (
-    <TouchableOpacity
-      onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ selected: on }}
-      accessibilityLabel={on ? `Hide ${label} on chart` : `Show ${label} on chart`}
-      hitSlop={4}
-      style={[styles.activityChip, { opacity: on ? 1 : 0.45 }]}
-    >
-      <View
-        style={[
-          styles.toggle,
-          {
-            backgroundColor: on ? color : "transparent",
-            borderColor: color,
-          },
-        ]}
-      />
-      <Text style={styles.activityChipLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-function MetricCell({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.metricCell}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue} numberOfLines={1}>
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 export function WorkoutHistoryRow({
   workout,
   loading,
@@ -91,66 +46,38 @@ export function WorkoutHistoryRow({
   open: boolean;
   onToggle: () => void;
 }) {
-  const { width } = useWindowDimensions();
-  const padX = rowPadX(width);
-  const sessionMetaKey = workout.sessions
-    .map((s) => `${s.id}:${s.activityType ?? ""}`)
-    .join("|");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(workout.sessions.map((s) => s.id))
-  );
+  const padX = rowPadX(useWindowDimensions().width);
+  const sessionKey = workout.sessions.map((s) => `${s.id}:${s.activityType ?? ""}`).join("|");
+  const [selectedIds, setSelectedIds] = useState(() => new Set(workout.sessions.map((s) => s.id)));
 
   const title = workoutTitle(workout);
   const sports = workoutSports(workout);
-  const durationS = workoutDurationS(workout);
   const energyJ = workoutEnergyJ(workout);
-  const avgPowerW = workoutAvgPowerW(workout);
-  const peakPowerW = workoutPeakPowerW(workout);
+  const values = {
+    time: formatDuration(workoutDurationS(workout)),
+    energy: energyJ !== undefined ? formatEnergy(energyJ) : "—",
+    avg: formatPowerW(workoutAvgPowerW(workout)),
+    peak: formatPowerW(workoutPeakPowerW(workout)),
+  };
   const statusLabel = workout.status === "completed" ? null : "In progress";
 
-  const values = {
-    time: formatDuration(durationS),
-    energy: energyJ !== undefined ? formatEnergy(energyJ) : "—",
-    avg: formatPowerW(avgPowerW),
-    peak: formatPowerW(peakPowerW),
-  };
-
-  const colorBySessionId = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const s of workout.sessions) {
-      map[s.id] = activityColorForSport(s.activityType || "Activity");
-    }
-    return map;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by sessionMetaKey
-  }, [sessionMetaKey]);
+  const colorBySessionId: Record<string, string> = {};
+  for (const s of workout.sessions) {
+    colorBySessionId[s.id] = activityColorForSport(s.activityType || "Activity");
+  }
 
   const { series, loading: powerLoading, error: powerError } = useWorkoutPowerSeries(
     open ? workout : null
   );
-
-  const chartSeries = useMemo(
-    () =>
-      series.map((s) => ({
-        session: s.session,
-        timelineSamples: s.timelineSamples,
-        color: colorBySessionId[s.session.id] ?? theme.colors.secondaryGreen,
-      })),
-    [series, colorBySessionId]
-  );
+  const chartSeries = series.map((s) => ({
+    session: s.session,
+    timelineSamples: s.timelineSamples,
+    color: colorBySessionId[s.session.id] ?? theme.colors.secondaryGreen,
+  }));
 
   useEffect(() => {
     setSelectedIds(new Set(workout.sessions.map((s) => s.id)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by sessionMetaKey
-  }, [workout.id, sessionMetaKey]);
-
-  function toggleActivity(sessionId: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(sessionId)) next.delete(sessionId);
-      else next.add(sessionId);
-      return next;
-    });
-  }
+  }, [workout.id, sessionKey]);
 
   return (
     <View style={styles.card}>
@@ -162,8 +89,6 @@ export function WorkoutHistoryRow({
         <Text style={styles.title} numberOfLines={2}>
           {title}
         </Text>
-
-        {/* Date + full sport word tags */}
         <View style={styles.metaRow}>
           <Text style={styles.metaDate}>{formatWorkoutDate(workout.startedAt)}</Text>
           {sports.map((s) => (
@@ -176,10 +101,14 @@ export function WorkoutHistoryRow({
             </Text>
           ) : null}
         </View>
-
         <View style={styles.metrics}>
           {METRICS.map(({ key, label }) => (
-            <MetricCell key={key} label={label} value={values[key]} />
+            <View key={key} style={styles.metricCell}>
+              <Text style={styles.metricLabel}>{label}</Text>
+              <Text style={styles.metricValue} numberOfLines={1}>
+                {values[key]}
+              </Text>
+            </View>
           ))}
         </View>
       </TouchableOpacity>
@@ -188,15 +117,37 @@ export function WorkoutHistoryRow({
         <View style={[styles.expand, { paddingHorizontal: padX }]}>
           {workout.sessions.length > 0 && (
             <View style={styles.activityRow}>
-              {workout.sessions.map((session: Session) => (
-                <ActivityToggle
-                  key={session.id}
-                  color={colorBySessionId[session.id] ?? theme.colors.secondaryGreen}
-                  on={selectedIds.has(session.id)}
-                  label={session.activityType || "Activity"}
-                  onToggle={() => toggleActivity(session.id)}
-                />
-              ))}
+              {workout.sessions.map((session: Session) => {
+                const color = colorBySessionId[session.id] ?? theme.colors.secondaryGreen;
+                const on = selectedIds.has(session.id);
+                const label = session.activityType || "Activity";
+                return (
+                  <TouchableOpacity
+                    key={session.id}
+                    onPress={() =>
+                      setSelectedIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(session.id)) next.delete(session.id);
+                        else next.add(session.id);
+                        return next;
+                      })
+                    }
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: on }}
+                    accessibilityLabel={on ? `Hide ${label} on chart` : `Show ${label} on chart`}
+                    hitSlop={4}
+                    style={[styles.activityChip, { opacity: on ? 1 : 0.45 }]}
+                  >
+                    <View
+                      style={[
+                        styles.toggle,
+                        { backgroundColor: on ? color : "transparent", borderColor: color },
+                      ]}
+                    />
+                    <Text style={styles.activityChipLabel}>{label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           )}
           {powerError ? (

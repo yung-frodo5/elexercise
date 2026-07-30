@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { theme } from "@exercise-tracker/design-tokens";
 import { sportTagColors } from "@exercise-tracker/workout-history";
 
-/** Read-only sport pill using shared `sportTagColors`. */
 export function SportTag({ label, compact }: { label: string; compact?: boolean }) {
   const { fg, bg } = sportTagColors(label);
   return (

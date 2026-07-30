@@ -11,14 +11,20 @@ const TABS: { id: SubTab; label: string }[] = [
   { id: "workouts", label: "Workouts" },
 ];
 
-/** Dashboard sub-tabs: Track (existing dark shell) and Workouts (white/navy feed). */
 export default function ExerciseDashboardScreen({ accessToken }: { accessToken: string }) {
   const [subTab, setSubTab] = useState<SubTab>("track");
-  const onWorkouts = subTab === "workouts";
+  const light = subTab === "workouts";
+  const ink = light ? theme.colors.navy : theme.colors.textPrimary;
 
   return (
-    <View style={[styles.container, onWorkouts && styles.containerWorkouts]}>
-      <View style={[styles.tabBar, onWorkouts && styles.tabBarWorkouts]}>
+    <View style={[styles.container, light && styles.lightBg]}>
+      <View
+        style={[
+          styles.tabBar,
+          light && styles.lightBg,
+          { borderBottomColor: withAlpha(ink, light ? 0.12 : 0.15) },
+        ]}
+      >
         {TABS.map(({ id, label }) => {
           const active = subTab === id;
           return (
@@ -32,8 +38,7 @@ export default function ExerciseDashboardScreen({ accessToken }: { accessToken: 
               <Text
                 style={[
                   styles.tabLabel,
-                  onWorkouts ? styles.tabLabelOnLight : null,
-                  active && (onWorkouts ? styles.tabLabelActiveOnLight : styles.tabLabelActive),
+                  { color: withAlpha(ink, active ? 1 : light ? 0.45 : 0.55) },
                 ]}
               >
                 {label}
@@ -57,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.surface,
   },
-  containerWorkouts: {
+  lightBg: {
     backgroundColor: "#FFFFFF",
   },
   tabBar: {
@@ -65,11 +70,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: withAlpha(theme.colors.textPrimary, 0.15),
-  },
-  tabBarWorkouts: {
-    backgroundColor: "#FFFFFF",
-    borderBottomColor: withAlpha(theme.colors.navy, 0.12),
   },
   tab: {
     marginRight: theme.spacing.xl,
@@ -79,17 +79,7 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: theme.typography.size.md,
     fontWeight: theme.typography.weight.semibold,
-    color: withAlpha(theme.colors.textPrimary, 0.55),
     paddingBottom: theme.spacing.sm,
-  },
-  tabLabelOnLight: {
-    color: withAlpha(theme.colors.navy, 0.45),
-  },
-  tabLabelActive: {
-    color: theme.colors.textPrimary,
-  },
-  tabLabelActiveOnLight: {
-    color: theme.colors.navy,
   },
   underline: {
     alignSelf: "stretch",

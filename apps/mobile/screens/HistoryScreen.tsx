@@ -23,7 +23,6 @@ export default function HistoryScreen({ accessToken }: { accessToken: string }) 
   const filtered = useMemo(
     () =>
       filterAndSortHistoryWorkouts(workouts, {
-        sports: [],
         keywords,
         sortKey: "date",
         sortDir: "desc",

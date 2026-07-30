@@ -48,8 +48,8 @@ function ensureStyles() {
     .elex-expandable-search:-webkit-autofill:active {
       -webkit-text-fill-color: ${theme.colors.navy} !important;
       caret-color: ${theme.colors.navy};
-      box-shadow: 0 0 0 1000px #FFFFFF inset !important;
-      -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+      box-shadow: 0 0 0 1000px ${theme.colors.background} inset !important;
+      -webkit-box-shadow: 0 0 0 1000px ${theme.colors.background} inset !important;
       transition: background-color 99999s ease-out;
       border-bottom-color: ${withAlpha(theme.colors.border, 0.35)} !important;
     }

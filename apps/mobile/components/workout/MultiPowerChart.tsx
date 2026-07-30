@@ -15,14 +15,12 @@ type SeriesInput = {
   color: string;
 };
 
-const MOBILE_MAX_POINTS = 120;
-const Y_TITLE_W = 18;
+const MAX_POINTS = 120;
 const TICK_W = 36;
-const PAD = { top: 10, right: 8, bottom: 28 };
-const CHART_H = 180;
+const PAD = { top: 10, right: 8, bottom: 22, left: TICK_W };
+const CHART_H = 168;
 const INK = theme.colors.navy;
 
-/** Multi-activity power chart using shared downsample / axis-max helpers. */
 export function MultiPowerChart({
   series,
   selectedIds,
@@ -30,21 +28,20 @@ export function MultiPowerChart({
   series: SeriesInput[];
   selectedIds: ReadonlySet<string>;
 }) {
-  const [plotWidth, setPlotWidth] = useState(0);
+  const [width, setWidth] = useState(0);
   const selectedKey = [...selectedIds].sort().join("|");
 
   const model = useMemo(() => {
     const idSet = new Set(selectedKey ? selectedKey.split("|") : []);
     const active = series.filter((s) => idSet.has(s.session.id));
     const solo = active.length === 1;
-
     let peak = 100;
     let minT = Number.POSITIVE_INFINITY;
     let maxT = 0;
     const prepared: { id: string; color: string; samples: PowerSamplePoint[] }[] = [];
 
     for (const s of active) {
-      const samples = downsamplePowerSamples(s.timelineSamples, MOBILE_MAX_POINTS);
+      const samples = downsamplePowerSamples(s.timelineSamples, MAX_POINTS);
       for (const p of samples) {
         peak = Math.max(peak, p.powerW);
         minT = Math.min(minT, p.tMs);
@@ -70,91 +67,69 @@ export function MultiPowerChart({
     return <Text style={styles.empty}>No power data recorded for these activities.</Text>;
   }
 
+  const plotW = Math.max(10, width - PAD.left - PAD.right);
   const plotH = Math.max(10, CHART_H - PAD.top - PAD.bottom);
   const xRange = Math.max(1, model.xMax - model.xMin);
   const yTicks = [0, 0.5, 1].map((f) => Math.round(f * model.yMax));
-  const xTickCount = Math.max(2, Math.min(5, Math.floor(plotWidth / 64)));
+  const xTickCount = Math.max(2, Math.min(5, Math.floor(plotW / 64)));
   const xTicks = Array.from({ length: xTickCount }, (_, i) =>
     model.xMin + (i / (xTickCount - 1)) * xRange
   );
 
   return (
-    <View style={styles.wrap}>
-      <Text style={styles.title}>Power Output</Text>
-      <View style={[styles.chartRow, { height: CHART_H }]}>
-        <View style={styles.yTitleCol}>
-          <Text style={styles.yTitle}>Watts</Text>
-        </View>
-
-        <View style={styles.tickCol}>
-          {yTicks.map((w) => {
+    <View style={styles.wrap} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <Text style={styles.title}>Power Output (W)</Text>
+      <View style={{ height: CHART_H, width: "100%" }}>
+        {width > 0 &&
+          yTicks.map((w) => {
             const y = PAD.top + (1 - w / model.yMax) * plotH;
             return (
-              <Text key={w} style={[styles.tickLabel, { top: y - 6 }]}>
-                {w}
+              <View key={w} style={[styles.gridRow, { top: y }]}>
+                <Text style={styles.tick}>{w}</Text>
+                <View style={[styles.gridLine, { width: plotW }]} />
+              </View>
+            );
+          })}
+
+        {width > 0 &&
+          xTicks.map((tMs) => {
+            const x = PAD.left + ((tMs - model.xMin) / xRange) * plotW;
+            return (
+              <Text key={tMs} style={[styles.xLabel, { left: x - 22 }]}>
+                {formatDuration(tMs / 1000)}
               </Text>
             );
           })}
-        </View>
 
-        <View
-          style={styles.plot}
-          onLayout={(e) => setPlotWidth(e.nativeEvent.layout.width)}
-        >
-          {plotWidth > 0 &&
-            yTicks.map((w) => {
-              const y = PAD.top + (1 - w / model.yMax) * plotH;
+        {width > 0 &&
+          model.prepared.map((s) =>
+            s.samples.slice(0, -1).map((p, i) => {
+              const next = s.samples[i + 1]!;
+              const x1 = PAD.left + ((p.tMs - model.xMin) / xRange) * plotW;
+              const y1 = PAD.top + (1 - p.powerW / model.yMax) * plotH;
+              const x2 = PAD.left + ((next.tMs - model.xMin) / xRange) * plotW;
+              const y2 = PAD.top + (1 - next.powerW / model.yMax) * plotH;
+              const dx = x2 - x1;
+              const dy = y2 - y1;
+              const len = Math.hypot(dx, dy);
+              if (len < 0.5) return null;
+              const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
               return (
                 <View
-                  key={w}
-                  style={[styles.gridLine, { top: y, width: plotWidth - PAD.right }]}
+                  key={`${s.id}-${i}`}
+                  style={{
+                    position: "absolute",
+                    left: (x1 + x2) / 2 - len / 2,
+                    top: (y1 + y2) / 2 - 1,
+                    width: len,
+                    height: 2,
+                    backgroundColor: s.color,
+                    transform: [{ rotate: `${angle}deg` }],
+                  }}
                 />
               );
-            })}
-
-          {plotWidth > 0 &&
-            xTicks.map((tMs) => {
-              const x = ((tMs - model.xMin) / xRange) * (plotWidth - PAD.right);
-              return (
-                <Text key={tMs} style={[styles.xLabel, { left: x - 22 }]}>
-                  {formatDuration(tMs / 1000)}
-                </Text>
-              );
-            })}
-
-          {plotWidth > 0 &&
-            model.prepared.map((s) =>
-              s.samples.slice(0, -1).map((p, i) => {
-                const next = s.samples[i + 1]!;
-                const usableW = plotWidth - PAD.right;
-                const x1 = ((p.tMs - model.xMin) / xRange) * usableW;
-                const y1 = PAD.top + (1 - p.powerW / model.yMax) * plotH;
-                const x2 = ((next.tMs - model.xMin) / xRange) * usableW;
-                const y2 = PAD.top + (1 - next.powerW / model.yMax) * plotH;
-                const dx = x2 - x1;
-                const dy = y2 - y1;
-                const len = Math.sqrt(dx * dx + dy * dy);
-                if (len < 0.5) return null;
-                const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-                return (
-                  <View
-                    key={`${s.id}-${i}`}
-                    style={{
-                      position: "absolute",
-                      left: (x1 + x2) / 2 - len / 2,
-                      top: (y1 + y2) / 2 - 1,
-                      width: len,
-                      height: 2,
-                      backgroundColor: s.color,
-                      transform: [{ rotate: `${angle}deg` }],
-                    }}
-                  />
-                );
-              })
-            )}
-
-          <Text style={styles.xTitle}>Time</Text>
-        </View>
+            })
+          )}
       </View>
     </View>
   );
@@ -166,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: withAlpha(theme.colors.navy, 0.04),
     borderRadius: theme.radii.md,
     paddingTop: theme.spacing.xs,
-    paddingBottom: theme.spacing.xs,
+    overflow: "hidden",
   },
   title: {
     marginBottom: theme.spacing.xs,
@@ -183,60 +158,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: theme.spacing.md,
   },
-  chartRow: {
-    flexDirection: "row",
-    width: "100%",
-  },
-  yTitleCol: {
-    width: Y_TITLE_W,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  yTitle: {
-    width: CHART_H - 40,
-    fontSize: 9,
-    color: withAlpha(INK, 0.75),
-    textAlign: "center",
-    transform: [{ rotate: "-90deg" }],
-  },
-  tickCol: {
-    width: TICK_W,
-    position: "relative",
-  },
-  tickLabel: {
+  gridRow: {
     position: "absolute",
-    right: 4,
-    width: TICK_W - 4,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  tick: {
+    width: TICK_W,
+    paddingRight: 4,
     fontSize: 9,
     color: INK,
     textAlign: "right",
   },
-  plot: {
-    flex: 1,
-    minWidth: 0,
-    position: "relative",
-  },
   gridLine: {
-    position: "absolute",
-    left: 0,
     height: StyleSheet.hairlineWidth,
     backgroundColor: withAlpha(INK, 0.2),
   },
   xLabel: {
     position: "absolute",
-    top: CHART_H - 18,
+    top: CHART_H - 16,
     width: 44,
     textAlign: "center",
     fontSize: 9,
     color: INK,
-  },
-  xTitle: {
-    position: "absolute",
-    left: 0,
-    right: PAD.right,
-    bottom: 2,
-    textAlign: "center",
-    fontSize: 9,
-    color: withAlpha(INK, 0.75),
   },
 });

@@ -1,6 +1,5 @@
-import { StyleSheet, TextInput, View, useWindowDimensions } from "react-native";
+import { StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import { SearchIcon } from "./SearchIcon";
 
 function padX(width: number): number {
   if (width < 360) return theme.spacing.md;
@@ -8,7 +7,7 @@ function padX(width: number): number {
   return theme.spacing.xl;
 }
 
-/** Full-width rounded search field for the Workouts feed. */
+/** Full-width search field for the Workouts feed. */
 export function FeedSearchBar({
   value,
   onChange,
@@ -24,9 +23,9 @@ export function FeedSearchBar({
   return (
     <View style={[styles.wrap, { paddingHorizontal: padX(width) }]}>
       <View style={styles.field}>
-        <SearchIcon size={16} color={withAlpha(ink, 0.45)} />
+        <Text style={[styles.icon, { color: withAlpha(ink, 0.45) }]}>⌕</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: ink }]}
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
@@ -56,12 +55,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: 10,
   },
+  icon: {
+    fontSize: 16,
+    lineHeight: 18,
+  },
   input: {
     flex: 1,
     minWidth: 0,
     padding: 0,
     margin: 0,
     fontSize: theme.typography.size.sm,
-    color: theme.colors.navy,
   },
 });
