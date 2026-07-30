@@ -90,7 +90,7 @@ export default function LandingPage() {
           >
             <p className="definition-headword" style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
               <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span>{" "}
-              \əˈlɛk &middot; sə &middot; saɪz\
+              \əˈlɛk &middot; sɚ &middot; saɪz\
             </p>
             <p
               className="definition-body-line"
