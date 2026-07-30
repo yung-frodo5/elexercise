@@ -13,6 +13,8 @@ export const typography = {
     mono: "monospace",
   },
   size: {
+    // Compact uppercase labels (table headers, chart titles).
+    xxs: 11,
     xs: 13,
     sm: 14,
     md: 16,

@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { Session, WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { activityColorForSport } from "../../lib/activityColors";
 import { formatDurationHms, formatEnergy, formatPowerW, formatWorkoutDate } from "../../lib/format";
-import { withAlpha } from "../../lib/color";
 import {
   sessionDurationS,
   workoutAvgPowerW,
@@ -57,7 +56,7 @@ function ActivityToggle({
       style={{
         width: 12,
         height: 12,
-        borderRadius: 3,
+        borderRadius: theme.radii.sm,
         flexShrink: 0,
         boxSizing: "border-box",
         padding: 0,
@@ -230,7 +229,7 @@ export function WorkoutHistoryRow({
                 display: "inline-block",
                 marginTop: 2,
                 color: theme.colors.textMuted,
-                fontSize: 12,
+                fontSize: theme.typography.size.xxs,
                 lineHeight: 1.2,
                 flexShrink: 0,
               }}

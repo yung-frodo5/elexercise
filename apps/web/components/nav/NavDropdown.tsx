@@ -2,10 +2,7 @@
 
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
-
-export { withAlpha };
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
 const KEYFRAMES_ID = "elex-nav-dropdown-keyframes";
 
@@ -132,7 +129,7 @@ export function NavDropdownPanel({
         overflow: "hidden",
         backgroundColor: theme.colors.background,
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-        borderRadius: 10,
+        borderRadius: theme.radii.lg,
         boxShadow: `0 10px 28px ${withAlpha(theme.colors.textPrimary, 0.1)}`,
         zIndex: 2,
         animation: "elexNavMenuIn 160ms ease-out",

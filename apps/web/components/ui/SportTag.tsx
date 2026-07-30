@@ -12,7 +12,7 @@ export function SportTag({ label }: { label: string }) {
         display: "inline-flex",
         alignItems: "center",
         padding: `3px ${theme.spacing.sm}px`,
-        borderRadius: 999,
+        borderRadius: theme.radii.pill,
         background: bg,
         color: fg,
         fontSize: theme.typography.size.xs,

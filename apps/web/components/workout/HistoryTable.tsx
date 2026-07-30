@@ -2,9 +2,9 @@
 
 import type { CSSProperties } from "react";
 import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import type { HistorySortDir, HistorySortKey } from "../../lib/historySessions";
+import { overlineStyle } from "../../lib/uiStyles";
 import { WorkoutHistoryRow } from "./WorkoutHistoryRow";
 
 const COLUMNS: { label: string; key: HistorySortKey; align?: "left" | "right" }[] = [
@@ -42,13 +42,9 @@ export function HistoryTable({
   onCloseExpand: () => void;
 }) {
   const headerCell: CSSProperties = {
+    ...overlineStyle,
     padding: `${theme.spacing.md}px`,
     textAlign: "left",
-    fontSize: 11,
-    fontWeight: theme.typography.weight.semibold,
-    letterSpacing: "0.07em",
-    textTransform: "uppercase",
-    color: theme.colors.textMuted,
     borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
     whiteSpace: "nowrap",
     backgroundColor: HEADER_BG,
@@ -67,7 +63,7 @@ export function HistoryTable({
         overflowX: "auto",
         maxHeight: "min(70vh, 720px)",
         overflowY: "auto",
-        borderRadius: 12,
+        borderRadius: theme.radii.xl,
         border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
         backgroundColor: theme.colors.background,
         boxShadow: `0 8px 28px ${withAlpha(theme.colors.textPrimary, 0.05)}`,

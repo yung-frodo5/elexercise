@@ -1,8 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
 /** Soft bordered surface for empty states and lightweight panels. */
 export function SoftPanel({
@@ -20,7 +19,7 @@ export function SoftPanel({
       style={{
         backgroundColor: theme.colors.background,
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-        borderRadius: 10,
+        borderRadius: theme.radii.lg,
         boxShadow: `0 4px 16px ${withAlpha(theme.colors.textPrimary, 0.06)}`,
         ...style,
       }}

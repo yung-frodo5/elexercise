@@ -11,10 +11,10 @@ import {
   YAxis,
 } from "recharts";
 import type { Session } from "@exercise-tracker/shared-types";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { downsamplePowerSamples, powerAxisMaxW } from "../../lib/downsamplePowerSamples";
 import { formatDuration } from "../../lib/format";
+import { overlineStyle } from "../../lib/uiStyles";
 import type { PowerSamplePoint } from "../../lib/usePowerSamples";
 
 type SeriesInput = {
@@ -106,18 +106,7 @@ export function MultiPowerChart({
 
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-      <p
-        style={{
-          margin: 0,
-          marginBottom: theme.spacing.xs,
-          fontSize: 11,
-          fontWeight: theme.typography.weight.semibold,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          textAlign: "center",
-          color: theme.colors.textMuted,
-        }}
-      >
+      <p style={{ ...overlineStyle, marginBottom: theme.spacing.xs, textAlign: "center" }}>
         Power Output
       </p>
       <div style={{ flex: 1, minHeight: 0 }}>
@@ -140,7 +129,7 @@ export function MultiPowerChart({
                 offset: -8,
                 style: {
                   fill: theme.colors.textMuted,
-                  fontSize: 11,
+                  fontSize: theme.typography.size.xxs,
                   fontFamily: theme.typography.fontFamily.web,
                 },
               }}
@@ -159,7 +148,7 @@ export function MultiPowerChart({
                 offset: -6,
                 style: {
                   fill: theme.colors.textMuted,
-                  fontSize: 11,
+                  fontSize: theme.typography.size.xxs,
                   fontFamily: theme.typography.fontFamily.web,
                   textAnchor: "middle",
                 },
@@ -174,7 +163,7 @@ export function MultiPowerChart({
                     style={{
                       background: theme.colors.background,
                       border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-                      borderRadius: 8,
+                      borderRadius: theme.radii.md,
                       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                       fontFamily: theme.typography.fontFamily.web,
                       whiteSpace: "nowrap",

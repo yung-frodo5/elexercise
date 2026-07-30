@@ -1,8 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
 /** Additive filter pill — reusable across list screens. */
 export function FilterChip({
@@ -16,7 +15,7 @@ export function FilterChip({
 }) {
   const style: CSSProperties = {
     padding: `5px ${theme.spacing.md}px`,
-    borderRadius: 999,
+    borderRadius: theme.radii.pill,
     border: `1px solid ${
       active ? withAlpha(theme.colors.primaryGreen, 0.45) : withAlpha(theme.colors.border, 0.28)
     }`,

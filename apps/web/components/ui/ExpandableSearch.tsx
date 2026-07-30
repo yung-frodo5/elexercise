@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { theme } from "@exercise-tracker/design-tokens";
-import { withAlpha } from "../../lib/color";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { SearchIcon } from "./SearchIcon";
 
 const STYLES_ID = "elex-expandable-search-styles";
