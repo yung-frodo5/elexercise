@@ -68,7 +68,7 @@ export function HistoryTable({
         boxShadow: `0 8px 28px ${withAlpha(theme.colors.textPrimary, 0.05)}`,
       }}
     >
-      <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
+      <table style={{ width: "100%", minWidth: 640, borderCollapse: "separate", borderSpacing: 0 }}>
         <thead>
           <tr>
             {COLUMNS.map(({ label, key, align }) => {

@@ -17,23 +17,47 @@ const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resourc
 // the home page, which gets 0.5in -- per design feedback, route-specific,
 // hence needing the pathname (and therefore a client component) rather
 // than a single static margin in the server layout.
+//
+// Home page's side margin stays a fixed 0.5in. Every other page instead
+// gets width: 90% (a 5%-per-side gutter that scales with the window,
+// instead of a fixed inch value staying constant as it resizes) capped by
+// max-width: 1040px (matching the widest page content, History/Calculator)
+// so past that point extra window width becomes more sage margin instead
+// of the dark green panel growing indefinitely wider than any page's
+// actual content. margin uses the literal "auto" keyword (not a percentage)
+// so the browser centers whichever of the two constraints (90% vs 1040px
+// cap) actually applies, rather than leaving lopsided leftover space.
 export function ContentPanel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const sideMargin = pathname === "/" ? "0.5in" : "0.75in";
+  const isHome = pathname === "/";
   const paddingBottom = pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)
     ? theme.spacing.xxl + theme.spacing.xl
     : theme.spacing.xxl;
 
   return (
     <div
-      style={{
-        margin: `${sideMargin} ${sideMargin} 1in ${sideMargin}`,
-        backgroundColor: theme.colors.surface,
-        paddingTop: theme.spacing.xxl,
-        paddingLeft: theme.spacing.xxl,
-        paddingRight: theme.spacing.xxl,
-        paddingBottom,
-      }}
+      style={
+        isHome
+          ? {
+              margin: "0.5in 0.5in 1in 0.5in",
+              backgroundColor: theme.colors.surface,
+              paddingTop: theme.spacing.xxl,
+              paddingLeft: theme.spacing.xxl,
+              paddingRight: theme.spacing.xxl,
+              paddingBottom,
+            }
+          : {
+              width: "90%",
+              maxWidth: 1040,
+              boxSizing: "border-box",
+              margin: "0.75in auto 1in auto",
+              backgroundColor: theme.colors.surface,
+              paddingTop: theme.spacing.xxl,
+              paddingLeft: theme.spacing.xxl,
+              paddingRight: theme.spacing.xxl,
+              paddingBottom,
+            }
+      }
     >
       {children}
     </div>

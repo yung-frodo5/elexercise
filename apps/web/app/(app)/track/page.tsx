@@ -120,7 +120,7 @@ export default function TrackPage() {
   const inProgressSession = currentWorkout?.sessions.find((s) => s.status === "in_progress");
 
   return (
-    <main style={{ padding: theme.spacing.xl, maxWidth: 480 }}>
+    <main style={{ padding: theme.spacing.xl, maxWidth: 480, margin: "0 auto" }}>
       <h1>Track</h1>
 
       {error && <p style={{ color: theme.colors.error }}>{error}</p>}

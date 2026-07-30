@@ -18,7 +18,7 @@ const cell = {
 
 export default function ResourcesPage() {
   return (
-    <main style={{ padding: theme.spacing.xl, maxWidth: 640 }}>
+    <main style={{ padding: theme.spacing.xl, maxWidth: 640, margin: "0 auto" }}>
       <h1>Resources</h1>
       <p style={{ color: theme.colors.textMuted }}>
         Tools and references for putting elexercise&rsquo;s ideas into practice.
