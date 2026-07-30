@@ -5,9 +5,11 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import {
   activityColorForSport,
   formatDuration,
+  formatDurationHms,
   formatEnergy,
   formatPowerW,
   formatWorkoutDate,
+  sessionDurationS,
   workoutAvgPowerW,
   workoutDurationS,
   workoutEnergyJ,
@@ -33,6 +35,68 @@ function rowPadX(width: number): number {
   if (width < 400) return theme.spacing.lg;
   if (width < 768) return theme.spacing.xl;
   return theme.spacing.xxl;
+}
+
+function ActivitySubRow({
+  session,
+  color,
+  selected,
+  onToggle,
+}: {
+  session: Session;
+  color: string;
+  selected: boolean;
+  onToggle: () => void;
+}) {
+  const label = session.activityType || "Activity";
+  const energy =
+    session.totalEnergyJoules !== undefined ? formatEnergy(session.totalEnergyJoules) : "—";
+
+  return (
+    <TouchableOpacity
+      onPress={onToggle}
+      activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      accessibilityLabel={
+        selected ? `Hide ${label} on chart` : `Show ${label} on chart`
+      }
+      style={[styles.subRow, { opacity: selected ? 1 : 0.45 }]}
+    >
+      <View style={styles.subHead}>
+        <View style={[styles.toggle, { backgroundColor: selected ? color : "transparent", borderColor: color }]} />
+        <Text style={styles.subLabel} numberOfLines={1}>
+          {label}
+        </Text>
+      </View>
+      <View style={styles.metrics}>
+        <View style={styles.metricCell}>
+          <Text style={styles.metricLabel}>Time</Text>
+          <Text style={styles.subValue} numberOfLines={1}>
+            {formatDurationHms(sessionDurationS(session))}
+          </Text>
+        </View>
+        <View style={styles.metricCell}>
+          <Text style={styles.metricLabel}>Energy</Text>
+          <Text style={styles.subValue} numberOfLines={1}>
+            {energy}
+          </Text>
+        </View>
+        <View style={styles.metricCell}>
+          <Text style={styles.metricLabel}>Avg power</Text>
+          <Text style={styles.subValue} numberOfLines={1}>
+            {formatPowerW(session.avgPowerW)}
+          </Text>
+        </View>
+        <View style={styles.metricCell}>
+          <Text style={styles.metricLabel}>Peak power</Text>
+          <Text style={styles.subValue} numberOfLines={1}>
+            {formatPowerW(session.peakPowerW)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 export function WorkoutHistoryRow({
@@ -79,6 +143,15 @@ export function WorkoutHistoryRow({
     setSelectedIds(new Set(workout.sessions.map((s) => s.id)));
   }, [workout.id, sessionKey]);
 
+  function toggleActivity(sessionId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(sessionId)) next.delete(sessionId);
+      else next.add(sessionId);
+      return next;
+    });
+  }
+
   return (
     <View style={styles.card}>
       <TouchableOpacity
@@ -115,41 +188,15 @@ export function WorkoutHistoryRow({
 
       {open && (
         <View style={[styles.expand, { paddingHorizontal: padX }]}>
-          {workout.sessions.length > 0 && (
-            <View style={styles.activityRow}>
-              {workout.sessions.map((session: Session) => {
-                const color = colorBySessionId[session.id] ?? theme.colors.secondaryGreen;
-                const on = selectedIds.has(session.id);
-                const label = session.activityType || "Activity";
-                return (
-                  <TouchableOpacity
-                    key={session.id}
-                    onPress={() =>
-                      setSelectedIds((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(session.id)) next.delete(session.id);
-                        else next.add(session.id);
-                        return next;
-                      })
-                    }
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: on }}
-                    accessibilityLabel={on ? `Hide ${label} on chart` : `Show ${label} on chart`}
-                    hitSlop={4}
-                    style={[styles.activityChip, { opacity: on ? 1 : 0.45 }]}
-                  >
-                    <View
-                      style={[
-                        styles.toggle,
-                        { backgroundColor: on ? color : "transparent", borderColor: color },
-                      ]}
-                    />
-                    <Text style={styles.activityChipLabel}>{label}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )}
+          {workout.sessions.map((session: Session) => (
+            <ActivitySubRow
+              key={session.id}
+              session={session}
+              color={colorBySessionId[session.id] ?? theme.colors.secondaryGreen}
+              selected={selectedIds.has(session.id)}
+              onToggle={() => toggleActivity(session.id)}
+            />
+          ))}
           {powerError ? (
             <Text style={styles.chartMsg}>Couldn't load power: {powerError}</Text>
           ) : powerLoading ? (
@@ -173,7 +220,7 @@ const styles = StyleSheet.create({
   item: {
     width: "100%",
     paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.lg,
+    paddingBottom: theme.spacing.md,
     gap: theme.spacing.sm,
   },
   title: {
@@ -221,21 +268,31 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.lg,
     gap: theme.spacing.sm,
   },
-  activityRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: theme.spacing.md,
-    paddingBottom: theme.spacing.xs,
+  subRow: {
+    paddingVertical: theme.spacing.sm,
+    paddingLeft: theme.spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: withAlpha(INK, 0.12),
+    gap: theme.spacing.xs,
+    backgroundColor: withAlpha(INK, 0.03),
+    borderRadius: theme.radii.sm,
   },
-  activityChip: {
+  subHead: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: theme.spacing.sm,
   },
-  activityChipLabel: {
+  subLabel: {
+    flex: 1,
     fontSize: theme.typography.size.sm,
     fontWeight: theme.typography.weight.medium,
     color: INK,
+  },
+  subValue: {
+    fontSize: theme.typography.size.sm,
+    fontWeight: theme.typography.weight.semibold,
+    color: INK,
+    fontVariant: ["tabular-nums"],
   },
   toggle: {
     width: 12,
