@@ -17,10 +17,10 @@ export function SoftPanel({
     <div
       className={className}
       style={{
-        backgroundColor: theme.colors.surface,
+        backgroundColor: "#FFFFFF",
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
         borderRadius: theme.radii.lg,
-        boxShadow: `0 4px 16px ${withAlpha(theme.colors.textPrimary, 0.06)}`,
+        boxShadow: `0 4px 16px ${withAlpha(theme.colors.navy, 0.06)}`,
         ...style,
       }}
     >

@@ -10,16 +10,16 @@ import { AvatarCircle } from "../../../components/profile/AvatarCircle";
 const headerCell: CSSProperties = {
   textAlign: "left",
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-  borderBottom: `1px solid ${theme.colors.border}`,
-  color: theme.colors.textMuted,
+  borderBottom: `1px solid #D6E9FF`,
+  color: theme.colors.navy,
   fontSize: theme.typography.size.xs,
   textTransform: "uppercase",
 };
 
 const cell: CSSProperties = {
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-  borderBottom: `1px solid ${theme.colors.border}`,
-  color: theme.colors.textPrimary,
+  borderBottom: `1px solid #D6E9FF`,
+  color: theme.colors.navy,
 };
 
 // Standing in for real friends until there's actual social data to show --
@@ -83,17 +83,17 @@ export default function LeaderboardPage() {
 
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 640, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-      <h1 style={{ color: theme.colors.textPrimary }}>Leaderboard</h1>
+      <h1 style={{ color: theme.colors.navy }}>Leaderboard</h1>
 
       {error && <p style={{ color: theme.colors.error }}>{error}</p>}
 
       {loading ? (
-        <p style={{ marginTop: theme.spacing.xl, color: theme.colors.textMuted }}>Loading…</p>
+        <p style={{ marginTop: theme.spacing.xl, color: theme.colors.navy }}>Loading…</p>
       ) : (
         <div style={{ overflowX: "auto", marginTop: theme.spacing.xl }}>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
           <thead>
-            <tr>
+            <tr style={{ backgroundColor: "#D6E9FF" }}>
               <th style={headerCell}>#</th>
               <th style={headerCell}></th>
               <th style={headerCell}>Name</th>
@@ -102,28 +102,32 @@ export default function LeaderboardPage() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => (
-              <tr key={row.id} style={row.isMe ? { backgroundColor: theme.colors.sageAccent } : undefined}>
-                <td style={cell}>
+            {rows.map((row, index) => {
+              const rowColor = row.isMe ? { color: theme.colors.navy } : undefined;
+              return (
+              <tr key={row.id} style={row.isMe ? { backgroundColor: "#FFFFFF" } : undefined}>
+                <td style={{ ...cell, ...rowColor }}>
                   {index + 1}
                   {index === 0 ? " 👑" : ""}
                 </td>
-                <td style={cell}>
+                <td style={{ ...cell, ...rowColor }}>
                   <AvatarCircle src={row.avatarUrl ?? ""} size={28} />
                 </td>
                 <td
                   style={{
                     ...cell,
+                    ...rowColor,
                     fontWeight: row.isMe ? theme.typography.weight.bold : theme.typography.weight.regular,
                   }}
                 >
                   {row.displayName}
                   {row.isMe ? " (you)" : ""}
                 </td>
-                <td style={{ ...cell, textAlign: "right" }}>{row.level}</td>
-                <td style={{ ...cell, textAlign: "right" }}>{row.elexir} Wh</td>
+                <td style={{ ...cell, ...rowColor, textAlign: "right" }}>{row.level}</td>
+                <td style={{ ...cell, ...rowColor, textAlign: "right" }}>{row.elexir} Wh</td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
         </div>

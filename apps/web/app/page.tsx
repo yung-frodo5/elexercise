@@ -3,10 +3,6 @@
 import { theme } from "@exercise-tracker/design-tokens";
 import { landingArticle } from "@exercise-tracker/content";
 import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
-import { FramedImage } from "../components/content/FramedImage";
-// Web-only image — not part of the shared `packages/content` article data,
-// since it isn't confirmed for mobile yet.
-import articleDiagram from "../assets/images/what-is-elexercise.svg";
 
 export default function LandingPage() {
   // hero used to be an image (landing-hero.png) rendered via the shared
@@ -40,6 +36,22 @@ export default function LandingPage() {
           visibility: visible;
           pointer-events: auto;
         }
+        /* ArticleHeader/ArticleBody default to navy text (correct on the
+           white About page, their other use site) -- override here per
+           design feedback: the title (h2, the only one in this subtree)
+           green, everything else black. The byline ("By: ...") is hidden
+           entirely -- ">" targets it specifically since it's a direct
+           child of the popup, unlike ArticleBody's paragraphs which are
+           nested one level deeper inside ArticleBody's own wrapper div. */
+        .definition-popup h2 {
+          color: #228B22 !important;
+        }
+        .definition-popup > p {
+          display: none;
+        }
+        .definition-popup p {
+          color: #000000 !important;
+        }
         /* The headword's 60px nowrap text is wider than any phone viewport
            -- without this it forces the whole page to scroll horizontally.
            !important is needed to beat the matching inline styles. */
@@ -54,7 +66,11 @@ export default function LandingPage() {
       <section
         style={{
           paddingTop: theme.spacing.xxl,
-          paddingBottom: theme.spacing.xxl,
+          // Generous bottom padding so the page has real scroll room below
+          // the trigger -- the popup can be tall (up to 80vh) and is
+          // absolutely positioned, so without this there isn't guaranteed
+          // room to scroll down far enough to read all the way to its end.
+          paddingBottom: "80vh",
           paddingLeft: theme.spacing.xxl,
           paddingRight: theme.spacing.xxl,
           display: "flex",
@@ -65,8 +81,7 @@ export default function LandingPage() {
           <div
             className="definition-panel"
             style={{
-              backgroundColor: theme.colors.surface,
-              color: theme.colors.textPrimary,
+              color: "#000000",
               padding: theme.spacing.xl,
               borderRadius: theme.radii.lg,
               fontFamily: "Georgia, 'Times New Roman', serif",
@@ -97,10 +112,11 @@ export default function LandingPage() {
             className="definition-popup"
             style={{
               width: "min(90vw, 840px)",
-              maxHeight: "70vh",
+              maxHeight: "80vh",
               overflowY: "auto",
               marginTop: theme.spacing.sm,
-              backgroundColor: theme.colors.border,
+              backgroundColor: "#D6E9FF",
+              color: "#000000",
               borderRadius: theme.radii.lg,
               padding: theme.spacing.xxl,
               boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
@@ -108,9 +124,6 @@ export default function LandingPage() {
           >
             <ArticleHeader article={landingArticle} />
             <ArticleBody article={{ ...landingArticle, body: rest }} />
-            <div style={{ marginTop: theme.spacing.xl }}>
-              <FramedImage image={articleDiagram} alt="TODO: describe this diagram" maxWidth={480} />
-            </div>
           </div>
         </div>
       </section>

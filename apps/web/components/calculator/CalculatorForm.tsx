@@ -11,7 +11,7 @@ const labelStyle: CSSProperties = {
   flexDirection: "column",
   gap: theme.spacing.xs,
   fontSize: theme.typography.size.sm,
-  color: theme.colors.textPrimary,
+  color: theme.colors.navy,
 };
 
 const inputStyle: CSSProperties = {
@@ -27,7 +27,7 @@ function FieldNote({ children }: { children: ReactNode }) {
     <p
       style={{
         fontSize: theme.typography.size.xs,
-        color: theme.colors.textMuted,
+        color: theme.colors.navy,
         margin: 0,
         // Grows faster than the field next to it, so extra horizontal space
         // goes to the descriptive text rather than the (fixed-content) input.
@@ -189,7 +189,7 @@ export function CalculatorForm({
                 Grid carbon intensity varies by time of day, season, regional grid makeup, and more. For reference (
                 <ExternalLink
                   href="https://www.epa.gov/egrid/summary-data"
-                  style={{ color: theme.colors.textMuted }}
+                  style={{ color: theme.colors.navy }}
                 >
                   eGRID
                 </ExternalLink>

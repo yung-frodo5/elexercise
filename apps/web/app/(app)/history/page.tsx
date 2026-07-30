@@ -26,7 +26,7 @@ const mainStyle: CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
   fontFamily: theme.typography.fontFamily.web,
-  color: theme.colors.textPrimary,
+  color: theme.colors.navy,
 };
 
 export default function HistoryPage() {
@@ -82,8 +82,8 @@ export default function HistoryPage() {
         >
           Workout Log
         </h1>
-        <p style={{ marginTop: theme.spacing.md, color: theme.colors.textMuted }}>Loading your workouts…</p>
-        <p style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.sm }}>
+        <p style={{ marginTop: theme.spacing.md, color: theme.colors.navy }}>Loading your workouts…</p>
+        <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
           First load can take up to 30 seconds if the API has been idle.
         </p>
       </main>
@@ -99,7 +99,7 @@ export default function HistoryPage() {
             fontSize: theme.typography.size.xl,
             fontWeight: theme.typography.weight.bold,
             letterSpacing: "-0.02em",
-            color: theme.colors.textPrimary,
+            color: theme.colors.navy,
           }}
         >
           Workout Log
@@ -108,7 +108,7 @@ export default function HistoryPage() {
           style={{
             margin: 0,
             marginTop: theme.spacing.xs,
-            color: theme.colors.textMuted,
+            color: theme.colors.navy,
             fontSize: theme.typography.size.sm,
             lineHeight: 1.45,
             maxWidth: 420,
@@ -141,7 +141,7 @@ export default function HistoryPage() {
               style={{
                 margin: 0,
                 marginTop: theme.spacing.xs,
-                color: theme.colors.textMuted,
+                color: theme.colors.navy,
                 fontSize: theme.typography.size.sm,
                 lineHeight: 1.45,
               }}
@@ -172,7 +172,7 @@ export default function HistoryPage() {
           <p
             style={{
               marginTop: theme.spacing.lg,
-              color: theme.colors.textMuted,
+              color: theme.colors.navy,
               fontSize: theme.typography.size.sm,
             }}
           >
@@ -216,7 +216,7 @@ export default function HistoryPage() {
               Share
             </a>
             {shareCopied && (
-              <span style={{ marginLeft: theme.spacing.xs, color: theme.colors.textMuted }}>
+              <span style={{ marginLeft: theme.spacing.xs, color: theme.colors.navy }}>
                 Copied to clipboard!
               </span>
             )}

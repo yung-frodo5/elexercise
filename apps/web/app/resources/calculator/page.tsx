@@ -28,7 +28,7 @@ export default function CalculatorPage() {
       `}</style>
       <div
         className="intro-lines"
-        style={{ columnGap: theme.spacing.xs, rowGap: theme.spacing.xs, color: theme.colors.textMuted }}
+        style={{ columnGap: theme.spacing.xs, rowGap: theme.spacing.xs, color: theme.colors.navy }}
       >
         {INTRO_LINES.map(({ label, quote }) => (
           <Fragment key={label}>

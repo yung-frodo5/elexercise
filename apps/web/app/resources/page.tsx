@@ -12,7 +12,7 @@ const RESOURCES: { href: string; title: string; description: string }[] = [
 const cell = {
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
   textAlign: "left" as const,
-  borderBottom: `1px solid ${theme.colors.border}`,
+  borderBottom: `1px solid #D6E9FF`,
   verticalAlign: "top" as const,
 };
 
@@ -20,13 +20,13 @@ export default function ResourcesPage() {
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 640, margin: "0 auto" }}>
       <h1>Resources</h1>
-      <p style={{ color: theme.colors.textMuted }}>
+      <p style={{ color: theme.colors.navy }}>
         Tools and references for putting elexercise&rsquo;s ideas into practice.
       </p>
 
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: theme.spacing.lg }}>
         <thead>
-          <tr>
+          <tr style={{ backgroundColor: "#D6E9FF" }}>
             <th style={cell}>Tool / resource</th>
             <th style={cell}>What it&rsquo;s for</th>
           </tr>
@@ -35,11 +35,11 @@ export default function ResourcesPage() {
           {RESOURCES.map((resource) => (
             <tr key={resource.href}>
               <td style={cell}>
-                <Link href={resource.href} style={{ color: theme.colors.textPrimary }}>
+                <Link href={resource.href} style={{ color: theme.colors.navy }}>
                   {resource.title}
                 </Link>
               </td>
-              <td style={{ ...cell, color: theme.colors.textMuted }}>{resource.description}</td>
+              <td style={{ ...cell, color: theme.colors.navy }}>{resource.description}</td>
             </tr>
           ))}
         </tbody>

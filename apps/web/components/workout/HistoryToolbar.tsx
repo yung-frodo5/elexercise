@@ -38,7 +38,7 @@ export function HistoryToolbar({
           margin: 0,
           fontSize: theme.typography.size.sm,
           fontWeight: theme.typography.weight.semibold,
-          color: theme.colors.textPrimary,
+          color: theme.colors.navy,
           whiteSpace: "nowrap",
           fontFamily: theme.typography.fontFamily.mono,
           letterSpacing: "-0.02em",

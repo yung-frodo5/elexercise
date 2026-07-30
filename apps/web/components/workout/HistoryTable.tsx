@@ -20,7 +20,7 @@ const COLUMNS: { label: string; key: HistorySortKey; align?: "left" | "right" }[
 const COL_COUNT = COLUMNS.length;
 
 /** Opaque sticky header so scrolling rows don't show through. */
-const HEADER_BG = theme.colors.border;
+const HEADER_BG = "#002FA7";
 
 export function HistoryTable({
   rows,
@@ -64,8 +64,8 @@ export function HistoryTable({
         overflowY: "auto",
         borderRadius: theme.radii.xl,
         border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-        backgroundColor: theme.colors.surface,
-        boxShadow: `0 8px 28px ${withAlpha(theme.colors.textPrimary, 0.05)}`,
+        backgroundColor: "#FFFFFF",
+        boxShadow: `0 8px 28px ${withAlpha(theme.colors.navy, 0.05)}`,
       }}
     >
       <table style={{ width: "100%", minWidth: 640, borderCollapse: "separate", borderSpacing: 0 }}>
@@ -80,7 +80,7 @@ export function HistoryTable({
                   style={{
                     ...headerCell,
                     textAlign: align ?? "left",
-                    color: theme.colors.textPrimary,
+                    color: "#FFFFFF",
                   }}
                   onClick={() => onSort(key)}
                 >

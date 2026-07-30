@@ -27,7 +27,7 @@ export function LevelProgress({
             width: "100%",
             height: 6,
             borderRadius: theme.radii.pill,
-            backgroundColor: theme.colors.border,
+            backgroundColor: theme.colors.error,
             overflow: "hidden",
           }}
         >
@@ -82,7 +82,7 @@ export function LevelProgress({
         <span style={{ fontSize: theme.typography.size.lg, fontWeight: theme.typography.weight.semibold }}>
           Level {level}
         </span>
-        <span style={{ fontSize: theme.typography.size.xs, color: theme.colors.textMuted }}>
+        <span style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
           {elexir}{" "}
           <span className="elexir-tooltip-wrap" tabIndex={0}>
             <span style={{ textDecoration: "underline dashed", cursor: "help" }}>elexir</span>
@@ -93,7 +93,7 @@ export function LevelProgress({
                 width: 220,
                 marginBottom: theme.spacing.xs,
                 backgroundColor: theme.colors.border,
-                color: theme.colors.textPrimary,
+                color: theme.colors.navy,
                 fontSize: theme.typography.size.xs,
                 lineHeight: 1.4,
                 padding: theme.spacing.sm,
@@ -114,7 +114,7 @@ export function LevelProgress({
           width: "100%",
           height: 10,
           borderRadius: theme.radii.pill,
-          backgroundColor: theme.colors.border,
+          backgroundColor: theme.colors.error,
           overflow: "hidden",
         }}
       >
@@ -129,7 +129,7 @@ export function LevelProgress({
         />
       </div>
 
-      <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.xs, color: theme.colors.textMuted }}>
+      <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
         {progress.xpRemaining} elexir to level {level + 1}
       </div>
     </div>

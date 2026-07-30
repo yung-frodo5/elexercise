@@ -5,7 +5,7 @@ import { theme } from "@exercise-tracker/design-tokens";
 /** Simple magnifying-glass silhouette (not emoji). */
 export function SearchIcon({
   size = 16,
-  color = theme.colors.textMuted,
+  color = theme.colors.navy,
 }: {
   size?: number;
   color?: string;

@@ -27,16 +27,16 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
   return (
     <div
       style={{
-        background: theme.colors.background,
+        background: "#FFFFFF",
         border: `1px solid ${theme.colors.border}`,
         borderRadius: 4,
         padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       }}
     >
-      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.textPrimary }}>
+      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.navy }}>
         {Math.round(point.powerW)} W
       </div>
-      <div style={{ fontSize: theme.typography.size.xs, color: theme.colors.textMuted }}>
+      <div style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
         {formatDuration(point.tMs / 1000)}
       </div>
     </div>
@@ -54,7 +54,7 @@ export function PowerChart({ samples, peakPowerW }: { samples: PowerSamplePoint[
         <XAxis
           dataKey="tMs"
           tickFormatter={(tMs: number) => formatDuration(tMs / 1000)}
-          stroke={theme.colors.textMuted}
+          stroke={theme.colors.navy}
           tickLine={false}
           axisLine={false}
           fontSize={theme.typography.size.xs}
@@ -63,7 +63,7 @@ export function PowerChart({ samples, peakPowerW }: { samples: PowerSamplePoint[
         <YAxis
           domain={[0, yMax]}
           tickFormatter={(value: number) => `${value}W`}
-          stroke={theme.colors.textMuted}
+          stroke={theme.colors.navy}
           tickLine={false}
           axisLine={false}
           fontSize={theme.typography.size.xs}
@@ -79,7 +79,7 @@ export function PowerChart({ samples, peakPowerW }: { samples: PowerSamplePoint[
           fillOpacity={0.1}
           isAnimationActive={false}
           dot={false}
-          activeDot={{ r: 4, fill: theme.colors.secondaryGreen, stroke: theme.colors.background, strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: theme.colors.secondaryGreen, stroke: "#FFFFFF", strokeWidth: 2 }}
         />
       </AreaChart>
     </ResponsiveContainer>

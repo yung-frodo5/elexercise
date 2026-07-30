@@ -16,6 +16,10 @@ function ensureKeyframes() {
       from { opacity: 0; transform: translateY(-6px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    @keyframes elexNavDrawerIn {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
   `;
   document.head.appendChild(style);
 }
@@ -46,7 +50,7 @@ export const navSectionLabelStyle: CSSProperties = {
   padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
   fontSize: theme.typography.size.md,
   fontWeight: theme.typography.weight.bold,
-  color: theme.colors.sageAccent,
+  color: "#228B22",
   letterSpacing: "0.04em",
   textTransform: "uppercase",
 };
@@ -122,26 +126,46 @@ export function NavDropdownPanel({
   if (!open) return null;
   ensureKeyframes();
 
+  // The left (main nav) menu is a full-height drawer fixed to the left edge
+  // of the window, not a small anchored dropdown like the right (profile)
+  // menu -- per design feedback, distinct enough from the right menu's
+  // layout that it needs its own branch rather than a shared style object.
+  const style: CSSProperties =
+    align === "left"
+      ? {
+          position: "fixed",
+          top: 0,
+          left: 0,
+          bottom: 0,
+          width: 400,
+          maxWidth: "85vw",
+          padding: theme.spacing.sm,
+          overflowY: "auto",
+          backgroundColor: "#002FA7",
+          borderRight: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
+          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navy, 0.1)}`,
+          zIndex: 150,
+          animation: "elexNavDrawerIn 180ms ease-out",
+        }
+      : {
+          position: "absolute",
+          top: "100%",
+          right: 0,
+          marginTop: theme.spacing.sm,
+          minWidth: 220,
+          padding: theme.spacing.sm,
+          overflow: "hidden",
+          backgroundColor: "#002FA7",
+          border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
+          borderRadius: theme.radii.pill,
+          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navy, 0.1)}`,
+          zIndex: 2,
+          animation: "elexNavMenuIn 160ms ease-out",
+          transformOrigin: "top right",
+        };
+
   return (
-    <div
-      id={id}
-      style={{
-        position: "absolute",
-        top: "100%",
-        ...(align === "left" ? { left: 0 } : { right: 0 }),
-        marginTop: theme.spacing.sm,
-        minWidth: 220,
-        padding: theme.spacing.sm,
-        overflow: "hidden",
-        backgroundColor: theme.colors.border,
-        border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-        borderRadius: theme.radii.lg,
-        boxShadow: `0 10px 28px ${withAlpha(theme.colors.textPrimary, 0.1)}`,
-        zIndex: 2,
-        animation: "elexNavMenuIn 160ms ease-out",
-        transformOrigin: align === "left" ? "top left" : "top right",
-      }}
-    >
+    <div id={id} style={style}>
       {children}
     </div>
   );
