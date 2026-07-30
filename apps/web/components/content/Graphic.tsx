@@ -1,5 +1,4 @@
 import type { Graphic as GraphicBlock } from "@exercise-tracker/content";
-import { theme } from "@exercise-tracker/design-tokens";
 import { graphicAssets, graphicCrops } from "../../lib/content/graphicAssets";
 import { FramedImage } from "./FramedImage";
 
@@ -10,7 +9,6 @@ export function Graphic({ graphic, maxWidth }: { graphic: GraphicBlock; maxWidth
     <div
       style={{
         width: "100%",
-        backgroundColor: theme.colors.background,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

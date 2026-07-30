@@ -3,6 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
 import { SupabaseWorkoutRepository } from "./SupabaseWorkoutRepository.js";
 import { MachineNotFoundError, WorkoutNotFoundError, SessionNotFoundError } from "./WorkoutRepository.js";
+import { levelForXp } from "@exercise-tracker/leveling";
 
 // Integration tests against a real local Supabase Postgres instance — hit
 // the real backend, don't mock storage. Requires `supabase start` to be
@@ -240,6 +241,45 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(firstSession.peakPowerW).toBe(250);
     expect(firstSession.totalEnergyJoules).toBeCloseTo(200, 5);
     expect(firstSession.durationS).toBeGreaterThanOrEqual(0);
+  });
+
+  it("awards elexir for Wh generated through a machine session, and levels up accordingly", async () => {
+    const { session } = await repo.startMachineSession(userId, scanToken);
+    // 1 hour @ 200W = 200 Wh (trapezoidal over a single interval, both
+    // endpoints at 200W simplifies to power * elapsed time).
+    await repo.insertPowerSample(session.id, 0, 200);
+    await repo.insertPowerSample(session.id, 3_600_000, 200);
+
+    await repo.endSession(userId, session.id);
+
+    const { data: profile } = await admin.from("profiles").select("elexir, level").eq("id", userId).single();
+    expect(profile!.elexir).toBe(200);
+    expect(profile!.level).toBe(levelForXp(200));
+  });
+
+  it("does not award elexir when ending a manual session, even with power samples recorded", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await repo.insertPowerSample(session.id, 0, 200);
+    await repo.insertPowerSample(session.id, 3_600_000, 200);
+
+    await repo.endSession(userId, session.id);
+
+    const { data: profile } = await admin.from("profiles").select("elexir, level").eq("id", userId).single();
+    expect(profile!.elexir).toBe(0);
+    expect(profile!.level).toBe(1);
+  });
+
+  it("awards elexir to the original owner when their machine session is closed by another user scanning in", async () => {
+    const userA = await repo.startMachineSession(userId, scanToken);
+    await repo.insertPowerSample(userA.session.id, 0, 200);
+    await repo.insertPowerSample(userA.session.id, 3_600_000, 200);
+
+    await repo.startMachineSession(otherUserId, scanToken); // closes userA's session on the machine
+
+    const { data: profileA } = await admin.from("profiles").select("elexir").eq("id", userId).single();
+    const { data: profileB } = await admin.from("profiles").select("elexir").eq("id", otherUserId).single();
+    expect(profileA!.elexir).toBe(200);
+    expect(profileB!.elexir).toBe(0);
   });
 
   it("ends a workout", async () => {

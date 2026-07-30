@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../../lib/supabase";
 import { useSupabaseSession } from "../../../lib/useSession";
 import { useProfile } from "../../../lib/useProfile";
+import { LevelProgress } from "../../../components/profile/LevelProgress";
+import { AvatarCircle } from "../../../components/profile/AvatarCircle";
+import { UN_COUNTRIES } from "../../../lib/unCountries";
 
 export default function ProfilePage() {
   const { session } = useSupabaseSession();
-  const { displayName, setDisplayName } = useProfile(session?.user.id);
+  const { displayName, level, elexir, avatarUrl, homeRegion, setDisplayName, setAvatarUrl, setHomeRegion } =
+    useProfile(session?.user.id);
 
   const [displayNameInput, setDisplayNameInput] = useState("");
+  const [avatarUrlInput, setAvatarUrlInput] = useState("");
+  const [homeRegionInput, setHomeRegionInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
@@ -18,21 +24,43 @@ export default function ProfilePage() {
     if (displayName !== null) setDisplayNameInput(displayName);
   }, [displayName]);
 
+  useEffect(() => {
+    if (avatarUrl !== null) setAvatarUrlInput(avatarUrl);
+  }, [avatarUrl]);
+
+  useEffect(() => {
+    if (homeRegion !== null) setHomeRegionInput(homeRegion);
+  }, [homeRegion]);
+
+  function handleAvatarFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setAvatarUrlInput(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!session) return;
     setStatus(null);
     setSaving(true);
-    const trimmed = displayNameInput.trim();
+    const trimmedName = displayNameInput.trim();
+    const trimmedAvatarUrl = avatarUrlInput.trim();
+    const trimmedHomeRegion = homeRegionInput.trim();
     // RLS's profiles_update_own policy ensures a user can only update their own row.
     const { error } = await supabase
       .from("profiles")
-      .update({ display_name: trimmed })
+      .update({ display_name: trimmedName, avatar_url: trimmedAvatarUrl || null, home_region: trimmedHomeRegion })
       .eq("id", session.user.id);
     if (error) {
       setStatus(`Error: ${error.message}`);
     } else {
-      setDisplayName(trimmed);
+      setDisplayName(trimmedName);
+      setAvatarUrl(trimmedAvatarUrl);
+      setHomeRegion(trimmedHomeRegion);
       setStatus("Saved");
     }
     setSaving(false);
@@ -40,20 +68,53 @@ export default function ProfilePage() {
 
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 360 }}>
-      <h1 style={{ color: theme.colors.textPrimary }}>Profile Details</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
+        <h1 style={{ margin: 0, color: theme.colors.textPrimary }}>{displayNameInput || "Profile Details"}</h1>
+        <AvatarCircle src={avatarUrlInput} size={40} />
+      </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: theme.spacing.sm }}>
+      {level !== null && elexir !== null && (
+        <div style={{ marginTop: theme.spacing.xl }}>
+          <LevelProgress level={level} elexir={elexir} />
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit}
+        style={{ marginTop: theme.spacing.xl, display: "flex", flexDirection: "column", gap: theme.spacing.sm }}
+      >
         <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Display name</label>
-        <input value={displayNameInput} onChange={(e) => setDisplayNameInput(e.target.value)} />
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save"}
-        </button>
+        <div style={{ display: "flex", gap: theme.spacing.sm }}>
+          <input
+            style={{ flex: 1 }}
+            value={displayNameInput}
+            onChange={(e) => setDisplayNameInput(e.target.value)}
+          />
+          <button type="submit" disabled={saving}>
+            {saving ? "Saving…" : "Save"}
+          </button>
+        </div>
+
+        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Avatar</label>
+        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
+          <AvatarCircle src={avatarUrlInput} size={40} />
+          <input type="file" accept="image/*" onChange={handleAvatarFileChange} />
+        </div>
+
+        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Home region</label>
+        <select value={homeRegionInput} onChange={(e) => setHomeRegionInput(e.target.value)}>
+          <option value="" disabled>
+            Select a country
+          </option>
+          {UN_COUNTRIES.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+
         {status && <p style={{ color: theme.colors.textMuted }}>{status}</p>}
       </form>
-
-      <p style={{ marginTop: theme.spacing.xl, color: theme.colors.textMuted }}>
-        TODO: show additional profile fields (home region, avatar)
-      </p>
     </main>
   );
 }

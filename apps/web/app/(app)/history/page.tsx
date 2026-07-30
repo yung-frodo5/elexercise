@@ -8,10 +8,12 @@ import {
   nextSortState,
   toggleListItem,
   uniqueWorkoutActivityTypes,
+  workoutEnergyJ,
   type HistorySortDir,
   type HistorySortKey,
 } from "../../../lib/historySessions";
 import { useHistoryWorkouts } from "../../../lib/useHistoryWorkouts";
+import { formatEnergy, formatEnergyComparison } from "../../../lib/format";
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
@@ -42,6 +44,10 @@ export default function HistoryPage() {
   const filtered = useMemo(
     () => filterAndSortHistoryWorkouts(workouts, { sports, keywords, sortKey, sortDir }),
     [workouts, sports, keywords, sortKey, sortDir]
+  );
+  const totalEnergyJ = useMemo(
+    () => filtered.reduce((sum, workout) => sum + (workoutEnergyJ(workout) ?? 0), 0),
+    [filtered]
   );
 
   async function toggleExpand(workoutId: string) {
@@ -150,6 +156,22 @@ export default function HistoryPage() {
             onToggleExpand={(workoutId) => void toggleExpand(workoutId)}
             onCloseExpand={() => setExpandedId(null)}
           />
+        )}
+
+        {totalEnergyJ > 0 && (
+          <p
+            style={{
+              marginTop: theme.spacing.lg,
+              color: theme.colors.textMuted,
+              fontSize: theme.typography.size.sm,
+            }}
+          >
+            Total energy generated:{" "}
+            <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
+              {formatEnergy(totalEnergyJ)}
+            </span>{" "}
+            — [{formatEnergyComparison(totalEnergyJ / 3600)}].
+          </p>
         )}
       </section>
     </main>

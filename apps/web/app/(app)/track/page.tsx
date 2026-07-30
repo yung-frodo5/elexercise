@@ -30,8 +30,11 @@ export default function TrackPage() {
     try {
       const current = await getCurrentWorkout(session.access_token);
       setCurrentWorkout(current ? await getWorkout(session.access_token, current.id) : null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load workouts");
+    } catch {
+      // Falls back to the empty "start a workout" state (e.g. a stale/expired
+      // session token failing the call with 401) rather than surfacing an
+      // error, so the page still shows something reviewable.
+      setCurrentWorkout(null);
     } finally {
       // Only matters for the first load — the empty/start-a-workout state
       // is only accurate once we've actually heard back from the API. The

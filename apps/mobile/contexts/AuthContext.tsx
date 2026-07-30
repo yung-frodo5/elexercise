@@ -14,6 +14,8 @@ export interface Profile {
   display_name: string;
   avatar_url: string | null;
   home_region: string;
+  level: number;
+  elexir: number;
   created_at: string;
 }
 

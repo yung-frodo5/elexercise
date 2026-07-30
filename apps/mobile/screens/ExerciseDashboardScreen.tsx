@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weight.medium,
   },
   toggleLabelActive: {
-    color: "#ffffff",
+    color: theme.colors.textPrimary,
   },
 });

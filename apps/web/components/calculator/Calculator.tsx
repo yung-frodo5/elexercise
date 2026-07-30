@@ -18,11 +18,20 @@ export function Calculator() {
   return (
     <div style={{ display: "flex", gap: theme.spacing.xxl, flexWrap: "wrap", width: "100%" }}>
       <div style={{ flex: "1 1 320px", minWidth: 0 }}>
-        <h2 style={{ textAlign: "center", marginTop: 0 }}>Inputs</h2>
+        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Inputs</h2>
         <CalculatorForm inputs={inputs} onChange={patchInputs} />
       </div>
-      <div style={{ flex: "1 1 280px", minWidth: 0 }}>
-        <h2 style={{ textAlign: "center", marginTop: 0 }}>Outputs</h2>
+      <div
+        style={{
+          flex: "1 1 280px",
+          minWidth: 0,
+          backgroundColor: theme.colors.sageAccent,
+          borderRadius: theme.radii.lg,
+          padding: theme.spacing.xl,
+          color: theme.colors.border,
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Outputs</h2>
         <CalculatorResults result={result} />
       </div>
     </div>

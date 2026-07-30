@@ -8,6 +8,8 @@ import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
 import { LoginModal } from "../auth/LoginModal";
+import { LevelProgress } from "../profile/LevelProgress";
+import { AvatarCircle } from "../profile/AvatarCircle";
 import logo from "../../assets/images/logo.png";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
 import {
@@ -22,7 +24,7 @@ const pressedBg = withAlpha(theme.colors.textPrimary, 0.08);
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
-  const { displayName } = useProfile(session?.user.id);
+  const { displayName, level, elexir, avatarUrl } = useProfile(session?.user.id);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -68,7 +70,7 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: theme.colors.bannerBackground,
+        backgroundColor: theme.colors.sageAccent,
       }}
     >
       <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start" }}>
@@ -89,7 +91,7 @@ export function SiteHeader() {
             background: menuOpen ? pressedBg : "transparent",
             border: "none",
             cursor: "pointer",
-            color: theme.colors.textPrimary,
+            color: theme.colors.border,
             fontSize: theme.typography.size.lg,
             transition: "background-color 120ms ease",
           }}
@@ -98,7 +100,11 @@ export function SiteHeader() {
         </button>
 
         <NavDropdownPanel open={menuOpen} align="left" id={navPanelId}>
-          <NavMenuItemLink href="/" onClick={() => setMenuOpen(false)}>
+          <NavMenuItemLink
+            href="/"
+            onClick={() => setMenuOpen(false)}
+            style={{ fontWeight: theme.typography.weight.bold, fontSize: theme.typography.size.lg, color: theme.colors.sageAccent }}
+          >
             Home
           </NavMenuItemLink>
 
@@ -112,16 +118,32 @@ export function SiteHeader() {
               <NavMenuItemLink href="/history" onClick={() => setMenuOpen(false)}>
                 Workout Log
               </NavMenuItemLink>
+              <NavMenuItemLink href="/leaderboard" onClick={() => setMenuOpen(false)}>
+                Leaderboard
+              </NavMenuItemLink>
             </>
           )}
 
           <div style={{ height: theme.spacing.xs }} />
           <p style={navSectionLabelStyle}>Resources</p>
-          <NavMenuItemLink href="/resources" onClick={() => setMenuOpen(false)}>
-            Overview
-          </NavMenuItemLink>
           <NavMenuItemLink href="/resources/calculator" onClick={() => setMenuOpen(false)}>
             Calculator
+          </NavMenuItemLink>
+          <NavMenuItemLink href="/resources" onClick={() => setMenuOpen(false)}>
+            Other Resources
+          </NavMenuItemLink>
+          <NavMenuItemLink
+            href="/resources/about"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              fontWeight: navSectionLabelStyle.fontWeight,
+              fontSize: navSectionLabelStyle.fontSize,
+              color: navSectionLabelStyle.color,
+              letterSpacing: navSectionLabelStyle.letterSpacing,
+              textTransform: navSectionLabelStyle.textTransform,
+            }}
+          >
+            About
           </NavMenuItemLink>
         </NavDropdownPanel>
       </div>
@@ -166,28 +188,37 @@ export function SiteHeader() {
                     background: profileMenuOpen ? pressedBg : "transparent",
                     border: "none",
                     cursor: "pointer",
-                    color: theme.colors.textPrimary,
+                    color: theme.colors.border,
                     fontSize: theme.typography.size.md,
                     transition: "background-color 120ms ease",
                   }}
                 >
-                  <span aria-hidden>{theme.icons.profile}</span>
+                  <AvatarCircle src={avatarUrl ?? ""} size={28} />
                   <span
                     style={{
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
+                      fontWeight: theme.typography.weight.bold,
                     }}
                   >
                     {displayName ?? session.user.email}
                   </span>
                 </button>
 
+                {level !== null && elexir !== null && (
+                  <div style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.border }}>
+                    <LevelProgress level={level} elexir={elexir} compact />
+                  </div>
+                )}
+
                 <NavDropdownPanel open={profileMenuOpen} align="right" id={profilePanelId}>
                   <NavMenuItemLink href="/profile" onClick={() => setProfileMenuOpen(false)}>
                     Profile
                   </NavMenuItemLink>
-                  <NavMenuItemButton onClick={() => void handleSignOut()}>Sign out</NavMenuItemButton>
+                  <NavMenuItemButton onClick={() => void handleSignOut()} style={{ color: theme.colors.error }}>
+                    Sign out
+                  </NavMenuItemButton>
                 </NavDropdownPanel>
               </>
             ) : (

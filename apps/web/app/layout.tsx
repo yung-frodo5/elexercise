@@ -20,9 +20,35 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           color: theme.colors.textPrimary,
         }}
       >
+        {/* Browsers apply their own UA font to form controls regardless of
+            inherited body font-family -- this is the standard fix so inputs,
+            selects, textareas, and buttons match the rest of the page instead
+            of falling back to the system default. Buttons also get a shared
+            background per design feedback. */}
+        <style>{`
+          input, textarea, select, button {
+            font-family: inherit;
+            font-size: inherit;
+          }
+          button {
+            background-color: #F0E9E9;
+          }
+        `}</style>
         <SiteHeader />
         {/* Header/footer are position:fixed (out of flow) so content needs matching padding. */}
-        <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>{children}</div>
+        <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
+          {/* The body background is the page canvas; this is the "foreground"
+              panel framed by it -- top margin per design feedback. */}
+          <div
+            style={{
+              margin: "0.75in 1in 1in 1in",
+              backgroundColor: theme.colors.surface,
+              padding: theme.spacing.xxl,
+            }}
+          >
+            {children}
+          </div>
+        </div>
         <SiteFooter />
       </body>
     </html>

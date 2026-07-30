@@ -10,6 +10,7 @@ import {
 import { theme } from "@exercise-tracker/design-tokens";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
+import { LevelProgress } from "../components/profile/LevelProgress";
 
 export default function ProfileScreen() {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -58,6 +59,10 @@ export default function ProfileScreen() {
       <Text style={styles.label}>Home region</Text>
       <Text>{profile.home_region}</Text>
 
+      <View style={styles.levelSection}>
+        <LevelProgress level={profile.level} elexir={profile.elexir} />
+      </View>
+
       <Text style={styles.label}>Display name</Text>
       <TextInput
         style={styles.input}
@@ -98,6 +103,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: theme.typography.size.xs,
     color: theme.colors.textMuted,
+    marginTop: theme.spacing.md,
+  },
+  levelSection: {
     marginTop: theme.spacing.md,
   },
   input: {

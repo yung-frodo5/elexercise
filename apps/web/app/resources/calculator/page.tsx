@@ -12,9 +12,7 @@ const INTRO_LINES: { label: string; quote: string }[] = [
 export default function CalculatorPage() {
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>
-        <span aria-hidden>{theme.icons.calculator}</span> elexercise calculator
-      </h1>
+      <h1 style={{ textAlign: "center" }}>Calculator</h1>
       {/* Below the breakpoint, the label/quote pairs no longer fit side by
           side without mid-phrase wrapping — collapse to a single column
           (each half on its own centered line) instead. Media queries need a

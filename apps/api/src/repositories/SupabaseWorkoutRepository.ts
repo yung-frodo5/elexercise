@@ -13,6 +13,7 @@ import {
   SessionNotFoundError,
 } from "./WorkoutRepository.js";
 import { computeSessionStats } from "../services/sessionStats.js";
+import { levelForXp } from "@exercise-tracker/leveling";
 
 // Row shapes as they come back from Postgres (snake_case) — mapped to the
 // camelCase shared-types shapes below, same "row mapping" pattern the old
@@ -158,23 +159,48 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     return data as SessionRow;
   }
 
+  // Elexir is earned 1:1 with Wh actually generated through a machine --
+  // custom/manual sessions (logging a run, lifting without a machine) never
+  // generate real power, so they never award anything. Read-modify-write,
+  // not a fully atomic increment: acceptable because the existing
+  // exclusivity invariants (one open session per workout, one active
+  // session per machine) mean two concurrent awards to the *same* user's
+  // row structurally can't happen today.
+  private async awardElexir(userId: string, wh: number): Promise<void> {
+    const earned = Math.round(wh);
+    if (earned <= 0) return;
+
+    const { data, error: fetchError } = await this.client
+      .from("profiles")
+      .select("elexir")
+      .eq("id", userId)
+      .single();
+    if (fetchError) throw fetchError;
+
+    const newElexir = (data as { elexir: number }).elexir + earned;
+    const { error: updateError } = await this.client
+      .from("profiles")
+      .update({ elexir: newElexir, level: levelForXp(newElexir) })
+      .eq("id", userId);
+    if (updateError) throw updateError;
+  }
+
   // Computes and persists one session's completed-state stats: queries its
   // power_samples once, derives avg/peak/energy from them (left unset if
   // there are none), and duration from wall-clock started_at/ended_at
   // (independent of sample coverage, so it's always set). Shared by every
   // path that can flip a session out of in_progress, so none of them leave
-  // stats null just because they close a session as a side effect rather
-  // than through the explicit "Stop" action.
+  // stats null (or skip an elexir award) just because they close a session
+  // as a side effect rather than through the explicit "Stop" action.
   private async computeAndCloseSession(
-    sessionId: string,
-    startedAt: string,
+    session: { id: string; startedAt: string; source: Session["source"]; ownerUserId: string },
     endedAt: string,
     extra: { details?: SessionDetails } = {}
   ): Promise<void> {
     const { data: sampleRows, error: samplesError } = await this.client
       .from("power_samples")
       .select("t_ms, power_w")
-      .eq("session_id", sessionId)
+      .eq("session_id", session.id)
       .order("t_ms");
     if (samplesError) throw samplesError;
 
@@ -183,7 +209,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
       powerW: row.power_w,
     }));
     const stats = computeSessionStats(samples);
-    const durationS = Math.round((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 1000);
+    const durationS = Math.round((new Date(endedAt).getTime() - new Date(session.startedAt).getTime()) / 1000);
 
     const { error } = await this.client
       .from("sessions")
@@ -196,25 +222,39 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
           : {}),
         ...(extra.details ? { details: extra.details } : {}),
       })
-      .eq("id", sessionId);
+      .eq("id", session.id);
     if (error) throw error;
+
+    if (session.source === "machine" && stats) {
+      await this.awardElexir(session.ownerUserId, stats.totalEnergyJoules / 3600);
+    }
   }
 
   // Only one session is ever open at a time. Called before inserting a new
   // one (so starting a session closes whatever was previously open) and
   // when ending a workout (so nothing is left dangling in_progress). Returns
   // the ids of whatever got closed, so callers can react to those specific
-  // sessions no longer being in_progress.
-  private async closeOpenSessions(workoutId: string, endedAt: string): Promise<string[]> {
+  // sessions no longer being in_progress. ownerUserId is the workout's
+  // owner -- every session on it belongs to the same user, so callers that
+  // already know that (all three do) just pass it through instead of this
+  // re-deriving it via a join.
+  private async closeOpenSessions(workoutId: string, endedAt: string, ownerUserId: string): Promise<string[]> {
     const { data, error } = await this.client
       .from("sessions")
-      .select("id, started_at")
+      .select("id, started_at, source")
       .eq("workout_id", workoutId)
       .eq("status", "in_progress");
     if (error) throw error;
 
-    const rows = (data ?? []) as { id: string; started_at: string }[];
-    await Promise.all(rows.map((row) => this.computeAndCloseSession(row.id, row.started_at, endedAt)));
+    const rows = (data ?? []) as { id: string; started_at: string; source: Session["source"] }[];
+    await Promise.all(
+      rows.map((row) =>
+        this.computeAndCloseSession(
+          { id: row.id, startedAt: row.started_at, source: row.source, ownerUserId },
+          endedAt
+        )
+      )
+    );
     return rows.map((row) => row.id);
   }
 
@@ -222,16 +262,34 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
   // just the current one. Physically only one person can be on a machine
   // at a time, so scanning into one someone else is actively on ends
   // their session (but not their workout -- they might resume manually).
+  // Unlike closeOpenSessions, these rows can belong to a DIFFERENT user
+  // than the one calling startMachineSession, so ownership has to come
+  // from a join, not a passed-in id. source is always "machine" here by
+  // construction (filtered by machine_id).
   private async closeActiveSessionsOnMachine(machineId: string, endedAt: string): Promise<string[]> {
     const { data, error } = await this.client
       .from("sessions")
-      .select("id, started_at")
+      .select("id, started_at, workouts!inner(user_id)")
       .eq("machine_id", machineId)
       .eq("status", "in_progress");
     if (error) throw error;
 
-    const rows = (data ?? []) as { id: string; started_at: string }[];
-    await Promise.all(rows.map((row) => this.computeAndCloseSession(row.id, row.started_at, endedAt)));
+    // Without generated DB types, supabase-js's default overload types
+    // every embedded relation as an array regardless of actual FK
+    // cardinality -- verified directly against the running Postgres
+    // instance that PostgREST/supabase-js actually returns `workouts` here
+    // as a single object at runtime (workout_id is many-to-one), so the
+    // array-shaped static type is simply wrong; cast through `unknown` to
+    // match reality instead of what the type checker infers.
+    const rows = (data ?? []) as unknown as { id: string; started_at: string; workouts: { user_id: string } }[];
+    await Promise.all(
+      rows.map((row) =>
+        this.computeAndCloseSession(
+          { id: row.id, startedAt: row.started_at, source: "machine", ownerUserId: row.workouts.user_id },
+          endedAt
+        )
+      )
+    );
     return rows.map((row) => row.id);
   }
 
@@ -244,7 +302,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
 
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
     const endedAt = new Date().toISOString();
-    const closedOwn = await this.closeOpenSessions(workoutRow.id, endedAt);
+    const closedOwn = await this.closeOpenSessions(workoutRow.id, endedAt, userId);
     const closedOnMachine = await this.closeActiveSessionsOnMachine(machine.id, endedAt);
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: machine.id,
@@ -265,7 +323,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     activityType: string
   ): Promise<{ workout: Workout; session: Session; closedSessionIds?: string[] }> {
     const workoutRow = await this.findOrCreateCurrentWorkout(userId);
-    const closedSessionIds = await this.closeOpenSessions(workoutRow.id, new Date().toISOString());
+    const closedSessionIds = await this.closeOpenSessions(workoutRow.id, new Date().toISOString(), userId);
     const sessionRow = await this.insertSession(workoutRow.id, {
       machineId: null,
       source: "manual",
@@ -284,16 +342,19 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     // the parent workout via an inner join before allowing the mutation.
     const { data: owned, error: ownedError } = await this.client
       .from("sessions")
-      .select("id, started_at, workouts!inner(user_id)")
+      .select("id, started_at, source, workouts!inner(user_id)")
       .eq("id", sessionId)
       .eq("workouts.user_id", userId)
       .maybeSingle();
     if (ownedError) throw ownedError;
     if (!owned) throw new SessionNotFoundError(sessionId);
 
-    await this.computeAndCloseSession(sessionId, (owned as { started_at: string }).started_at, new Date().toISOString(), {
-      details,
-    });
+    const ownedRow = owned as { started_at: string; source: Session["source"] };
+    await this.computeAndCloseSession(
+      { id: sessionId, startedAt: ownedRow.started_at, source: ownedRow.source, ownerUserId: userId },
+      new Date().toISOString(),
+      { details }
+    );
 
     const { data, error } = await this.client.from("sessions").select("*").eq("id", sessionId).single();
     if (error) throw error;
@@ -313,7 +374,7 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     if (error) throw error;
     if (!data) throw new WorkoutNotFoundError(workoutId);
 
-    const closedSessionIds = await this.closeOpenSessions(workoutId, endedAt);
+    const closedSessionIds = await this.closeOpenSessions(workoutId, endedAt, userId);
 
     return { ...rowToWorkout(data as WorkoutRow), ...(closedSessionIds.length ? { closedSessionIds } : {}) };
   }

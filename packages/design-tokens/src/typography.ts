@@ -3,13 +3,15 @@
 //
 // fontFamily can't be a single cross-platform string: web takes a CSS font
 // stack, React Native takes one named font (or undefined for the OS
-// default, which is what apps/mobile relies on today). Custom font loading
-// per platform is a future concern, not something this pass solves.
+// default, which is what apps/mobile relies on today). A custom digital/LED
+// face and later a geometric sans were both tried and reverted per design
+// feedback. web now matches mono -- the header's "elexercise!" wordmark was
+// already set in monospace, and design feedback asked for all body text to
+// match it.
 export const typography = {
   fontFamily: {
-    web: "sans-serif",
+    web: "monospace",
     native: undefined as string | undefined,
-    // Display/accent face for headings like the landing hero — web-only for now.
     mono: "monospace",
   },
   size: {
