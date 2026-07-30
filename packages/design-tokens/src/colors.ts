@@ -2,30 +2,35 @@
 // actual design decision rather than a mechanical extraction of what was
 // already hardcoded. Update here to repaint both apps at once.
 //
-// Sage-green page canvas framing a dark-green "foreground" content panel,
-// white text (design feedback pass, iterated from an earlier black/neon-LED
-// palette).
+// textPrimary/textMuted stay white here since apps/mobile still relies on
+// them globally (Text.defaultProps in App.tsx) against its own black/green
+// screens -- apps/web's recent "white text -> navy" pass (on a now-white
+// canvas, dark-green panel removed) is applied there directly via
+// theme.colors.navy at each web call site instead of changing this shared
+// token, so mobile's contrast against its own (unchanged) dark screens
+// doesn't break.
 export const colors = {
   primaryGreen: "#6a994e",
   secondaryGreen: "#386641",
-  // General-purpose accent -- used for the header, the calculator's Outputs
-  // column, and emphasized nav dropdown items.
+  // General-purpose accent -- used for emphasized nav dropdown items.
   sageAccent: "#95C07C",
   bannerBackground: "#000000",
-  // Outermost page canvas -- a lighter tint of sageAccent (same hue, mixed
-  // toward white), so it reads as a distinct but complementary shade rather
-  // than an exact match to the header. The margined content panel (surface)
-  // sits on top of it.
+  // Mobile's screen-canvas color; apps/web no longer uses this as a
+  // background (its canvas is plain white now).
   background: "#B5D3A3",
-  // The "foreground" content panel color -- what actually holds page
-  // content, framed by background's margin (see apps/web/app/layout.tsx).
+  // Mobile's dark-green panel/screen color; apps/web no longer uses this
+  // as a background (the dark green panel was removed there).
   surface: "#0B3D0B",
   error: "#bc4749",
-  // Uniform across primary and muted text.
+  // Uniform across primary and muted text -- still white; see the note above.
   textPrimary: "#FFFFFF",
   textMuted: "#FFFFFF",
   colorContrast: "#aa7122",
   border: "#5b462b",
+  // apps/web's replacement for textPrimary/textMuted now that its canvas
+  // is white -- not shared with mobile (see note above). Brightened from
+  // an earlier near-black #001F3F per design feedback ("more blue").
+  navy: "#0033A0",
   // Extra accents for hashed sport tags / multi-series charts.
   accentBlue: "#1f4e79",
   accentBlueMuted: "#2a6f97",

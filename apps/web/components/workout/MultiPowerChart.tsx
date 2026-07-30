@@ -90,7 +90,7 @@ export function MultiPowerChart({
 
   if (active.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.textMuted, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
         Select an activity to show power output.
       </p>
     );
@@ -98,7 +98,7 @@ export function MultiPowerChart({
 
   if (data.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.textMuted, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
         No power data recorded for these activities.
       </p>
     );
@@ -118,7 +118,7 @@ export function MultiPowerChart({
               dataKey="tMs"
               domain={[xMin, xMax || "auto"]}
               tickFormatter={(tMs: number) => formatDuration(tMs / 1000)}
-              stroke={theme.colors.textMuted}
+              stroke={theme.colors.navy}
               tickLine={false}
               axisLine={false}
               fontSize={theme.typography.size.xs}
@@ -128,7 +128,7 @@ export function MultiPowerChart({
                 position: "insideBottom",
                 offset: -8,
                 style: {
-                  fill: theme.colors.textMuted,
+                  fill: theme.colors.navy,
                   fontSize: theme.typography.size.xxs,
                   fontFamily: theme.typography.fontFamily.web,
                 },
@@ -136,7 +136,7 @@ export function MultiPowerChart({
             />
             <YAxis
               domain={[0, yMax]}
-              stroke={theme.colors.textMuted}
+              stroke={theme.colors.navy}
               tickLine={false}
               axisLine={false}
               fontSize={theme.typography.size.xs}
@@ -147,7 +147,7 @@ export function MultiPowerChart({
                 position: "insideLeft",
                 offset: -6,
                 style: {
-                  fill: theme.colors.textMuted,
+                  fill: theme.colors.navy,
                   fontSize: theme.typography.size.xxs,
                   fontFamily: theme.typography.fontFamily.web,
                   textAnchor: "middle",
@@ -161,7 +161,7 @@ export function MultiPowerChart({
                 return (
                   <div
                     style={{
-                      background: theme.colors.background,
+                      background: "#FFFFFF",
                       border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
                       borderRadius: theme.radii.md,
                       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
@@ -172,7 +172,7 @@ export function MultiPowerChart({
                     <div
                       style={{
                         fontSize: theme.typography.size.xs,
-                        color: theme.colors.textMuted,
+                        color: theme.colors.navy,
                         marginBottom: 4,
                       }}
                     >

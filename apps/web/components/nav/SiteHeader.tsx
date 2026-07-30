@@ -20,7 +20,7 @@ import {
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 
-const pressedBg = withAlpha(theme.colors.textPrimary, 0.08);
+const pressedBg = withAlpha(theme.colors.navy, 0.08);
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
@@ -80,7 +80,7 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: theme.colors.sageAccent,
+        backgroundColor: "#FFFFFF",
       }}
     >
       <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start", minWidth: 0 }}>
@@ -101,7 +101,7 @@ export function SiteHeader() {
             background: menuOpen ? pressedBg : "transparent",
             border: "none",
             cursor: "pointer",
-            color: theme.colors.border,
+            color: "#228B22",
             fontSize: theme.typography.size.lg,
             transition: "background-color 120ms ease",
           }}
@@ -113,7 +113,13 @@ export function SiteHeader() {
           <NavMenuItemLink
             href="/"
             onClick={() => setMenuOpen(false)}
-            style={{ fontWeight: theme.typography.weight.bold, fontSize: theme.typography.size.lg, color: theme.colors.sageAccent }}
+            style={{
+              fontWeight: navSectionLabelStyle.fontWeight,
+              fontSize: navSectionLabelStyle.fontSize,
+              letterSpacing: navSectionLabelStyle.letterSpacing,
+              textTransform: navSectionLabelStyle.textTransform,
+              color: theme.colors.error,
+            }}
           >
             Home
           </NavMenuItemLink>
@@ -165,9 +171,9 @@ export function SiteHeader() {
           display: "flex",
           alignItems: "center",
           gap: theme.spacing.xs,
-          color: theme.colors.textPrimary,
-          fontFamily: theme.typography.fontFamily.mono,
+          color: "#228B22",
           fontSize: theme.typography.size.lg,
+          fontWeight: theme.typography.weight.bold,
           textDecoration: "none",
           justifySelf: "center",
         }}
@@ -199,7 +205,7 @@ export function SiteHeader() {
                     background: profileMenuOpen ? pressedBg : "transparent",
                     border: "none",
                     cursor: "pointer",
-                    color: theme.colors.border,
+                    color: "#228B22",
                     fontSize: theme.typography.size.md,
                     transition: "background-color 120ms ease",
                   }}
@@ -219,7 +225,7 @@ export function SiteHeader() {
                 </button>
 
                 {level !== null && elexir !== null && (
-                  <div style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.border }}>
+                  <div style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.navy }}>
                     <LevelProgress level={level} elexir={elexir} compact />
                   </div>
                 )}
@@ -246,7 +252,7 @@ export function SiteHeader() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: theme.colors.textPrimary,
+                  color: theme.colors.navy,
                   fontSize: theme.typography.size.md,
                 }}
               >

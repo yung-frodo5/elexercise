@@ -61,7 +61,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
-          backgroundColor: theme.colors.surface,
+          backgroundColor: "#FFFFFF",
           padding: theme.spacing.xl,
           maxWidth: 360,
           width: "90%",
@@ -78,13 +78,13 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             border: "none",
             cursor: "pointer",
             fontSize: theme.typography.size.md,
-            color: theme.colors.textPrimary,
+            color: theme.colors.navy,
           }}
         >
           {theme.icons.close}
         </button>
-        <h1 style={{ margin: 0, color: theme.colors.textPrimary }}>Exercise Tracker</h1>
-        <p style={{ color: theme.colors.textMuted }}>
+        <h1 style={{ margin: 0, color: theme.colors.navy }}>Exercise Tracker</h1>
+        <p style={{ color: theme.colors.navy }}>
           {mode === "signIn" ? "Sign in to continue" : "Create an account"}
         </p>
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: theme.spacing.sm }}>
@@ -96,7 +96,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             onChange={(e) => setPassword(e.target.value)}
           />
           {error && <p style={{ color: theme.colors.error }}>{error}</p>}
-          {info && <p style={{ color: theme.colors.textMuted }}>{info}</p>}
+          {info && <p style={{ color: theme.colors.navy }}>{info}</p>}
           <button type="submit">{mode === "signIn" ? "Sign in" : "Create account"}</button>
         </form>
         <button

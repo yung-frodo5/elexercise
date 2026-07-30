@@ -28,7 +28,7 @@ function ensureStyles() {
       border-radius: 0;
       border-bottom: 1px solid ${withAlpha(theme.colors.border, 0.35)};
       padding: 4px 0;
-      color: ${theme.colors.textPrimary};
+      color: ${theme.colors.navy};
       font-size: ${theme.typography.size.sm}px;
       font-family: ${theme.typography.fontFamily.web};
     }
@@ -46,8 +46,8 @@ function ensureStyles() {
     .elex-expandable-search:-webkit-autofill:hover,
     .elex-expandable-search:-webkit-autofill:focus,
     .elex-expandable-search:-webkit-autofill:active {
-      -webkit-text-fill-color: ${theme.colors.textPrimary} !important;
-      caret-color: ${theme.colors.textPrimary};
+      -webkit-text-fill-color: ${theme.colors.navy} !important;
+      caret-color: ${theme.colors.navy};
       box-shadow: 0 0 0 1000px ${theme.colors.background} inset !important;
       -webkit-box-shadow: 0 0 0 1000px ${theme.colors.background} inset !important;
       transition: background-color 99999s ease-out;
@@ -126,7 +126,7 @@ export function ExpandableSearch({
         </>
       ) : (
         <button type="button" aria-label="Search" onClick={() => onOpenChange(true)} style={iconButtonStyle}>
-          <SearchIcon size={15} color={theme.colors.textMuted} />
+          <SearchIcon size={15} color={theme.colors.navy} />
         </button>
       )}
     </div>

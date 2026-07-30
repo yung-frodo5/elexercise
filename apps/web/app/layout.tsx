@@ -17,8 +17,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{
           margin: 0,
           fontFamily: theme.typography.fontFamily.web,
-          backgroundColor: theme.colors.background,
-          color: theme.colors.textPrimary,
+          backgroundColor: "#FFFFFF",
+          color: theme.colors.navy,
         }}
       >
         {/* Browsers apply their own UA font to form controls regardless of

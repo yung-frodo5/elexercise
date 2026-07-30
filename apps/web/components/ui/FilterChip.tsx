@@ -20,7 +20,7 @@ export function FilterChip({
       active ? withAlpha(theme.colors.primaryGreen, 0.45) : withAlpha(theme.colors.border, 0.28)
     }`,
     background: active ? withAlpha(theme.colors.primaryGreen, 0.2) : "transparent",
-    color: active ? theme.colors.secondaryGreen : theme.colors.textMuted,
+    color: active ? theme.colors.secondaryGreen : theme.colors.navy,
     fontSize: theme.typography.size.xs,
     fontWeight: active ? theme.typography.weight.semibold : theme.typography.weight.medium,
     fontFamily: theme.typography.fontFamily.web,

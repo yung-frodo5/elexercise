@@ -20,10 +20,12 @@ import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
 const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
-// A third sage tone (lighter than either zebra shade) so hover/expanded
-// rows read as a distinct highlight rather than just landing on whichever
-// zebra shade the row already had.
-const ROW_HOVER_BG = "#D6E8C9";
+// Subtle navy-tinted highlight (not sage) so hover/expanded rows still read
+// as a distinct state now that the base row background is plain white.
+// Solid, not alpha-blended -- the table wrapper behind these rows is dark
+// green, and an alpha color would blend against that instead of reading as
+// a light tint over white.
+const ROW_HOVER_BG = "#E6ECF2";
 
 function ensureRowStyles() {
   if (typeof document === "undefined") return;
@@ -159,7 +161,7 @@ export function WorkoutHistoryRow({
   const cell: CSSProperties = {
     padding: `${theme.spacing.md}px`,
     fontSize: theme.typography.size.sm,
-    color: theme.colors.border,
+    color: theme.colors.navy,
     verticalAlign: "middle",
     fontFamily: theme.typography.fontFamily.web,
     borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
@@ -180,7 +182,7 @@ export function WorkoutHistoryRow({
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
     borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-    backgroundColor: theme.colors.background,
+    backgroundColor: "#FFFFFF",
   };
 
   const subNumeric: CSSProperties = {
@@ -189,18 +191,12 @@ export function WorkoutHistoryRow({
     fontSize: theme.typography.size.xs,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
-    color: theme.colors.border,
+    color: theme.colors.navy,
     textAlign: "right",
     fontVariantNumeric: "tabular-nums",
   };
 
-  const rowBg = open
-    ? ROW_HOVER_BG
-    : hovered
-      ? ROW_HOVER_BG
-      : zebra
-        ? theme.colors.sageAccent
-        : theme.colors.background;
+  const rowBg = open || hovered ? ROW_HOVER_BG : zebra ? "#D6E9FF" : "#FFFFFF";
 
   return (
     <>
@@ -232,7 +228,7 @@ export function WorkoutHistoryRow({
               style={{
                 display: "inline-block",
                 marginTop: 2,
-                color: theme.colors.border,
+                color: theme.colors.navy,
                 fontSize: theme.typography.size.xxs,
                 lineHeight: 1.2,
                 flexShrink: 0,
@@ -243,7 +239,7 @@ export function WorkoutHistoryRow({
             <div style={{ minWidth: 0 }}>
               <span
                 style={{
-                  color: theme.colors.border,
+                  color: theme.colors.navy,
                   fontWeight: theme.typography.weight.semibold,
                   fontSize: theme.typography.size.md,
                 }}
@@ -256,7 +252,7 @@ export function WorkoutHistoryRow({
                     display: "block",
                     marginTop: 2,
                     fontSize: theme.typography.size.xs,
-                    color: theme.colors.border,
+                    color: theme.colors.navy,
                   }}
                 >
                   {statusLabel}
@@ -269,7 +265,7 @@ export function WorkoutHistoryRow({
         <td
           style={{
             ...cell,
-            color: theme.colors.border,
+            color: theme.colors.navy,
             whiteSpace: "nowrap",
             fontSize: theme.typography.size.xs,
           }}
@@ -308,7 +304,7 @@ export function WorkoutHistoryRow({
             colSpan={colSpan}
             style={{
               padding: `${theme.spacing.md}px ${theme.spacing.xl}px ${theme.spacing.xl}px`,
-              backgroundColor: theme.colors.background,
+              backgroundColor: "#FFFFFF",
               borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
               boxShadow: EXPAND_ACCENT,
             }}
@@ -320,7 +316,7 @@ export function WorkoutHistoryRow({
                     Couldn&rsquo;t load power: {powerError}
                   </p>
                 ) : powerLoading ? (
-                  <p style={{ color: theme.colors.border, margin: 0, textAlign: "center" }}>
+                  <p style={{ color: theme.colors.navy, margin: 0, textAlign: "center" }}>
                     Loading power profile…
                   </p>
                 ) : (
@@ -381,7 +377,7 @@ function ActivitySubRow({
             style={{
               fontSize: theme.typography.size.sm,
               fontWeight: theme.typography.weight.medium,
-              color: theme.colors.border,
+              color: theme.colors.navy,
             }}
           >
             {session.activityType || "Activity"}

@@ -25,10 +25,10 @@ export function Calculator() {
         style={{
           flex: "1 1 280px",
           minWidth: 0,
-          backgroundColor: theme.colors.sageAccent,
+          backgroundColor: "#D6E9FF",
           borderRadius: theme.radii.lg,
           padding: theme.spacing.xl,
-          color: theme.colors.border,
+          color: theme.colors.navy,
         }}
       >
         <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Outputs</h2>

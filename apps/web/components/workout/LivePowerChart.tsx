@@ -29,7 +29,7 @@ export function LivePowerChart({ sessionId, activityType }: { sessionId: string;
       <h3>Live power — {activityType}</h3>
 
       {!loading && !stats && (
-        <p style={{ color: theme.colors.textMuted }}>Waiting for the first reading…</p>
+        <p style={{ color: theme.colors.navy }}>Waiting for the first reading…</p>
       )}
 
       {stats && (

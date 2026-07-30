@@ -69,7 +69,7 @@ export default function ProfilePage() {
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 360, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
-        <h1 style={{ margin: 0, color: theme.colors.textPrimary }}>{displayNameInput || "Profile Details"}</h1>
+        <h1 style={{ margin: 0, color: "#228B22" }}>{displayNameInput || "Profile Details"}</h1>
         <AvatarCircle src={avatarUrlInput} size={40} />
       </div>
 
@@ -83,10 +83,10 @@ export default function ProfilePage() {
         onSubmit={handleSubmit}
         style={{ marginTop: theme.spacing.xl, display: "flex", flexDirection: "column", gap: theme.spacing.sm }}
       >
-        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Display name</label>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs }}>Display name</label>
         <input value={displayNameInput} onChange={(e) => setDisplayNameInput(e.target.value)} />
 
-        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
           Avatar
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
@@ -94,7 +94,7 @@ export default function ProfilePage() {
           <input type="file" accept="image/*" onChange={handleAvatarFileChange} />
         </div>
 
-        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
           Home Region
         </label>
         <select value={homeRegionInput} onChange={(e) => setHomeRegionInput(e.target.value)}>
@@ -112,7 +112,7 @@ export default function ProfilePage() {
           {saving ? "Saving…" : "Save"}
         </button>
 
-        {status && <p style={{ color: theme.colors.textMuted }}>{status}</p>}
+        {status && <p style={{ color: theme.colors.navy }}>{status}</p>}
       </form>
     </main>
   );
