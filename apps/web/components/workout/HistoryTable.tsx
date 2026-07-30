@@ -50,17 +50,32 @@ export function HistoryTable({
   };
 
   return (
-    <div
-      style={{
-        overflowX: "auto",
-        maxHeight: "min(70vh, 720px)",
-        overflowY: "auto",
-        borderRadius: theme.radii.xl,
-        border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-        backgroundColor: "#FFFFFF",
-        boxShadow: `0 8px 28px ${withAlpha(theme.colors.navy, 0.05)}`,
-      }}
-    >
+    <>
+      <style>{`
+        @media (max-width: 640px) {
+          .history-table-scroll {
+            max-height: min(52vh, 420px) !important;
+          }
+          .history-table-scroll th,
+          .history-table-scroll td {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+        }
+      `}</style>
+      <div
+        className="history-table-scroll"
+        style={{
+          overflowX: "auto",
+          maxHeight: "min(70vh, 720px)",
+          overflowY: "auto",
+          WebkitOverflowScrolling: "touch",
+          borderRadius: theme.radii.xl,
+          border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
+          backgroundColor: "#FFFFFF",
+          boxShadow: `0 8px 28px ${withAlpha(theme.colors.navy, 0.05)}`,
+        }}
+      >
       <table style={{ width: "100%", minWidth: 640, borderCollapse: "separate", borderSpacing: 0 }}>
         <thead>
           <tr>
@@ -99,6 +114,7 @@ export function HistoryTable({
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
