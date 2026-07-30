@@ -1,53 +1,72 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import { useMemo, useState, type CSSProperties } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
-import { getWorkout, listWorkouts } from "../../../lib/api";
-import { aggregateWorkoutStats } from "../../../lib/aggregateWorkoutStats";
-import { CondensedStats } from "../../../components/workout/CondensedStats";
-import { SessionLogList } from "../../../components/workout/SessionLogList";
+import {
+  filterAndSortHistoryWorkouts,
+  nextSortState,
+  toggleListItem,
+  uniqueWorkoutActivityTypes,
+  type HistorySortDir,
+  type HistorySortKey,
+} from "../../../lib/historySessions";
+import { useHistoryWorkouts } from "../../../lib/useHistoryWorkouts";
+import { SoftPanel } from "../../../components/ui/SoftPanel";
+import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
+import { HistoryTable } from "../../../components/workout/HistoryTable";
+
+const mainStyle: CSSProperties = {
+  padding: `${theme.spacing.xxl}px ${theme.spacing.xl}px`,
+  maxWidth: 1040,
+  margin: "0 auto",
+  width: "100%",
+  boxSizing: "border-box",
+  fontFamily: theme.typography.fontFamily.web,
+  color: theme.colors.textPrimary,
+};
 
 export default function HistoryPage() {
   const { session } = useSupabaseSession();
+  const { workouts, loading, error, loadingWorkoutId, ensureWorkoutLoaded } =
+    useHistoryWorkouts(session);
 
-  const [history, setHistory] = useState<Workout[]>([]);
-  const [expanded, setExpanded] = useState<Record<string, WorkoutWithSessions | undefined>>({});
-  const [dataLoading, setDataLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [keywords, setKeywords] = useState("");
+  const [sports, setSports] = useState<string[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<HistorySortKey>("date");
+  const [sortDir, setSortDir] = useState<HistorySortDir>("desc");
 
-  const refresh = useCallback(async () => {
-    if (!session) return;
-    try {
-      const all = await listWorkouts(session.access_token);
-      setHistory(all);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load workouts");
-    } finally {
-      // Same cold-start-aware loading state as /track — see that page for why.
-      setDataLoading(false);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  const sportOptions = useMemo(() => uniqueWorkoutActivityTypes(workouts), [workouts]);
+  const filtered = useMemo(
+    () => filterAndSortHistoryWorkouts(workouts, { sports, keywords, sortKey, sortDir }),
+    [workouts, sports, keywords, sortKey, sortDir]
+  );
 
   async function toggleExpand(workoutId: string) {
-    if (!session) return;
-    if (expanded[workoutId]) {
-      setExpanded((prev) => ({ ...prev, [workoutId]: undefined }));
+    if (expandedId === workoutId) {
+      setExpandedId(null);
       return;
     }
-    const detail = await getWorkout(session.access_token, workoutId);
-    setExpanded((prev) => ({ ...prev, [workoutId]: detail }));
+    setExpandedId(workoutId);
+    await ensureWorkoutLoaded(workoutId);
   }
 
-  if (dataLoading) {
+  if (loading) {
     return (
-      <main style={{ padding: theme.spacing.xl }}>
-        <p>Loading your workouts…</p>
+      <main style={mainStyle}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: theme.typography.size.xl,
+            fontWeight: theme.typography.weight.bold,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Workout Log
+        </h1>
+        <p style={{ marginTop: theme.spacing.md, color: theme.colors.textMuted }}>Loading your workouts…</p>
         <p style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.sm }}>
           First load can take up to 30 seconds if the API has been idle.
         </p>
@@ -56,41 +75,81 @@ export default function HistoryPage() {
   }
 
   return (
-    <main style={{ padding: theme.spacing.xl, maxWidth: 480 }}>
-      <h1>History</h1>
+    <main style={mainStyle}>
+      <header style={{ marginBottom: theme.spacing.xl }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: theme.typography.size.xl,
+            fontWeight: theme.typography.weight.bold,
+            letterSpacing: "-0.02em",
+            color: theme.colors.textPrimary,
+          }}
+        >
+          Workout Log
+        </h1>
+        <p
+          style={{
+            margin: 0,
+            marginTop: theme.spacing.xs,
+            color: theme.colors.textMuted,
+            fontSize: theme.typography.size.sm,
+            lineHeight: 1.45,
+            maxWidth: 420,
+          }}
+        >
+          Past workouts and session power profiles.
+        </p>
+      </header>
 
-      {error && <p style={{ color: theme.colors.error }}>{error}</p>}
+      {error && <p style={{ marginBottom: theme.spacing.md, color: theme.colors.error }}>{error}</p>}
 
-      <section style={{ marginTop: theme.spacing.lg }}>
-        {history.length === 0 ? (
-          <p>No past workouts yet.</p>
+      <section>
+        <HistoryToolbar
+          activityCount={filtered.length}
+          sportOptions={sportOptions}
+          selectedSports={sports}
+          onToggleSport={(sport) => setSports((prev) => toggleListItem(prev, sport))}
+          keywords={keywords}
+          searchOpen={searchOpen}
+          onSearchOpenChange={setSearchOpen}
+          onKeywordsChange={setKeywords}
+        />
+
+        {filtered.length === 0 ? (
+          <SoftPanel style={{ padding: theme.spacing.xl }}>
+            <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold }}>
+              {workouts.length === 0 ? "No past workouts yet." : "No workouts match these filters."}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                marginTop: theme.spacing.xs,
+                color: theme.colors.textMuted,
+                fontSize: theme.typography.size.sm,
+                lineHeight: 1.45,
+              }}
+            >
+              {workouts.length === 0
+                ? "Finish a workout on Track and it will show up here."
+                : "Try clearing filters or search."}
+            </p>
+          </SoftPanel>
         ) : (
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {history.map((w) => {
-              const detail = expanded[w.id];
-              return (
-                <li
-                  key={w.id}
-                  style={{ borderBottom: `1px solid ${theme.colors.border}`, padding: `${theme.spacing.sm}px 0` }}
-                >
-                  <button
-                    onClick={() => void toggleExpand(w.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", textAlign: "left", width: "100%" }}
-                  >
-                    {new Date(w.startedAt).toLocaleString()} — {w.status}
-                  </button>
-                  {detail && (
-                    <>
-                      <div style={{ marginTop: theme.spacing.xs }}>
-                        <CondensedStats {...aggregateWorkoutStats(detail)} />
-                      </div>
-                      <SessionLogList sessions={detail.sessions} />
-                    </>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          <HistoryTable
+            rows={filtered}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            expandedId={expandedId}
+            loadingWorkoutId={loadingWorkoutId}
+            onSort={(key) => {
+              const next = nextSortState(sortKey, sortDir, key);
+              setSortKey(next.sortKey);
+              setSortDir(next.sortDir);
+            }}
+            onToggleExpand={(workoutId) => void toggleExpand(workoutId)}
+            onCloseExpand={() => setExpandedId(null)}
+          />
         )}
       </section>
     </main>

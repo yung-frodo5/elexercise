@@ -5,25 +5,28 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { theme } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
+import { isDevBypassAuth } from "../../lib/devAuth";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
 import { LoginModal } from "../auth/LoginModal";
 import logo from "../../assets/images/logo.png";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
+import { withAlpha } from "../../lib/color";
 import {
   NavDropdownPanel,
   NavMenuItemButton,
   NavMenuItemLink,
   navSectionLabelStyle,
-  withAlpha,
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 
 const pressedBg = withAlpha(theme.colors.textPrimary, 0.08);
 
 export function SiteHeader() {
+  const bypass = isDevBypassAuth();
   const { session, loading } = useSupabaseSession();
   const { displayName } = useProfile(session?.user.id);
+  const showAppNav = Boolean(session) || bypass;
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -103,7 +106,7 @@ export function SiteHeader() {
             Home
           </NavMenuItemLink>
 
-          {session && (
+          {showAppNav && (
             <>
               <div style={{ height: theme.spacing.xs }} />
               <p style={navSectionLabelStyle}>Exercise Dashboard</p>

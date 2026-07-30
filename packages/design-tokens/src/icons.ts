@@ -12,4 +12,6 @@ export const icons = {
   settings: "⚙️",
   close: "✕",
   calculator: "🧮",
+  expand: "▸",
+  collapse: "▾",
 } as const;

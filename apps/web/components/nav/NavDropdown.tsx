@@ -3,6 +3,7 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { theme } from "@exercise-tracker/design-tokens";
+import { withAlpha } from "../../lib/color";
 
 const KEYFRAMES_ID = "elex-nav-dropdown-keyframes";
 
@@ -18,16 +19,6 @@ function ensureKeyframes() {
     }
   `;
   document.head.appendChild(style);
-}
-
-/** Apply alpha to a `#rrggbb` token without hardcoding a second palette. */
-export function withAlpha(hex: string, alpha: number): string {
-  const raw = hex.replace("#", "");
-  if (raw.length !== 6) return hex;
-  const r = Number.parseInt(raw.slice(0, 2), 16);
-  const g = Number.parseInt(raw.slice(2, 4), 16);
-  const b = Number.parseInt(raw.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 const itemStyle: CSSProperties = {
