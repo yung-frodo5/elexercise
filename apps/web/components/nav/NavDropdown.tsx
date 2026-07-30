@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
 const KEYFRAMES_ID = "elex-nav-dropdown-keyframes";
 
@@ -18,16 +18,6 @@ function ensureKeyframes() {
     }
   `;
   document.head.appendChild(style);
-}
-
-/** Apply alpha to a `#rrggbb` token without hardcoding a second palette. */
-export function withAlpha(hex: string, alpha: number): string {
-  const raw = hex.replace("#", "");
-  if (raw.length !== 6) return hex;
-  const r = Number.parseInt(raw.slice(0, 2), 16);
-  const g = Number.parseInt(raw.slice(2, 4), 16);
-  const b = Number.parseInt(raw.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 const itemStyle: CSSProperties = {
@@ -139,7 +129,7 @@ export function NavDropdownPanel({
         overflow: "hidden",
         backgroundColor: theme.colors.background,
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-        borderRadius: 10,
+        borderRadius: theme.radii.lg,
         boxShadow: `0 10px 28px ${withAlpha(theme.colors.textPrimary, 0.1)}`,
         zIndex: 2,
         animation: "elexNavMenuIn 160ms ease-out",

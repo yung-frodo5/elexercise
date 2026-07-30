@@ -14,4 +14,8 @@ export const colors = {
   textMuted: "#283f3b",
   colorContrast: "#aa7122",
   border: "#5b462b",
+  // Extra accents for hashed sport tags / multi-series charts.
+  accentBlue: "#1f4e79",
+  accentBlueMuted: "#2a6f97",
+  accentBrick: "#8a3a3c",
 } as const;

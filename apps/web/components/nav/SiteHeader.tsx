@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
@@ -15,7 +15,6 @@ import {
   NavMenuItemButton,
   NavMenuItemLink,
   navSectionLabelStyle,
-  withAlpha,
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 
