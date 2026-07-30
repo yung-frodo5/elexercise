@@ -67,7 +67,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main style={{ padding: theme.spacing.xl, maxWidth: 360 }}>
+    <main style={{ padding: theme.spacing.xl, maxWidth: 360, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
         <h1 style={{ margin: 0, color: theme.colors.textPrimary }}>{displayNameInput || "Profile Details"}</h1>
         <AvatarCircle src={avatarUrlInput} size={40} />

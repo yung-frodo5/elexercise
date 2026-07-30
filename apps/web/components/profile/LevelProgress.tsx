@@ -20,7 +20,7 @@ export function LevelProgress({
 
   if (compact) {
     return (
-      <div style={{ minWidth: 120 }}>
+      <div style={{ minWidth: 60, maxWidth: 120, width: "100%" }}>
         <div style={{ fontSize: theme.typography.size.xxs, marginBottom: 2 }}>Level {level}</div>
         <div
           style={{

@@ -40,6 +40,15 @@ export default function LandingPage() {
           visibility: visible;
           pointer-events: auto;
         }
+        /* The headword's 60px nowrap text is wider than any phone viewport
+           -- without this it forces the whole page to scroll horizontally.
+           !important is needed to beat the matching inline styles. */
+        @media (max-width: 600px) {
+          .definition-wrap { display: block; width: 100%; box-sizing: border-box; }
+          .definition-panel { font-size: 26px !important; padding: 16px !important; }
+          .definition-headword { white-space: normal !important; font-size: 30px !important; }
+          .definition-body-line { padding-left: 16px !important; }
+        }
       `}</style>
 
       <section
@@ -54,6 +63,7 @@ export default function LandingPage() {
       >
         <div className="definition-wrap" tabIndex={0}>
           <div
+            className="definition-panel"
             style={{
               backgroundColor: theme.colors.surface,
               color: theme.colors.textPrimary,
@@ -63,15 +73,21 @@ export default function LandingPage() {
               fontSize: 48,
             }}
           >
-            <p style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
+            <p className="definition-headword" style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
               <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span>{" "}
               \əˈlɛk &middot; sə &middot; saɪz\
             </p>
-            <p style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}>
+            <p
+              className="definition-body-line"
+              style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
+            >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>verb.</span> to produce
               electricity through exercise
             </p>
-            <p style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}>
+            <p
+              className="definition-body-line"
+              style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
+            >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> the act of
               producing electricity through exercise
             </p>

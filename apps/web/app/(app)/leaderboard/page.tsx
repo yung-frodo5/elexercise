@@ -90,7 +90,8 @@ export default function LeaderboardPage() {
       {loading ? (
         <p style={{ marginTop: theme.spacing.xl, color: theme.colors.textMuted }}>Loading…</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: theme.spacing.xl }}>
+        <div style={{ overflowX: "auto", marginTop: theme.spacing.xl }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
           <thead>
             <tr>
               <th style={headerCell}>#</th>
@@ -125,6 +126,7 @@ export default function LeaderboardPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       <form onSubmit={handleAdd} style={{ display: "flex", gap: theme.spacing.sm, marginTop: theme.spacing.xl }}>

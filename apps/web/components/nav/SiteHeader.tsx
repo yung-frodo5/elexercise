@@ -57,8 +57,18 @@ export function SiteHeader() {
   }
 
   return (
-    <header
-      style={{
+    <>
+      {/* Real <style> for the media query -- inline styles can't express
+          one. Below ~360px there isn't room for the logo, "elexercise!",
+          and the profile button all on one row without something giving;
+          the wordmark text is the least essential of the three. */}
+      <style>{`
+        @media (max-width: 360px) {
+          .site-header-wordmark-text { display: none; }
+        }
+      `}</style>
+      <header
+        style={{
         position: "fixed",
         top: 0,
         left: 0,
@@ -73,7 +83,7 @@ export function SiteHeader() {
         backgroundColor: theme.colors.sageAccent,
       }}
     >
-      <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start" }}>
+      <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start", minWidth: 0 }}>
         <button
           id={navMenuButtonId}
           type="button"
@@ -163,10 +173,10 @@ export function SiteHeader() {
         }}
       >
         <img src={logo.src} alt="" width={44} height={44} />
-        elexercise!
+        <span className="site-header-wordmark-text">elexercise!</span>
       </Link>
 
-      <div ref={profileMenuRef} style={{ position: "relative", justifySelf: "end" }}>
+      <div ref={profileMenuRef} style={{ position: "relative", justifySelf: "end", minWidth: 0 }}>
         {!loading && (
           <>
             {session ? (
@@ -183,6 +193,7 @@ export function SiteHeader() {
                     alignItems: "center",
                     gap: theme.spacing.xs,
                     maxWidth: 220,
+                    minWidth: 0,
                     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                     borderRadius: 8,
                     background: profileMenuOpen ? pressedBg : "transparent",
@@ -200,6 +211,7 @@ export function SiteHeader() {
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                       fontWeight: theme.typography.weight.bold,
+                      minWidth: 0,
                     }}
                   >
                     {displayName ?? session.user.email}
@@ -246,6 +258,7 @@ export function SiteHeader() {
       </div>
 
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-    </header>
+      </header>
+    </>
   );
 }
