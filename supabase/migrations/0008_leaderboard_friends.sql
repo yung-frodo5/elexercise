@@ -1,3 +1,28 @@
+-- Guard against drift: at least one environment's profiles table ended up
+-- with a composite primary key on (id, display_name) instead of just id as
+-- 0001 always specified (likely a manual dashboard edit outside this
+-- migration history, not anything applied through it). display_name was
+-- never meant to be part of a row's identity, and the mismatch blocks the
+-- friends table's FKs below, which reference profiles(id) alone. id is
+-- already unique on its own (1:1 with auth.users.id via profiles_id_fkey),
+-- so this is safe to correct. No-ops where the key is already id-only.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint c
+    where c.conrelid = 'public.profiles'::regclass
+      and c.contype = 'p'
+      and c.conkey = array[(
+        select attnum from pg_attribute
+        where attrelid = 'public.profiles'::regclass and attname = 'id'
+      )]
+  ) then
+    alter table public.profiles drop constraint profiles_pkey;
+    alter table public.profiles add primary key (id);
+  end if;
+end $$;
+
 -- Leaderboard: any authenticated user can read other users' profiles (to
 -- look a friend up by display_name and to show their elexir on the
 -- leaderboard). profiles_select_own (0001) already covers a user's own row
