@@ -103,7 +103,10 @@ export default function LeaderboardPage() {
           <tbody>
             {rows.map((row, index) => (
               <tr key={row.id} style={row.isMe ? { backgroundColor: theme.colors.sageAccent } : undefined}>
-                <td style={cell}>{index + 1}</td>
+                <td style={cell}>
+                  {index + 1}
+                  {index === 0 ? " 👑" : ""}
+                </td>
                 <td style={cell}>
                   <AvatarCircle src={row.avatarUrl ?? ""} size={28} />
                 </td>

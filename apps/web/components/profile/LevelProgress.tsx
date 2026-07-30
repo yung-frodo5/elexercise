@@ -47,6 +47,30 @@ export function LevelProgress({
 
   return (
     <div>
+      {/* Real <style> for :hover/:focus-within -- inline styles can't
+          express pseudo-classes. Matches the same hover-popup pattern used
+          for the home page's "elexercise" definition. */}
+      <style>{`
+        .elexir-tooltip-wrap { position: relative; display: inline-block; }
+        .elexir-tooltip-popup {
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: opacity 150ms ease;
+          z-index: 10;
+        }
+        .elexir-tooltip-wrap:hover .elexir-tooltip-popup,
+        .elexir-tooltip-wrap:focus-within .elexir-tooltip-popup {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+      `}</style>
+
       <div
         style={{
           display: "flex",
@@ -59,7 +83,29 @@ export function LevelProgress({
           Level {level}
         </span>
         <span style={{ fontSize: theme.typography.size.xs, color: theme.colors.textMuted }}>
-          {elexir} elexir earned
+          {elexir}{" "}
+          <span className="elexir-tooltip-wrap" tabIndex={0}>
+            <span style={{ textDecoration: "underline dashed", cursor: "help" }}>elexir</span>
+            <span
+              className="elexir-tooltip-popup"
+              style={{
+                display: "block",
+                width: 220,
+                marginBottom: theme.spacing.xs,
+                backgroundColor: theme.colors.border,
+                color: theme.colors.textPrimary,
+                fontSize: theme.typography.size.xs,
+                lineHeight: 1.4,
+                padding: theme.spacing.sm,
+                borderRadius: theme.radii.md,
+                boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)",
+                textAlign: "left",
+              }}
+            >
+              Earn elexir by elexercising - earning elexir also unlocks badges and achievements!
+            </span>
+          </span>{" "}
+          earned
         </span>
       </div>
 

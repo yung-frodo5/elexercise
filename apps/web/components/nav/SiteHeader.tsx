@@ -238,7 +238,6 @@ export function SiteHeader() {
                   fontSize: theme.typography.size.md,
                 }}
               >
-                <span aria-hidden>{theme.icons.login}</span>
                 <span>Log in</span>
               </button>
             )}

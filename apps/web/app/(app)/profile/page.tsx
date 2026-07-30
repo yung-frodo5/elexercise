@@ -84,24 +84,19 @@ export default function ProfilePage() {
         style={{ marginTop: theme.spacing.xl, display: "flex", flexDirection: "column", gap: theme.spacing.sm }}
       >
         <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Display name</label>
-        <div style={{ display: "flex", gap: theme.spacing.sm }}>
-          <input
-            style={{ flex: 1 }}
-            value={displayNameInput}
-            onChange={(e) => setDisplayNameInput(e.target.value)}
-          />
-          <button type="submit" disabled={saving}>
-            {saving ? "Saving…" : "Save"}
-          </button>
-        </div>
+        <input value={displayNameInput} onChange={(e) => setDisplayNameInput(e.target.value)} />
 
-        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Avatar</label>
+        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+          Avatar
+        </label>
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
           <AvatarCircle src={avatarUrlInput} size={40} />
           <input type="file" accept="image/*" onChange={handleAvatarFileChange} />
         </div>
 
-        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs }}>Home region</label>
+        <label style={{ color: theme.colors.textMuted, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+          Home Region
+        </label>
         <select value={homeRegionInput} onChange={(e) => setHomeRegionInput(e.target.value)}>
           <option value="" disabled>
             Select a country
@@ -112,6 +107,10 @@ export default function ProfilePage() {
             </option>
           ))}
         </select>
+
+        <button type="submit" disabled={saving} style={{ marginTop: theme.spacing.sm }}>
+          {saving ? "Saving…" : "Save"}
+        </button>
 
         {status && <p style={{ color: theme.colors.textMuted }}>{status}</p>}
       </form>
