@@ -20,11 +20,7 @@ import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
 const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
-// Subtle navy-tinted highlight (not sage) so hover/expanded rows still read
-// as a distinct state now that the base row background is plain white.
-// Solid, not alpha-blended -- the table wrapper behind these rows is dark
-// green, and an alpha color would blend against that instead of reading as
-// a light tint over white.
+/** Navy-tint hover/expanded fill on white rows (web table chrome). */
 const ROW_HOVER_BG = "#E6ECF2";
 
 function ensureRowStyles() {

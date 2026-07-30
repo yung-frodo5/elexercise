@@ -3,21 +3,14 @@
 import type { CSSProperties } from "react";
 import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import type { HistorySortDir, HistorySortKey } from "../../lib/historySessions";
+import {
+  HISTORY_COL_COUNT,
+  HISTORY_COLUMNS,
+  type HistorySortDir,
+  type HistorySortKey,
+} from "../../lib/historySessions";
 import { overlineStyle } from "../../lib/uiStyles";
 import { WorkoutHistoryRow } from "./WorkoutHistoryRow";
-
-const COLUMNS: { label: string; key: HistorySortKey; align?: "left" | "right" }[] = [
-  { label: "Title", key: "title" },
-  { label: "Date", key: "date" },
-  { label: "Workout", key: "sport" },
-  { label: "Time", key: "time", align: "right" },
-  { label: "Energy", key: "energy", align: "right" },
-  { label: "Avg. power", key: "avgPower", align: "right" },
-  { label: "Peak power", key: "peakPower", align: "right" },
-];
-
-const COL_COUNT = COLUMNS.length;
 
 /** Opaque sticky header so scrolling rows don't show through. */
 const HEADER_BG = "#002FA7";
@@ -71,7 +64,7 @@ export function HistoryTable({
       <table style={{ width: "100%", minWidth: 640, borderCollapse: "separate", borderSpacing: 0 }}>
         <thead>
           <tr>
-            {COLUMNS.map(({ label, key, align }) => {
+            {HISTORY_COLUMNS.map(({ label, key, align }) => {
               const active = sortKey === key;
               const arrow = !active ? "" : sortDir === "asc" ? " ↑" : " ↓";
               return (
@@ -99,7 +92,7 @@ export function HistoryTable({
               loading={loadingWorkoutId === workout.id}
               open={expandedId === workout.id}
               zebra={index % 2 === 1}
-              colSpan={COL_COUNT}
+              colSpan={HISTORY_COL_COUNT}
               onToggle={() => onToggleExpand(workout.id)}
               onClose={onCloseExpand}
             />

@@ -8,6 +8,6 @@ export const overlineStyle: CSSProperties = {
   fontWeight: theme.typography.weight.semibold,
   letterSpacing: "0.07em",
   textTransform: "uppercase",
-  color: theme.colors.textMuted,
+  color: theme.colors.navy,
   fontFamily: theme.typography.fontFamily.web,
 };

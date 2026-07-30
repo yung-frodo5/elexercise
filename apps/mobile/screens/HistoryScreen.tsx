@@ -1,122 +1,137 @@
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { theme } from "@exercise-tracker/design-tokens";
-import { getWorkout, listWorkouts } from "../lib/api";
-import { SessionList } from "../components/workout/SessionList";
+import { useCallback, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
+import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import { filterAndSortHistoryWorkouts } from "@exercise-tracker/workout-history";
+import { useHistoryWorkouts } from "../lib/useHistoryWorkouts";
+import { FeedSearchBar } from "../components/ui/FeedSearchBar";
+import { WorkoutHistoryRow } from "../components/workout/WorkoutHistoryRow";
 
 export default function HistoryScreen({ accessToken }: { accessToken: string }) {
-  const [history, setHistory] = useState<Workout[]>([]);
-  const [expanded, setExpanded] = useState<Record<string, WorkoutWithSessions | undefined>>({});
-  const [dataLoading, setDataLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { workouts, loading, error, loadingWorkoutId, ensureWorkoutLoaded } =
+    useHistoryWorkouts(accessToken);
 
-  const refresh = useCallback(async () => {
-    try {
-      const all = await listWorkouts(accessToken);
-      setHistory(all);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load workouts");
-    } finally {
-      // Same cold-start-aware loading state as Track — see that screen for why.
-      setDataLoading(false);
-    }
-  }, [accessToken]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [keywords, setKeywords] = useState("");
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  const filtered = useMemo(
+    () =>
+      filterAndSortHistoryWorkouts(workouts, {
+        keywords,
+        sortKey: "date",
+        sortDir: "desc",
+      }),
+    [workouts, keywords]
+  );
 
-  async function toggleExpand(workoutId: string) {
-    if (expanded[workoutId]) {
-      setExpanded((prev) => ({ ...prev, [workoutId]: undefined }));
-      return;
-    }
-    const detail = await getWorkout(accessToken, workoutId);
-    setExpanded((prev) => ({ ...prev, [workoutId]: detail }));
-  }
+  const handleToggleExpand = useCallback(
+    async (workoutId: string) => {
+      if (expandedId === workoutId) {
+        setExpandedId(null);
+        return;
+      }
+      setExpandedId(workoutId);
+      await ensureWorkoutLoaded(workoutId);
+    },
+    [expandedId, ensureWorkoutLoaded]
+  );
 
-  if (dataLoading) {
+  if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>History</Text>
-        <Text>Loading your workouts…</Text>
-        <Text style={styles.label}>First load can take up to 30 seconds if the API has been idle.</Text>
+      <View style={styles.centered}>
+        <ActivityIndicator color={theme.colors.primaryGreen} size="large" />
+        <Text style={styles.muted}>Loading your workouts…</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>History</Text>
-
-      {error && <Text style={styles.error}>{error}</Text>}
-
-      <FlatList
-        style={styles.list}
-        data={history}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>No past workouts yet.</Text>}
-        renderItem={({ item }) => (
-          <View>
-            <TouchableOpacity onPress={() => void toggleExpand(item.id)} style={styles.row}>
-              <Text style={styles.rowDate}>{new Date(item.startedAt).toLocaleString()}</Text>
-              <Text style={styles.rowSets}>{item.status}</Text>
-            </TouchableOpacity>
-            {expanded[item.id] && (
-              <View style={styles.expandedList}>
-                <SessionList sessions={expanded[item.id]!.sessions} />
-                <Text style={styles.label}>TODO: show duration/power/energy per session</Text>
-              </View>
-            )}
-          </View>
-        )}
-      />
-    </View>
+    <FlatList<WorkoutWithSessions>
+      style={styles.root}
+      data={filtered}
+      keyExtractor={(item) => item.id}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <View>
+          <FeedSearchBar value={keywords} onChange={setKeywords} />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+        </View>
+      }
+      ListEmptyComponent={
+        <View style={styles.empty}>
+          <Text style={styles.emptyTitle}>
+            {workouts.length === 0 ? "No past workouts yet." : "No workouts match your search."}
+          </Text>
+          <Text style={styles.emptyBody}>
+            {workouts.length === 0
+              ? "Finish a workout on Track and it will show up here."
+              : "Try a different search."}
+          </Text>
+        </View>
+      }
+      renderItem={({ item }) => (
+        <WorkoutHistoryRow
+          workout={item}
+          loading={loadingWorkoutId === item.id}
+          open={expandedId === item.id}
+          onToggle={() => void handleToggleExpand(item.id)}
+        />
+      )}
+      contentContainerStyle={filtered.length === 0 ? styles.emptyContainer : styles.listContent}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: theme.colors.background,
-    paddingTop: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.lg,
+    backgroundColor: "#FFFFFF",
   },
-  title: {
-    fontSize: theme.typography.size.lg,
-    fontWeight: theme.typography.weight.semibold,
-    marginBottom: theme.spacing.lg,
-    color: theme.colors.textPrimary,
+  listContent: {
+    paddingBottom: theme.spacing.xxl,
+  },
+  emptyContainer: {
+    flexGrow: 1,
+  },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    gap: theme.spacing.sm,
+    padding: theme.spacing.xl,
+  },
+  muted: {
+    color: withAlpha(theme.colors.navy, 0.7),
+    fontSize: theme.typography.size.sm,
   },
   error: {
-    color: theme.colors.error,
-    marginBottom: theme.spacing.md,
-  },
-  label: {
-    marginTop: theme.spacing.xs,
+    marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.sm,
-    color: theme.colors.textMuted,
+    color: theme.colors.error,
+    fontSize: theme.typography.size.sm,
   },
-  list: {
-    width: "100%",
+  empty: {
+    paddingHorizontal: theme.spacing.xl,
+    paddingTop: theme.spacing.xxl,
+    alignItems: "flex-start",
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+  emptyTitle: {
+    fontWeight: theme.typography.weight.semibold,
+    color: theme.colors.navy,
+    fontSize: theme.typography.size.md,
   },
-  rowDate: {
-    fontWeight: theme.typography.weight.medium,
-    color: theme.colors.textPrimary,
-  },
-  rowSets: {
-    color: theme.colors.textMuted,
-  },
-  expandedList: {
-    paddingLeft: theme.spacing.md,
-    paddingBottom: theme.spacing.sm,
+  emptyBody: {
+    marginTop: theme.spacing.xs,
+    color: withAlpha(theme.colors.navy, 0.65),
+    fontSize: theme.typography.size.sm,
+    lineHeight: 20,
   },
 });
