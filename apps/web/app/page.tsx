@@ -64,11 +64,11 @@ export default function LandingPage() {
             }}
           >
             <p style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
-              <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span> \ee &middot; lek &middot;
-              sr &middot; size\
+              <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span>{" "}
+              \əˈlɛk &middot; sə &middot; saɪz\
             </p>
             <p style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}>
-              <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>verb.</span> producing
+              <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>verb.</span> to produce
               electricity through exercise
             </p>
             <p style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}>

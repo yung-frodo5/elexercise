@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { theme } from "@exercise-tracker/design-tokens";
 import { SiteHeader } from "../components/nav/SiteHeader";
 import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
+import { ContentPanel } from "../components/layout/ContentPanel";
 import { HEADER_HEIGHT } from "../lib/layoutConstants";
 
 export const metadata: Metadata = {
@@ -31,23 +32,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             font-size: inherit;
           }
           button {
-            background-color: #F0E9E9;
+            background-color: #FFFFFF;
+          }
+          input[type="file"]::file-selector-button,
+          input[type="file"]::-webkit-file-upload-button {
+            font-family: inherit;
+            font-size: inherit;
+            background-color: #FFFFFF;
           }
         `}</style>
         <SiteHeader />
         {/* Header/footer are position:fixed (out of flow) so content needs matching padding. */}
         <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
-          {/* The body background is the page canvas; this is the "foreground"
-              panel framed by it -- top margin per design feedback. */}
-          <div
-            style={{
-              margin: "0.75in 1in 1in 1in",
-              backgroundColor: theme.colors.surface,
-              padding: theme.spacing.xxl,
-            }}
-          >
-            {children}
-          </div>
+          <ContentPanel>{children}</ContentPanel>
         </div>
         <SiteFooter />
       </body>

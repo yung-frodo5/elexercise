@@ -21,6 +21,16 @@ export function formatDurationHms(totalSeconds: number): string {
   return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
+/** Wordy elapsed time for prose, e.g. "2 hours 15 minutes" or "45 minutes". */
+export function formatDurationHoursMinutes(totalSeconds: number): string {
+  const totalMinutes = Math.round(Math.max(0, totalSeconds) / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const hoursPart = `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  const minutesPart = `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+  return hours > 0 ? `${hoursPart} ${minutesPart}` : minutesPart;
+}
+
 export function formatEnergy(joules: number): string {
   const wh = joules / 3600;
   return `${wh.toFixed(wh < 10 ? 2 : 1)} Wh`;

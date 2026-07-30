@@ -8,12 +8,13 @@ import {
   nextSortState,
   toggleListItem,
   uniqueWorkoutActivityTypes,
+  workoutDurationS,
   workoutEnergyJ,
   type HistorySortDir,
   type HistorySortKey,
 } from "../../../lib/historySessions";
 import { useHistoryWorkouts } from "../../../lib/useHistoryWorkouts";
-import { formatEnergy, formatEnergyComparison } from "../../../lib/format";
+import { formatDurationHoursMinutes, formatEnergy, formatEnergyComparison } from "../../../lib/format";
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
@@ -39,6 +40,7 @@ export default function HistoryPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [sortKey, setSortKey] = useState<HistorySortKey>("date");
   const [sortDir, setSortDir] = useState<HistorySortDir>("desc");
+  const [shareCopied, setShareCopied] = useState(false);
 
   const sportOptions = useMemo(() => uniqueWorkoutActivityTypes(workouts), [workouts]);
   const filtered = useMemo(
@@ -49,6 +51,14 @@ export default function HistoryPage() {
     () => filtered.reduce((sum, workout) => sum + (workoutEnergyJ(workout) ?? 0), 0),
     [filtered]
   );
+  const totalDurationS = useMemo(
+    () => filtered.reduce((sum, workout) => sum + workoutDurationS(workout), 0),
+    [filtered]
+  );
+  const shareText =
+    `I've generated ${formatEnergy(totalEnergyJ)} by exercising for ` +
+    `${formatDurationHoursMinutes(totalDurationS)}-${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
+    `Join elexercise to generate some electricity of your own. Learn more at elexercise.org`;
 
   async function toggleExpand(workoutId: string) {
     if (expandedId === workoutId) {
@@ -170,7 +180,46 @@ export default function HistoryPage() {
             <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
               {formatEnergy(totalEnergyJ)}
             </span>{" "}
-            — [{formatEnergyComparison(totalEnergyJ / 3600)}].
+            — {formatEnergyComparison(totalEnergyJ / 3600)}!{" "}
+            {/* A real <a href="sms:..."> rather than a button + JS
+                location.href assignment -- several mobile browsers only
+                reliably carry query params (here, the body) through a
+                custom URI scheme when it's a native link click, not a
+                script-driven navigation. Styled inline to match <button>
+                since it won't be caught by the global button selector.
+                Desktop Messages.app doesn't reliably honor body= at all
+                (an OS-level limitation, not fixable from web content), so
+                this also copies the text to the clipboard as a fallback --
+                works on every platform even when the compose window opens
+                blank. */}
+            <a
+              href={`sms:?body=${encodeURIComponent(shareText)}`}
+              onClick={() => {
+                void navigator.clipboard.writeText(shareText).then(() => {
+                  setShareCopied(true);
+                  setTimeout(() => setShareCopied(false), 2000);
+                });
+              }}
+              style={{
+                display: "inline-block",
+                fontFamily: "inherit",
+                fontSize: "inherit",
+                backgroundColor: "#FFFFFF",
+                color: "#000000",
+                padding: "1px 7px",
+                border: "1px solid",
+                borderRadius: 3,
+                textDecoration: "none",
+                cursor: "pointer",
+              }}
+            >
+              Share
+            </a>
+            {shareCopied && (
+              <span style={{ marginLeft: theme.spacing.xs, color: theme.colors.textMuted }}>
+                Copied to clipboard!
+              </span>
+            )}
           </p>
         )}
       </section>
