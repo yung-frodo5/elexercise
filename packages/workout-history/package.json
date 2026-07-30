@@ -1,0 +1,16 @@
+{
+  "name": "@exercise-tracker/workout-history",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@exercise-tracker/design-tokens": "0.1.0",
+    "@exercise-tracker/shared-types": "0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

@@ -3,21 +3,17 @@
 import type { CSSProperties } from "react";
 import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import type { HistorySortDir, HistorySortKey } from "../../lib/historySessions";
+import {
+  HISTORY_COL_COUNT,
+  HISTORY_COLUMNS,
+  type HistorySortDir,
+  type HistorySortKey,
+} from "@exercise-tracker/workout-history";
 import { overlineStyle } from "../../lib/uiStyles";
 import { WorkoutHistoryRow } from "./WorkoutHistoryRow";
 
-const COLUMNS: { label: string; key: HistorySortKey; align?: "left" | "right" }[] = [
-  { label: "Title", key: "title" },
-  { label: "Date", key: "date" },
-  { label: "Workout", key: "sport" },
-  { label: "Time", key: "time", align: "right" },
-  { label: "Energy", key: "energy", align: "right" },
-  { label: "Avg. power", key: "avgPower", align: "right" },
-  { label: "Peak power", key: "peakPower", align: "right" },
-];
-
-const COL_COUNT = COLUMNS.length;
+const COLUMNS = HISTORY_COLUMNS;
+const COL_COUNT = HISTORY_COL_COUNT;
 
 /** Opaque sticky header so scrolling rows don't show through. */
 const HEADER_BG = "#002FA7";
