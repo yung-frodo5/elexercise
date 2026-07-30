@@ -42,6 +42,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         `}</style>
         <SiteHeader />
+        {/* Vertical accent ribbon along the left edge, as wide as the
+            footer is tall -- fixed, spanning between the header and
+            footer so it doesn't overlap either. */}
+        <div
+          aria-hidden
+          style={{
+            position: "fixed",
+            top: HEADER_HEIGHT,
+            bottom: FOOTER_HEIGHT,
+            left: 0,
+            width: FOOTER_HEIGHT,
+            backgroundColor: "#002FA7",
+            zIndex: 50,
+          }}
+        />
         {/* Header/footer are position:fixed (out of flow) so content needs matching padding. */}
         <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
           <ContentPanel>{children}</ContentPanel>

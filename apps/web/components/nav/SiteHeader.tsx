@@ -12,6 +12,7 @@ import { LevelProgress } from "../profile/LevelProgress";
 import { AvatarCircle } from "../profile/AvatarCircle";
 import logo from "../../assets/images/logo.png";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
+import { FOOTER_HEIGHT } from "./SiteFooter";
 import {
   NavDropdownPanel,
   NavMenuItemButton,
@@ -80,10 +81,33 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: "#FFFFFF",
+        // Solid #002FA7 for the leftmost FOOTER_HEIGHT px (same width as
+        // the vertical ribbon below the header, so the two read as one
+        // continuous band up to the top of the page), white everywhere
+        // else -- a hard-edged gradient rather than touching the ribbon's
+        // own z-index/stacking, which would risk covering (and making
+        // unclickable) the hamburger button living in that header column.
+        background: `linear-gradient(to right, #002FA7 ${FOOTER_HEIGHT}px, #FFFFFF ${FOOTER_HEIGHT}px)`,
       }}
     >
-      <div ref={navMenuRef} style={{ position: "relative", justifySelf: "start", minWidth: 0 }}>
+      {/* Absolutely positioned (relative to the fixed <header>) and sized
+          to exactly the blue strip's width, rather than left in the grid's
+          first column with the header's own paddingLeft -- that combo put
+          the button off-center in the strip (flush with its right edge,
+          not centered). */}
+      <div
+        ref={navMenuRef}
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: FOOTER_HEIGHT,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <button
           id={navMenuButtonId}
           type="button"
@@ -175,6 +199,11 @@ export function SiteHeader() {
           fontSize: theme.typography.size.lg,
           fontWeight: theme.typography.weight.bold,
           textDecoration: "none",
+          // The hamburger's wrapper is position:absolute now (see above),
+          // which takes it out of grid auto-placement entirely -- without
+          // an explicit column, this and the profile section below would
+          // both shift left into columns 1/2 instead of 2/3.
+          gridColumn: 2,
           justifySelf: "center",
         }}
       >
@@ -182,7 +211,7 @@ export function SiteHeader() {
         <span className="site-header-wordmark-text">elexercise!</span>
       </Link>
 
-      <div ref={profileMenuRef} style={{ position: "relative", justifySelf: "end", minWidth: 0 }}>
+      <div ref={profileMenuRef} style={{ position: "relative", gridColumn: 3, justifySelf: "end", minWidth: 0 }}>
         {!loading && (
           <>
             {session ? (

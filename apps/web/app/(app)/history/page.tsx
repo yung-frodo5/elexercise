@@ -197,7 +197,7 @@ export default function HistoryPage() {
               onClick={() => {
                 void navigator.clipboard.writeText(shareText).then(() => {
                   setShareCopied(true);
-                  setTimeout(() => setShareCopied(false), 2000);
+                  setTimeout(() => setShareCopied(false), 5000);
                 });
               }}
               style={{
@@ -216,7 +216,16 @@ export default function HistoryPage() {
               Share
             </a>
             {shareCopied && (
-              <span style={{ marginLeft: theme.spacing.xs, color: theme.colors.navy }}>
+              <span
+                style={{
+                  display: "inline-block",
+                  marginLeft: theme.spacing.xs,
+                  backgroundColor: "#D6E9FF",
+                  color: theme.colors.navy,
+                  padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+                  borderRadius: theme.radii.md,
+                }}
+              >
                 Copied to clipboard!
               </span>
             )}
