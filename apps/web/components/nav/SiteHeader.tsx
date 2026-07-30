@@ -67,6 +67,10 @@ export function SiteHeader() {
         @media (max-width: 360px) {
           .site-header-wordmark-text { display: none; }
         }
+        @media (max-width: 600px) {
+          .site-header-display-name { display: none; }
+          .site-header-level { display: none; }
+        }
       `}</style>
       <header
         style={{
@@ -241,6 +245,7 @@ export function SiteHeader() {
                 >
                   <AvatarCircle src={avatarUrl ?? ""} size={28} />
                   <span
+                    className="site-header-display-name"
                     style={{
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -254,7 +259,10 @@ export function SiteHeader() {
                 </button>
 
                 {level !== null && elexir !== null && (
-                  <div style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.navy }}>
+                  <div
+                    className="site-header-level"
+                    style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.navy }}
+                  >
                     <LevelProgress level={level} elexir={elexir} compact />
                   </div>
                 )}

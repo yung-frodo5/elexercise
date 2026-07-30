@@ -57,8 +57,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             zIndex: 50,
           }}
         />
-        {/* Header/footer are position:fixed (out of flow) so content needs matching padding. */}
-        <div style={{ paddingTop: HEADER_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
+        {/* Header/footer/ribbon are position:fixed (out of flow) — reserve matching space. */}
+        <div
+          style={{
+            paddingTop: HEADER_HEIGHT,
+            paddingBottom: `calc(${FOOTER_HEIGHT}px + env(safe-area-inset-bottom, 0px))`,
+            paddingLeft: FOOTER_HEIGHT,
+            boxSizing: "border-box",
+          }}
+        >
           <ContentPanel>{children}</ContentPanel>
         </div>
         <SiteFooter />

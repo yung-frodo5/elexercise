@@ -232,12 +232,16 @@ export function WorkoutHistoryRow({
             >
               {open ? theme.icons.collapse : theme.icons.expand}
             </span>
-            <div style={{ minWidth: 0 }}>
+            <div style={{ minWidth: 0, overflow: "hidden" }}>
               <span
                 style={{
+                  display: "block",
                   color: theme.colors.navy,
                   fontWeight: theme.typography.weight.semibold,
                   fontSize: theme.typography.size.md,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {title}

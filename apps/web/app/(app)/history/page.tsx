@@ -71,7 +71,7 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <main style={mainStyle}>
+      <main className="history-main" style={mainStyle}>
         <h1
           style={{
             margin: 0,
@@ -91,147 +91,172 @@ export default function HistoryPage() {
   }
 
   return (
-    <main style={mainStyle}>
-      <header style={{ marginBottom: theme.spacing.xl }}>
-        <h1
-          style={{
-            margin: 0,
-            fontSize: theme.typography.size.xl,
-            fontWeight: theme.typography.weight.bold,
-            letterSpacing: "-0.02em",
-            color: theme.colors.navy,
-          }}
-        >
-          Workout Log
-        </h1>
-        <p
-          style={{
-            margin: 0,
-            marginTop: theme.spacing.xs,
-            color: theme.colors.navy,
-            fontSize: theme.typography.size.sm,
-            lineHeight: 1.45,
-            maxWidth: 420,
-          }}
-        >
-          Past workouts and session power profiles.
-        </p>
-      </header>
-
-      {error && <p style={{ marginBottom: theme.spacing.md, color: theme.colors.error }}>{error}</p>}
-
-      <section>
-        <HistoryToolbar
-          activityCount={filtered.length}
-          sportOptions={sportOptions}
-          selectedSports={sports}
-          onToggleSport={(sport) => setSports((prev) => toggleListItem(prev, sport))}
-          keywords={keywords}
-          searchOpen={searchOpen}
-          onSearchOpenChange={setSearchOpen}
-          onKeywordsChange={setKeywords}
-        />
-
-        {filtered.length === 0 ? (
-          <SoftPanel style={{ padding: theme.spacing.xl }}>
-            <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold }}>
-              {workouts.length === 0 ? "No past workouts yet." : "No workouts match these filters."}
-            </p>
-            <p
-              style={{
-                margin: 0,
-                marginTop: theme.spacing.xs,
-                color: theme.colors.navy,
-                fontSize: theme.typography.size.sm,
-                lineHeight: 1.45,
-              }}
-            >
-              {workouts.length === 0
-                ? "Finish a workout on Track and it will show up here."
-                : "Try clearing filters or search."}
-            </p>
-          </SoftPanel>
-        ) : (
-          <HistoryTable
-            rows={filtered}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            expandedId={expandedId}
-            loadingWorkoutId={loadingWorkoutId}
-            onSort={(key) => {
-              const next = nextSortState(sortKey, sortDir, key);
-              setSortKey(next.sortKey);
-              setSortDir(next.sortDir);
-            }}
-            onToggleExpand={(workoutId) => void toggleExpand(workoutId)}
-            onCloseExpand={() => setExpandedId(null)}
-          />
-        )}
-
-        {totalEnergyJ > 0 && (
-          <p
+    <>
+      <style>{`
+        @media (max-width: 640px) {
+          .history-main {
+            padding: 0 0 16px 0 !important;
+          }
+          .history-subtitle { display: none; }
+          .history-energy {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+            padding-bottom: 8px !important;
+          }
+          .history-energy-share {
+            align-self: flex-start;
+          }
+        }
+      `}</style>
+      <main className="history-main" style={mainStyle}>
+        <header style={{ marginBottom: theme.spacing.xl }}>
+          <h1
             style={{
-              marginTop: theme.spacing.lg,
+              margin: 0,
+              fontSize: theme.typography.size.xl,
+              fontWeight: theme.typography.weight.bold,
+              letterSpacing: "-0.02em",
               color: theme.colors.navy,
-              fontSize: theme.typography.size.sm,
             }}
           >
-            Total energy generated:{" "}
-            <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
-              {formatEnergy(totalEnergyJ)}
-            </span>{" "}
-            — {formatEnergyComparison(totalEnergyJ / 3600)}!{" "}
-            {/* A real <a href="sms:..."> rather than a button + JS
-                location.href assignment -- several mobile browsers only
-                reliably carry query params (here, the body) through a
-                custom URI scheme when it's a native link click, not a
-                script-driven navigation. Styled inline to match <button>
-                since it won't be caught by the global button selector.
-                Desktop Messages.app doesn't reliably honor body= at all
-                (an OS-level limitation, not fixable from web content), so
-                this also copies the text to the clipboard as a fallback --
-                works on every platform even when the compose window opens
-                blank. */}
-            <a
-              href={`sms:?body=${encodeURIComponent(shareText)}`}
-              onClick={() => {
-                void navigator.clipboard.writeText(shareText).then(() => {
-                  setShareCopied(true);
-                  setTimeout(() => setShareCopied(false), 5000);
-                });
-              }}
-              style={{
-                display: "inline-block",
-                fontFamily: "inherit",
-                fontSize: "inherit",
-                backgroundColor: "#FFFFFF",
-                color: "#000000",
-                padding: "1px 7px",
-                border: "1px solid",
-                borderRadius: 3,
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              Share
-            </a>
-            {shareCopied && (
-              <span
+            Workout Log
+          </h1>
+          <p
+            className="history-subtitle"
+            style={{
+              margin: 0,
+              marginTop: theme.spacing.xs,
+              color: theme.colors.navy,
+              fontSize: theme.typography.size.sm,
+              lineHeight: 1.45,
+              maxWidth: 420,
+            }}
+          >
+            Past workouts and session power profiles.
+          </p>
+        </header>
+
+        {error && <p style={{ marginBottom: theme.spacing.md, color: theme.colors.error }}>{error}</p>}
+
+        <section>
+          <HistoryToolbar
+            activityCount={filtered.length}
+            sportOptions={sportOptions}
+            selectedSports={sports}
+            onToggleSport={(sport) => setSports((prev) => toggleListItem(prev, sport))}
+            keywords={keywords}
+            searchOpen={searchOpen}
+            onSearchOpenChange={setSearchOpen}
+            onKeywordsChange={setKeywords}
+          />
+
+          {filtered.length === 0 ? (
+            <SoftPanel style={{ padding: theme.spacing.xl }}>
+              <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold }}>
+                {workouts.length === 0 ? "No past workouts yet." : "No workouts match these filters."}
+              </p>
+              <p
                 style={{
-                  display: "inline-block",
-                  marginLeft: theme.spacing.xs,
-                  backgroundColor: "#D6E9FF",
+                  margin: 0,
+                  marginTop: theme.spacing.xs,
                   color: theme.colors.navy,
-                  padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-                  borderRadius: theme.radii.md,
+                  fontSize: theme.typography.size.sm,
+                  lineHeight: 1.45,
                 }}
               >
-                Copied to clipboard!
+                {workouts.length === 0
+                  ? "Finish a workout on Track and it will show up here."
+                  : "Try clearing filters or search."}
+              </p>
+            </SoftPanel>
+          ) : (
+            <HistoryTable
+              rows={filtered}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              expandedId={expandedId}
+              loadingWorkoutId={loadingWorkoutId}
+              onSort={(key) => {
+                const next = nextSortState(sortKey, sortDir, key);
+                setSortKey(next.sortKey);
+                setSortDir(next.sortDir);
+              }}
+              onToggleExpand={(workoutId) => void toggleExpand(workoutId)}
+              onCloseExpand={() => setExpandedId(null)}
+            />
+          )}
+
+          {totalEnergyJ > 0 && (
+            <p
+              className="history-energy"
+              style={{
+                marginTop: theme.spacing.lg,
+                color: theme.colors.navy,
+                fontSize: theme.typography.size.sm,
+              }}
+            >
+              <span>
+                Total energy generated:{" "}
+                <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
+                  {formatEnergy(totalEnergyJ)}
+                </span>{" "}
+                — {formatEnergyComparison(totalEnergyJ / 3600)}!
               </span>
-            )}
-          </p>
-        )}
-      </section>
-    </main>
+              {/* A real <a href="sms:..."> rather than a button + JS
+                  location.href assignment -- several mobile browsers only
+                  reliably carry query params (here, the body) through a
+                  custom URI scheme when it's a native link click, not a
+                  script-driven navigation. Styled inline to match <button>
+                  since it won't be caught by the global button selector.
+                  Desktop Messages.app doesn't reliably honor body= at all
+                  (an OS-level limitation, not fixable from web content), so
+                  this also copies the text to the clipboard as a fallback --
+                  works on every platform even when the compose window opens
+                  blank. */}
+              <a
+                className="history-energy-share"
+                href={`sms:?body=${encodeURIComponent(shareText)}`}
+                onClick={() => {
+                  void navigator.clipboard.writeText(shareText).then(() => {
+                    setShareCopied(true);
+                    setTimeout(() => setShareCopied(false), 5000);
+                  });
+                }}
+                style={{
+                  display: "inline-block",
+                  fontFamily: "inherit",
+                  fontSize: "inherit",
+                  backgroundColor: "#FFFFFF",
+                  color: "#000000",
+                  padding: "1px 7px",
+                  border: "1px solid",
+                  borderRadius: 3,
+                  textDecoration: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Share
+              </a>
+              {shareCopied && (
+                <span
+                  style={{
+                    display: "inline-block",
+                    marginLeft: theme.spacing.xs,
+                    backgroundColor: "#D6E9FF",
+                    color: theme.colors.navy,
+                    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+                    borderRadius: theme.radii.md,
+                  }}
+                >
+                  Copied to clipboard!
+                </span>
+              )}
+            </p>
+          )}
+        </section>
+      </main>
+    </>
   );
 }

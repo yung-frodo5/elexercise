@@ -29,45 +29,63 @@ const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resourc
 // centers whichever of the two constraints (90% vs 1040px cap) actually
 // applies, rather than leaving lopsided leftover space.
 //
-// No explicit fontFamily here -- inherits the body's plain monospace, per
-// design feedback asking every page to match the Workout Log page's font
-// (home page's definition box keeps its own explicit Georgia serif either
-// way, explicitly excluded from this).
+// On narrow viewports, inch gutters + 90% width leave almost no room once
+// the left navy ribbon is reserved — collapse to edge-to-edge with tight
+// padding (see .content-panel media query below).
 export function ContentPanel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const paddingBottom = pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)
-    ? theme.spacing.xxl + theme.spacing.xl
-    : theme.spacing.xxl;
+  const paddingBottom =
+    pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)
+      ? theme.spacing.xxl + theme.spacing.xl
+      : theme.spacing.xxl;
 
   return (
-    <div
-      style={
-        isHome
-          ? {
-              margin: "0.5in 0.5in 1in 0.5in",
-              backgroundColor: "#FFFFFF",
-              color: theme.colors.navy,
-              paddingTop: theme.spacing.xxl,
-              paddingLeft: theme.spacing.xxl,
-              paddingRight: theme.spacing.xxl,
-              paddingBottom,
-            }
-          : {
-              width: "90%",
-              maxWidth: 1040,
-              boxSizing: "border-box",
-              margin: "0.75in auto 1in auto",
-              backgroundColor: "#FFFFFF",
-              color: theme.colors.navy,
-              paddingTop: theme.spacing.xxl,
-              paddingLeft: theme.spacing.xxl,
-              paddingRight: theme.spacing.xxl,
-              paddingBottom,
-            }
-      }
-    >
-      {children}
-    </div>
+    <>
+      <style>{`
+        @media (max-width: 640px) {
+          .content-panel {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 12px 0 20px 0 !important;
+            padding: 12px 12px 20px 12px !important;
+          }
+          .content-panel-home {
+            margin: 12px 0 20px 0 !important;
+            padding: 12px 12px 20px 12px !important;
+          }
+        }
+      `}</style>
+      <div
+        className={isHome ? "content-panel content-panel-home" : "content-panel"}
+        style={
+          isHome
+            ? {
+                margin: "0.5in 0.5in 1in 0.5in",
+                backgroundColor: "#FFFFFF",
+                color: theme.colors.navy,
+                paddingTop: theme.spacing.xxl,
+                paddingLeft: theme.spacing.xxl,
+                paddingRight: theme.spacing.xxl,
+                paddingBottom,
+                boxSizing: "border-box",
+              }
+            : {
+                width: "90%",
+                maxWidth: 1040,
+                boxSizing: "border-box",
+                margin: "0.75in auto 1in auto",
+                backgroundColor: "#FFFFFF",
+                color: theme.colors.navy,
+                paddingTop: theme.spacing.xxl,
+                paddingLeft: theme.spacing.xxl,
+                paddingRight: theme.spacing.xxl,
+                paddingBottom,
+              }
+        }
+      >
+        {children}
+      </div>
+    </>
   );
 }
