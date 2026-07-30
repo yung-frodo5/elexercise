@@ -16,7 +16,6 @@ export function useHistoryWorkouts(accessToken: string) {
     void (async () => {
       try {
         const listed = await listWorkouts(accessToken);
-        // Table needs session fields (sports/metrics); hydrate details up front.
         const details = await Promise.all(
           listed.map(async (workout) => {
             try {
@@ -41,7 +40,6 @@ export function useHistoryWorkouts(accessToken: string) {
     };
   }, [accessToken]);
 
-  /** Fill in a workout that somehow landed without sessions (partial list failure). */
   const ensureWorkoutLoaded = useCallback(
     async (workoutId: string) => {
       const existing = workoutsRef.current.find((w) => w.id === workoutId);
