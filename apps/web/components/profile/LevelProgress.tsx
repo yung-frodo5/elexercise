@@ -92,7 +92,7 @@ export function LevelProgress({
                 display: "block",
                 width: 220,
                 marginBottom: theme.spacing.xs,
-                backgroundColor: theme.colors.border,
+                backgroundColor: "#D6E9FF",
                 color: theme.colors.navy,
                 fontSize: theme.typography.size.xs,
                 lineHeight: 1.4,

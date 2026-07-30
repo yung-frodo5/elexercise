@@ -17,27 +17,21 @@ import { StartMachineForm } from "../../../components/workout/StartMachineForm";
 import { SessionList } from "../../../components/workout/SessionList";
 import { LivePowerChart } from "../../../components/workout/LivePowerChart";
 
-// Full-bleed light-blue background, breaking out to the actual window edges
-// regardless of ancestor nesting (see the About page's panel for the same
-// margin technique) -- the inner wrapper re-declares this page's own <main>
-// maxWidth/margin/padding recipe exactly, so the ribbon's text lines up
-// with the content below it (not with the window edge the ribbon itself
-// reaches).
-function LightBlueRibbon({ children }: { children: ReactNode }) {
+// A plain rectangular light-blue background sized to its own content, not
+// a full-bleed ribbon spanning the window -- per design feedback, simpler
+// than the earlier breakout version.
+function LightBlueHeading({ children }: { children: ReactNode }) {
   return (
-    <div
+    <h2
       style={{
+        display: "inline-block",
+        margin: 0,
         backgroundColor: "#D6E9FF",
-        marginLeft: "calc(-50vw + 50%)",
-        marginRight: "calc(-50vw + 50%)",
-        paddingTop: theme.spacing.sm,
-        paddingBottom: theme.spacing.sm,
+        padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
       }}
     >
-      <div style={{ maxWidth: 480, margin: "0 auto", paddingLeft: theme.spacing.xl, paddingRight: theme.spacing.xl }}>
-        {children}
-      </div>
-    </div>
+      {children}
+    </h2>
   );
 }
 
@@ -159,9 +153,7 @@ export default function TrackPage() {
       <section>
         {currentWorkout ? (
           <>
-            <LightBlueRibbon>
-              <h2 style={{ margin: 0 }}>Workout in progress</h2>
-            </LightBlueRibbon>
+            <LightBlueHeading>Workout in progress</LightBlueHeading>
             <div style={{ marginTop: theme.spacing.xxl }}>
               <SessionList sessions={currentWorkout.sessions} onStop={handleStopSession} busy={busy} />
             </div>
@@ -192,9 +184,7 @@ export default function TrackPage() {
           </>
         ) : (
           <>
-            <LightBlueRibbon>
-              <h2 style={{ margin: 0 }}>Start a workout</h2>
-            </LightBlueRibbon>
+            <LightBlueHeading>Start a workout</LightBlueHeading>
             <div style={{ marginTop: theme.spacing.xxl }}>
               <StartActivityForm onStart={handleStart} busy={busy} />
             </div>

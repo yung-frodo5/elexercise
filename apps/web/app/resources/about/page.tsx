@@ -34,6 +34,7 @@ export default function AboutPage() {
           // regardless of how deep that container is nested, as long as
           // nothing in the chain is asymmetric.
           marginRight: "calc(-50vw + 50%)",
+          marginLeft: theme.spacing.xxl * 2,
           paddingTop: theme.spacing.xl,
           paddingLeft: theme.spacing.xxl * 2,
           paddingBottom: theme.spacing.xl,
