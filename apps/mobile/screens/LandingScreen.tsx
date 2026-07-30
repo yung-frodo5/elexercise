@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primaryGreen,
   },
   section: {
-    backgroundColor: "#ffffff",
+    backgroundColor: theme.colors.surface,
     paddingVertical: theme.spacing.xxl,
     paddingHorizontal: theme.spacing.xl,
   },

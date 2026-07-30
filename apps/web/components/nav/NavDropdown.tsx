@@ -44,9 +44,9 @@ const hoverBg = withAlpha(theme.colors.primaryGreen, 0.16);
 export const navSectionLabelStyle: CSSProperties = {
   margin: 0,
   padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-  fontSize: theme.typography.size.xs,
-  fontWeight: theme.typography.weight.semibold,
-  color: theme.colors.textMuted,
+  fontSize: theme.typography.size.md,
+  fontWeight: theme.typography.weight.bold,
+  color: theme.colors.sageAccent,
   letterSpacing: "0.04em",
   textTransform: "uppercase",
 };
@@ -55,10 +55,12 @@ export function NavMenuItemLink({
   href,
   onClick,
   children,
+  style,
 }: {
   href: string;
   onClick: () => void;
   children: ReactNode;
+  style?: CSSProperties;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -70,6 +72,7 @@ export function NavMenuItemLink({
       style={{
         ...itemStyle,
         backgroundColor: hovered ? hoverBg : "transparent",
+        ...style,
       }}
     >
       {children}
@@ -80,9 +83,11 @@ export function NavMenuItemLink({
 export function NavMenuItemButton({
   onClick,
   children,
+  style,
 }: {
   onClick: () => void;
   children: ReactNode;
+  style?: CSSProperties;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -94,6 +99,7 @@ export function NavMenuItemButton({
       style={{
         ...itemStyle,
         backgroundColor: hovered ? hoverBg : "transparent",
+        ...style,
       }}
     >
       {children}
@@ -127,7 +133,7 @@ export function NavDropdownPanel({
         minWidth: 220,
         padding: theme.spacing.sm,
         overflow: "hidden",
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colors.border,
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
         borderRadius: theme.radii.lg,
         boxShadow: `0 10px 28px ${withAlpha(theme.colors.textPrimary, 0.1)}`,

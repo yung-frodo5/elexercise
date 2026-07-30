@@ -20,20 +20,20 @@ export function SiteFooter() {
         justifyContent: "space-between",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: theme.colors.bannerBackground,
+        backgroundColor: theme.colors.sageAccent,
       }}
     >
-      <span style={{ color: theme.colors.textPrimary }}>Est. 2026</span>
+      <span style={{ color: theme.colors.border }}>Est. 2026</span>
       <a
         href="mailto:noah.c.korotzer@gmail.com"
-        style={{ color: theme.colors.secondaryGreen, textDecoration: "underline" }}
+        style={{ color: theme.colors.border, textDecoration: "underline" }}
       >
         Contact Us
       </a>
       <ExternalLink
         href="https://www.flaticon.com/free-icons/renewable-energy"
         title="renewable energy icons"
-        style={{ color: theme.colors.textPrimary, fontSize: 12 }}
+        style={{ color: theme.colors.border, fontSize: 12 }}
       >
         Icon by Indah Rusiati
       </ExternalLink>

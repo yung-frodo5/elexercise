@@ -10,17 +10,17 @@ import { WorkoutHistoryRow } from "./WorkoutHistoryRow";
 const COLUMNS: { label: string; key: HistorySortKey; align?: "left" | "right" }[] = [
   { label: "Title", key: "title" },
   { label: "Date", key: "date" },
-  { label: "Sports", key: "sport" },
+  { label: "Workout", key: "sport" },
   { label: "Time", key: "time", align: "right" },
   { label: "Energy", key: "energy", align: "right" },
-  { label: "Avg power", key: "avgPower", align: "right" },
+  { label: "Avg. power", key: "avgPower", align: "right" },
   { label: "Peak power", key: "peakPower", align: "right" },
 ];
 
 const COL_COUNT = COLUMNS.length;
 
 /** Opaque sticky header so scrolling rows don't show through. */
-const HEADER_BG = theme.colors.background;
+const HEADER_BG = theme.colors.border;
 
 export function HistoryTable({
   rows,
@@ -48,7 +48,6 @@ export function HistoryTable({
     borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
     whiteSpace: "nowrap",
     backgroundColor: HEADER_BG,
-    backgroundImage: `linear-gradient(${withAlpha(theme.colors.secondaryGreen, 0.14)}, ${withAlpha(theme.colors.secondaryGreen, 0.14)})`,
     position: "sticky",
     top: 0,
     zIndex: 3,
@@ -65,7 +64,7 @@ export function HistoryTable({
         overflowY: "auto",
         borderRadius: theme.radii.xl,
         border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.colors.surface,
         boxShadow: `0 8px 28px ${withAlpha(theme.colors.textPrimary, 0.05)}`,
       }}
     >
@@ -81,7 +80,7 @@ export function HistoryTable({
                   style={{
                     ...headerCell,
                     textAlign: align ?? "left",
-                    color: active ? theme.colors.secondaryGreen : theme.colors.textMuted,
+                    color: theme.colors.textPrimary,
                   }}
                   onClick={() => onSort(key)}
                 >

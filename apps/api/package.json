@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@exercise-tracker/leveling": "0.1.0",
     "@exercise-tracker/shared-types": "0.1.0",
     "@supabase/supabase-js": "^2.110.5",
     "cors": "^2.8.5",

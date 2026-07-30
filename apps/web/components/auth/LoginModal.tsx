@@ -61,7 +61,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
-          backgroundColor: theme.colors.background,
+          backgroundColor: theme.colors.surface,
           padding: theme.spacing.xl,
           maxWidth: 360,
           width: "90%",

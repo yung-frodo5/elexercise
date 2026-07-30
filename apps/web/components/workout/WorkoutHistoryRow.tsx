@@ -19,7 +19,11 @@ import { MultiPowerChart } from "./MultiPowerChart";
 import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
-const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.primaryGreen}`;
+const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
+// A third sage tone (lighter than either zebra shade) so hover/expanded
+// rows read as a distinct highlight rather than just landing on whichever
+// zebra shade the row already had.
+const ROW_HOVER_BG = "#D6E8C9";
 
 function ensureRowStyles() {
   if (typeof document === "undefined") return;
@@ -28,7 +32,7 @@ function ensureRowStyles() {
   style.id = HISTORY_ROW_STYLES_ID;
   style.textContent = `
     .history-row:focus-visible {
-      outline: 2px solid ${theme.colors.primaryGreen};
+      outline: 2px solid ${theme.colors.border};
       outline-offset: -2px;
     }
   `;
@@ -155,10 +159,10 @@ export function WorkoutHistoryRow({
   const cell: CSSProperties = {
     padding: `${theme.spacing.md}px`,
     fontSize: theme.typography.size.sm,
-    color: theme.colors.textPrimary,
+    color: theme.colors.border,
     verticalAlign: "middle",
     fontFamily: theme.typography.fontFamily.web,
-    borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.12)}`,
+    borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
   };
 
   const numericCell: CSSProperties = {
@@ -175,8 +179,8 @@ export function WorkoutHistoryRow({
     ...cell,
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
-    borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.08)}`,
-    backgroundColor: withAlpha(theme.colors.primaryGreen, 0.04),
+    borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
+    backgroundColor: theme.colors.background,
   };
 
   const subNumeric: CSSProperties = {
@@ -185,18 +189,18 @@ export function WorkoutHistoryRow({
     fontSize: theme.typography.size.xs,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
-    color: theme.colors.textMuted,
+    color: theme.colors.border,
     textAlign: "right",
     fontVariantNumeric: "tabular-nums",
   };
 
   const rowBg = open
-    ? withAlpha(theme.colors.primaryGreen, 0.1)
+    ? ROW_HOVER_BG
     : hovered
-      ? withAlpha(theme.colors.primaryGreen, 0.08)
+      ? ROW_HOVER_BG
       : zebra
-        ? withAlpha(theme.colors.secondaryGreen, 0.035)
-        : "transparent";
+        ? theme.colors.sageAccent
+        : theme.colors.background;
 
   return (
     <>
@@ -228,7 +232,7 @@ export function WorkoutHistoryRow({
               style={{
                 display: "inline-block",
                 marginTop: 2,
-                color: theme.colors.textMuted,
+                color: theme.colors.border,
                 fontSize: theme.typography.size.xxs,
                 lineHeight: 1.2,
                 flexShrink: 0,
@@ -239,7 +243,7 @@ export function WorkoutHistoryRow({
             <div style={{ minWidth: 0 }}>
               <span
                 style={{
-                  color: theme.colors.secondaryGreen,
+                  color: theme.colors.border,
                   fontWeight: theme.typography.weight.semibold,
                   fontSize: theme.typography.size.md,
                 }}
@@ -252,7 +256,7 @@ export function WorkoutHistoryRow({
                     display: "block",
                     marginTop: 2,
                     fontSize: theme.typography.size.xs,
-                    color: theme.colors.textMuted,
+                    color: theme.colors.border,
                   }}
                 >
                   {statusLabel}
@@ -265,7 +269,7 @@ export function WorkoutHistoryRow({
         <td
           style={{
             ...cell,
-            color: theme.colors.textMuted,
+            color: theme.colors.border,
             whiteSpace: "nowrap",
             fontSize: theme.typography.size.xs,
           }}
@@ -304,8 +308,8 @@ export function WorkoutHistoryRow({
             colSpan={colSpan}
             style={{
               padding: `${theme.spacing.md}px ${theme.spacing.xl}px ${theme.spacing.xl}px`,
-              backgroundColor: withAlpha(theme.colors.primaryGreen, 0.04),
-              borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.14)}`,
+              backgroundColor: theme.colors.background,
+              borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
               boxShadow: EXPAND_ACCENT,
             }}
           >
@@ -316,7 +320,7 @@ export function WorkoutHistoryRow({
                     Couldn&rsquo;t load power: {powerError}
                   </p>
                 ) : powerLoading ? (
-                  <p style={{ color: theme.colors.textMuted, margin: 0, textAlign: "center" }}>
+                  <p style={{ color: theme.colors.border, margin: 0, textAlign: "center" }}>
                     Loading power profile…
                   </p>
                 ) : (
@@ -348,7 +352,7 @@ function ActivitySubRow({
 }) {
   const [hovered, setHovered] = useState(false);
   const durationS = sessionDurationS(session);
-  const hoverBg = withAlpha(theme.colors.primaryGreen, 0.1);
+  const hoverBg = ROW_HOVER_BG;
   const cell = hovered ? { ...subCell, backgroundColor: hoverBg } : subCell;
   const numeric = hovered ? { ...subNumeric, backgroundColor: hoverBg } : subNumeric;
 
@@ -377,7 +381,7 @@ function ActivitySubRow({
             style={{
               fontSize: theme.typography.size.sm,
               fontWeight: theme.typography.weight.medium,
-              color: theme.colors.textPrimary,
+              color: theme.colors.border,
             }}
           >
             {session.activityType || "Activity"}

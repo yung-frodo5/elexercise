@@ -13,6 +13,7 @@
   "dependencies": {
     "@exercise-tracker/content": "0.1.0",
     "@exercise-tracker/design-tokens": "0.1.0",
+    "@exercise-tracker/leveling": "0.1.0",
     "@exercise-tracker/shared-types": "0.1.0",
     "@supabase/supabase-js": "^2.110.5",
     "next": "^14.2.5",
