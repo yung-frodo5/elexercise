@@ -32,7 +32,10 @@ The web app talks to the API via `NEXT_PUBLIC_API_URL` (defaults to
 ## Data model changes
 
 If you change anything in `packages/shared-types`, that's a contract change
-for every app. In your PR:
+for every app. The same applies to `packages/leveling` and
+`packages/workout-history` — they're shared cross-app code too (api and
+both frontends for `leveling`; mobile for `workout-history`), so a change
+there likewise ripples to every consumer. In your PR:
 1. Update the type in `shared-types`.
 2. If it affects storage, add a new migration under `supabase/migrations/`
    (never edit an already-applied one) and update
@@ -124,6 +127,13 @@ not `next/image`.
   exception, not a default — if it's part of what the article actually says
   (copy, an illustrative diagram), it belongs in `packages/content`.
 
+## Mobile-specific instructions
+
+Before writing any `apps/mobile` code, read `apps/mobile/AGENTS.md` (also
+included by `apps/mobile/CLAUDE.md`) — it's a load-bearing warning that
+Expo has changed enough that the pinned-version docs at
+https://docs.expo.dev/versions/v57.0.0/ must be checked first.
+
 ## Storage backend
 
 All persistence goes through the `WorkoutRepository` interface
@@ -160,4 +170,15 @@ npm run lint
 npm run test
 ```
 
-CI runs the same checks — running them locally first saves a round trip.
+There is currently no CI configured for this repo — these are the only
+checks that run, so treat running them locally as mandatory, not a
+pre-check.
+
+Also note the root commands run `--workspaces --if-present`, which
+silently skips any workspace missing that script: `apps/api` has no
+`lint` script, and `apps/mobile` has neither `lint` nor `test`. On top of
+that, no ESLint config or dependency exists anywhere in the repo yet, so
+even `apps/web`'s `lint` script is likely non-functional as-is. In short,
+don't assume `npm run lint`/`npm run test` currently check anything
+meaningful across the whole repo — verify manually for `apps/api` and
+`apps/mobile` until real lint/test setups exist for them.
