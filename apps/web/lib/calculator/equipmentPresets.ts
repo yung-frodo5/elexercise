@@ -39,3 +39,17 @@ export const EQUIPMENT_TYPE_OPTIONS: { value: EquipmentType; label: string }[] =
 export function applyEquipmentType(inputs: CalculatorInputs, equipmentType: EquipmentType): CalculatorInputs {
   return { ...inputs, equipmentType, ...EQUIPMENT_PRESETS[equipmentType] };
 }
+
+const ELEXERCISE_EQUIPMENT_TYPES: EquipmentType[] = ["stationaryBikeElexercise", "strengthTrainingElexercise"];
+
+export function isElexerciseEquipmentType(equipmentType: EquipmentType): boolean {
+  return ELEXERCISE_EQUIPMENT_TYPES.includes(equipmentType);
+}
+
+// True only while the equipment is *currently* running one of the elexercise-branded presets verbatim --
+// once "Specify custom economics" is toggled on, the preset's numbers (including its power generation)
+// are no longer guaranteed to hold, so branding no longer strictly applies. Same condition the "Equipment
+// preset" results-table row already uses to fall back to "Custom" (see equipmentSettings.ts).
+export function isElexerciseEquipment(inputs: CalculatorInputs): boolean {
+  return !inputs.customizeEconomics && isElexerciseEquipmentType(inputs.equipmentType);
+}

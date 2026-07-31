@@ -11,11 +11,8 @@ import type { CalculatorColumn, EquipmentDraftFieldErrors } from "../../lib/calc
 
 // Starts empty (not pre-filled) — the Name field shows genuine placeholder text instead, and Save is
 // rejected with "Name is required." until the user types a real name (see validation.ts).
-// `usageRate` defaults to DEFAULT_CALCULATOR_INPUTS' own, but callers pass the just-saved draft's usage
-// rate through after a Save — someone adding several pieces of equipment is likely comparing them at the
-// same usage rate, so it shouldn't silently reset with every new draft.
-function makeBlankDraft(usageRate = DEFAULT_CALCULATOR_INPUTS.usageRate): CalculatorColumn {
-  return { id: "", name: "", inputs: { ...DEFAULT_CALCULATOR_INPUTS, usageRate } };
+function makeBlankDraft(): CalculatorColumn {
+  return { id: "", name: "", inputs: { ...DEFAULT_CALCULATOR_INPUTS } };
 }
 
 export function Calculator() {
@@ -24,6 +21,7 @@ export function Calculator() {
   const [draft, setDraft] = useState<CalculatorColumn>(makeBlankDraft);
   const [draftSnapshot, setDraftSnapshot] = useState<CalculatorColumn>(draft);
   const [errors, setErrors] = useState<EquipmentDraftFieldErrors>({});
+  const [saveErrorMessages, setSaveErrorMessages] = useState<string[]>([]);
   const nextId = useRef(0);
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(draftSnapshot);
@@ -79,11 +77,28 @@ export function Calculator() {
     loadDraft(makeBlankDraft(), "new");
   }
 
-  // A successful manual Save immediately opens a fresh "+ New equipment" draft, ready for the next one —
-  // unlike the auto-save-on-navigate path in requestSelect/requestNew, which continues on to whichever
-  // item the user actually clicked.
+  // A successful manual Save immediately opens a fresh "+ New equipment" draft pre-filled with the
+  // just-used settings (only Name clears) — ready to tweak for the next similar piece of equipment,
+  // unlike the auto-save-on-navigate path in requestSelect/requestNew (via loadDraft + makeBlankDraft),
+  // which continues on to whichever item the user actually clicked and starts that fully blank.
+  //
+  // The try/catch and message collection cover two distinct failure modes with one "Error" pill next to
+  // Save (see EquipmentEditor): commitDraft() returning validation errors, and an actual thrown exception
+  // (nothing throws today, but nothing guards against it either).
   function saveDraft() {
-    if (Object.keys(commitDraft()).length === 0) loadDraft(makeBlankDraft(draft.inputs.usageRate), "new");
+    try {
+      const draftErrors = commitDraft();
+      if (Object.keys(draftErrors).length > 0) {
+        setSaveErrorMessages(Object.values(draftErrors));
+        return;
+      }
+      setSaveErrorMessages([]);
+      setDraft((prev) => ({ id: "", name: "", inputs: prev.inputs }));
+      setDraftSnapshot((prev) => ({ id: "", name: "", inputs: prev.inputs }));
+      setSelectedId("new");
+    } catch {
+      setSaveErrorMessages(["An unexpected error occurred while saving."]);
+    }
   }
 
   function removeEquipment(id: string) {
@@ -103,7 +118,7 @@ export function Calculator() {
             fontSize: theme.typography.size.sm,
           }}
         >
-          <li>Create equipment for analysis using the Equipment Editor below.</li>
+          <li>Create equipment for analysis using the Equipment Builder below.</li>
           <li>When you&rsquo;re finished specifying a piece of equipment, hit Save.</li>
           <li>
             Continue to add as many as you&rsquo;d like — you can always edit previously-saved equipment.
@@ -112,8 +127,15 @@ export function Calculator() {
         </ol>
       </div>
 
-      <div>
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Equipment Editor</h2>
+      <div
+        style={{
+          backgroundColor: "#D6E9FF",
+          borderRadius: theme.radii.lg,
+          padding: theme.spacing.xl,
+          color: theme.colors.navy,
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Editor</h2>
         <div style={{ marginBottom: theme.spacing.lg }}>
           <EquipmentRoster
             equipment={equipmentList}
@@ -125,9 +147,13 @@ export function Calculator() {
         </div>
         <EquipmentEditor
           draft={draft}
-          onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
+          onChange={(patch) => {
+            setDraft((prev) => ({ ...prev, ...patch }));
+            setSaveErrorMessages([]);
+          }}
           onSave={saveDraft}
           errors={errors}
+          saveErrorMessages={saveErrorMessages}
         />
       </div>
 

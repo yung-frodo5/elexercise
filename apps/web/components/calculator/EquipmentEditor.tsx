@@ -1,11 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import {
   applyEquipmentType,
   applyLocation,
   EQUIPMENT_TYPE_OPTIONS,
+  formatPowerGenWh,
+  isElexerciseEquipmentType,
   LOCATION_OPTIONS,
   NAME_PLACEHOLDER,
   USAGE_RATE_OPTIONS,
@@ -19,7 +21,7 @@ import type {
   UsageRate,
 } from "../../lib/calculator";
 import { ExternalLink } from "../ui/ExternalLink";
-import { FieldWithNote, NumberField, RadioOption, SelectField, TextField } from "./formFields";
+import { FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
 
 function CategoryHeading({ children }: { children: string }) {
   return (
@@ -29,7 +31,7 @@ function CategoryHeading({ children }: { children: string }) {
   );
 }
 
-function PresetCaption({ children }: { children: string }) {
+function PresetCaption({ children }: { children: ReactNode }) {
   return (
     <p style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy, margin: 0, opacity: 0.75 }}>
       {children}
@@ -41,6 +43,18 @@ function RadioRow({ children }: { children: ReactNode }) {
   return <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs }}>{children}</div>;
 }
 
+// Native <option> elements can't reliably take color/bold styling across browsers (same reason
+// InfoTooltip in formFields.tsx rolls its own tooltip instead of relying on the browser's) -- a plain-text
+// ⚡ prefix is the one way to make the elexercise-branded presets stand out while still scanning the closed
+// dropdown's options list, ahead of picking one (BrandedEquipmentLabel's icon+bold-green only shows up
+// once a preset is already selected).
+const EQUIPMENT_TYPE_OPTIONS_WITH_BRAND_MARKER = EQUIPMENT_TYPE_OPTIONS.map((option) => ({
+  ...option,
+  // U+FE0F forces the emoji (color) presentation of U+26A1 -- without it, browsers default to the plain
+  // black-and-white text-style glyph for this particular character.
+  label: isElexerciseEquipmentType(option.value) ? `⚡️ ${option.label}` : option.label,
+}));
+
 // Fully controlled — no state of its own. Calculator.tsx owns the draft, the dirty-check against a
 // snapshot, and the discard-confirmation; this component just renders `draft` and calls `onChange`/`onSave`.
 export function EquipmentEditor({
@@ -48,11 +62,13 @@ export function EquipmentEditor({
   onChange,
   onSave,
   errors,
+  saveErrorMessages,
 }: {
   draft: CalculatorColumn;
   onChange: (patch: Partial<CalculatorColumn>) => void;
   onSave: () => void;
   errors: EquipmentDraftFieldErrors;
+  saveErrorMessages: string[];
 }) {
   const { inputs } = draft;
 
@@ -80,7 +96,7 @@ export function EquipmentEditor({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.md, width: "100%" }}>
       <TextField
-        label="Name"
+        label="Name (required)"
         value={draft.name}
         placeholder={NAME_PLACEHOLDER}
         onChange={(name) => onChange({ name })}
@@ -105,7 +121,7 @@ export function EquipmentEditor({
       <SelectField<EquipmentType>
         label="Equipment preset"
         value={inputs.equipmentType}
-        options={EQUIPMENT_TYPE_OPTIONS}
+        options={EQUIPMENT_TYPE_OPTIONS_WITH_BRAND_MARKER}
         onChange={(equipmentType) => patchInputs(applyEquipmentType(inputs, equipmentType))}
         tooltip="Changing this resets Capital cost, Subscription fee, Lifespan, and Power generation below."
         disabled={showCustomEconomics}
@@ -163,7 +179,15 @@ export function EquipmentEditor({
         </>
       ) : (
         <PresetCaption>
-          {`$${inputs.capitalCost} upfront · $${inputs.subscriptionFeeMonthly}/mo · ${inputs.lifespanYears}-yr lifespan · ${inputs.powerGenWh} Wh/workout`}
+          {`$${inputs.capitalCost} upfront · $${inputs.subscriptionFeeMonthly}/mo · ${inputs.lifespanYears}-yr lifespan`}
+          {inputs.powerGenWh > 0 && (
+            <>
+              {" · "}
+              <span style={{ color: theme.colors.primaryGreen, fontWeight: theme.typography.weight.bold }}>
+                {formatPowerGenWh(inputs.powerGenWh)}
+              </span>
+            </>
+          )}
         </PresetCaption>
       )}
 
@@ -246,24 +270,59 @@ export function EquipmentEditor({
         </PresetCaption>
       )}
 
-      <button
-        type="button"
-        onClick={onSave}
+      <div
         style={{
+          display: "flex",
+          alignItems: "center",
+          gap: theme.spacing.sm,
           alignSelf: "flex-start",
-          padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
           marginTop: theme.spacing.sm,
-          borderRadius: theme.radii.pill,
-          border: "none",
-          background: theme.colors.primaryGreen,
-          color: "#FFFFFF",
-          fontWeight: theme.typography.weight.semibold,
-          fontFamily: theme.typography.fontFamily.web,
-          cursor: "pointer",
         }}
       >
-        Save
-      </button>
+        <button
+          type="button"
+          onClick={onSave}
+          style={{
+            padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+            borderRadius: theme.radii.pill,
+            border: "none",
+            background: theme.colors.primaryGreen,
+            color: "#FFFFFF",
+            fontWeight: theme.typography.weight.semibold,
+            fontFamily: theme.typography.fontFamily.web,
+            cursor: "pointer",
+          }}
+        >
+          Save
+        </button>
+        {saveErrorMessages.length > 0 && (
+          <HoverTooltip
+            content={
+              <ul style={{ margin: 0, paddingLeft: theme.spacing.md }}>
+                {saveErrorMessages.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            }
+          >
+            <span
+              tabIndex={0}
+              role="status"
+              style={{
+                padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+                borderRadius: theme.radii.pill,
+                background: withAlpha(theme.colors.error, 0.15),
+                color: theme.colors.error,
+                fontSize: theme.typography.size.xs,
+                fontWeight: theme.typography.weight.semibold,
+                cursor: "help",
+              }}
+            >
+              Error
+            </span>
+          </HoverTooltip>
+        )}
+      </div>
     </div>
   );
 }

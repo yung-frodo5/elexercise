@@ -121,6 +121,46 @@ export function TextField({
   );
 }
 
+// Same rationale as InfoTooltip below (native `title` tooltips are unreliable across browsers), but the
+// trigger and content are both caller-supplied instead of a fixed (i) icon + string, so any element (e.g.
+// an error pill) can be the hover/focus target.
+export function HoverTooltip({ children, content }: { children: ReactNode; content: ReactNode }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <span
+      style={{ position: "relative", display: "inline-block" }}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
+    >
+      {children}
+      {visible && (
+        <span
+          role="tooltip"
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            marginTop: theme.spacing.xs,
+            minWidth: 220,
+            padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+            background: theme.colors.navy,
+            color: "#FFFFFF",
+            fontSize: theme.typography.size.xs,
+            fontWeight: theme.typography.weight.regular,
+            borderRadius: theme.radii.sm,
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
+            zIndex: 10,
+          }}
+        >
+          {content}
+        </span>
+      )}
+    </span>
+  );
+}
+
 // Native `title` tooltips turned out to be unreliable (inconsistent/no-show across browsers), so this
 // renders its own hover/focus-driven tooltip bubble instead — fully within our control, not dependent on
 // the browser's own tooltip UI.

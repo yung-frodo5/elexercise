@@ -170,11 +170,11 @@ export function SiteHeader() {
 
           <div style={{ height: theme.spacing.xs }} />
           <p style={navSectionLabelStyle}>Resources</p>
-          <NavMenuItemLink href="/resources/calculator" onClick={() => setMenuOpen(false)}>
-            Calculator
+          <NavMenuItemLink href="/resources/equipment-builder" onClick={() => setMenuOpen(false)}>
+            Equipment Builder
           </NavMenuItemLink>
           <NavMenuItemLink href="/resources" onClick={() => setMenuOpen(false)}>
-            Other Resources
+            All Resources
           </NavMenuItemLink>
           <NavMenuItemLink
             href="/resources/about"
