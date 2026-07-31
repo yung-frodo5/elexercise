@@ -175,7 +175,7 @@ export default function TrackPage() {
             <p style={{ marginTop: theme.spacing.lg }}>Add another activity:</p>
             <StartActivityForm onStart={handleStart} busy={busy} />
             <p style={{ marginTop: theme.spacing.sm }}>
-              Or connect to a machine (stand-in for scanning, until that's built):
+              Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />
             <button onClick={() => void handleEnd()} disabled={busy} style={{ marginTop: theme.spacing.sm }}>
@@ -189,7 +189,7 @@ export default function TrackPage() {
               <StartActivityForm onStart={handleStart} busy={busy} />
             </div>
             <p style={{ marginTop: theme.spacing.sm }}>
-              Or connect to a machine (stand-in for scanning, until that's built):
+              Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />
           </>

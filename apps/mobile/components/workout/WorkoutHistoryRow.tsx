@@ -141,6 +141,7 @@ export function WorkoutHistoryRow({
 
   useEffect(() => {
     setSelectedIds(new Set(workout.sessions.map((s) => s.id)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed on workout.id/sessionKey (stable primitives), not workout.sessions, so a new array reference with unchanged content doesn't retrigger the reset
   }, [workout.id, sessionKey]);
 
   function toggleActivity(sessionId: string) {

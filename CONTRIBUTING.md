@@ -174,11 +174,13 @@ There is currently no CI configured for this repo — these are the only
 checks that run, so treat running them locally as mandatory, not a
 pre-check.
 
-Also note the root commands run `--workspaces --if-present`, which
-silently skips any workspace missing that script: `apps/api` has no
-`lint` script, and `apps/mobile` has neither `lint` nor `test`. On top of
-that, no ESLint config or dependency exists anywhere in the repo yet, so
-even `apps/web`'s `lint` script is likely non-functional as-is. In short,
-don't assume `npm run lint`/`npm run test` currently check anything
-meaningful across the whole repo — verify manually for `apps/api` and
-`apps/mobile` until real lint/test setups exist for them.
+`npm run lint` now runs for real across all three apps (`next lint` +
+`eslint-config-next` for web, plain `eslint`/`typescript-eslint` for api,
+`expo lint` + `eslint-config-expo` for mobile) — all three share one
+`eslint@^8.57.0` install at the repo root rather than mixing majors, since
+`apps/mobile`'s `expo lint` resolves `eslint` via a plain Node
+`require()` from deep inside its own dependency tree and got confused
+resolving a different major version hoisted elsewhere in this monorepo.
+Note the root commands still run `--workspaces --if-present`, which
+silently skips any workspace missing that script — `apps/mobile` has no
+`test` script yet, so `npm run test` doesn't cover it.

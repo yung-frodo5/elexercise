@@ -63,6 +63,7 @@ export function useWorkoutPowerSeries(workout: WorkoutWithSessions | null): {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deliberately keyed on workoutId/sessionKey (stable primitives), not the workout object, so a new object reference with unchanged content doesn't retrigger the fetch
   }, [workoutId, sessionKey]);
 
   const series = useMemo(() => {
