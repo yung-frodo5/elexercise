@@ -29,6 +29,16 @@ export function StartActivityForm({
           setOther("");
         }}
         disabled={busy || !other.trim()}
+        style={{
+          padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+          borderRadius: theme.radii.pill,
+          border: "none",
+          background: theme.colors.primaryGreen,
+          color: "#FFFFFF",
+          fontWeight: theme.typography.weight.semibold,
+          fontFamily: theme.typography.fontFamily.web,
+          cursor: "pointer",
+        }}
       >
         Add
       </button>

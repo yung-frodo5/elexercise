@@ -102,7 +102,24 @@ export default function LandingPage() {
           >
             <p className="definition-headword" style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
               <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span>{" "}
-              \əˈlɛk &middot; sɚ &middot; saɪz\
+              \ɪˈlɛk &middot; sɚ &middot; saɪz\{" "}
+              <button
+                type="button"
+                aria-label="Play pronunciation"
+                onClick={() => {
+                  void new Audio("/elexercise.m4a").play();
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 32,
+                  verticalAlign: "middle",
+                  padding: 0,
+                }}
+              >
+                🔊
+              </button>
             </p>
             <p
               className="definition-body-line"

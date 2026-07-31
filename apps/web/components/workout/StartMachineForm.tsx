@@ -21,6 +21,16 @@ export function StartMachineForm({ onStart, busy }: { onStart: (scanToken: strin
           setMachineId("");
         }}
         disabled={busy || !machineId.trim()}
+        style={{
+          padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+          borderRadius: theme.radii.pill,
+          border: "none",
+          background: theme.colors.primaryGreen,
+          color: "#FFFFFF",
+          fontWeight: theme.typography.weight.semibold,
+          fontFamily: theme.typography.fontFamily.web,
+          cursor: "pointer",
+        }}
       >
         Connect
       </button>
