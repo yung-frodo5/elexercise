@@ -103,7 +103,7 @@ export function Calculator() {
             fontSize: theme.typography.size.sm,
           }}
         >
-          <li>Create equipment for analysis using the Equipment Editor below.</li>
+          <li>Create equipment for analysis using the Equipment Builder below.</li>
           <li>When you&rsquo;re finished specifying a piece of equipment, hit Save.</li>
           <li>
             Continue to add as many as you&rsquo;d like — you can always edit previously-saved equipment.
@@ -113,7 +113,6 @@ export function Calculator() {
       </div>
 
       <div>
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Equipment Editor</h2>
         <div style={{ marginBottom: theme.spacing.lg }}>
           <EquipmentRoster
             equipment={equipmentList}

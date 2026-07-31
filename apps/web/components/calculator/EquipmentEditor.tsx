@@ -6,6 +6,8 @@ import {
   applyEquipmentType,
   applyLocation,
   EQUIPMENT_TYPE_OPTIONS,
+  formatPowerGenWh,
+  isElexerciseEquipmentType,
   LOCATION_OPTIONS,
   NAME_PLACEHOLDER,
   USAGE_RATE_OPTIONS,
@@ -29,7 +31,7 @@ function CategoryHeading({ children }: { children: string }) {
   );
 }
 
-function PresetCaption({ children }: { children: string }) {
+function PresetCaption({ children }: { children: ReactNode }) {
   return (
     <p style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy, margin: 0, opacity: 0.75 }}>
       {children}
@@ -40,6 +42,16 @@ function PresetCaption({ children }: { children: string }) {
 function RadioRow({ children }: { children: ReactNode }) {
   return <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs }}>{children}</div>;
 }
+
+// Native <option> elements can't reliably take color/bold styling across browsers (same reason
+// InfoTooltip in formFields.tsx rolls its own tooltip instead of relying on the browser's) -- a plain-text
+// ⚡ prefix is the one way to make the elexercise-branded presets stand out while still scanning the closed
+// dropdown's options list, ahead of picking one (BrandedEquipmentLabel's icon+bold-green only shows up
+// once a preset is already selected).
+const EQUIPMENT_TYPE_OPTIONS_WITH_BRAND_MARKER = EQUIPMENT_TYPE_OPTIONS.map((option) => ({
+  ...option,
+  label: isElexerciseEquipmentType(option.value) ? `⚡ ${option.label}` : option.label,
+}));
 
 // Fully controlled — no state of its own. Calculator.tsx owns the draft, the dirty-check against a
 // snapshot, and the discard-confirmation; this component just renders `draft` and calls `onChange`/`onSave`.
@@ -80,7 +92,7 @@ export function EquipmentEditor({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.md, width: "100%" }}>
       <TextField
-        label="Name"
+        label="Name (required)"
         value={draft.name}
         placeholder={NAME_PLACEHOLDER}
         onChange={(name) => onChange({ name })}
@@ -105,7 +117,7 @@ export function EquipmentEditor({
       <SelectField<EquipmentType>
         label="Equipment preset"
         value={inputs.equipmentType}
-        options={EQUIPMENT_TYPE_OPTIONS}
+        options={EQUIPMENT_TYPE_OPTIONS_WITH_BRAND_MARKER}
         onChange={(equipmentType) => patchInputs(applyEquipmentType(inputs, equipmentType))}
         tooltip="Changing this resets Capital cost, Subscription fee, Lifespan, and Power generation below."
         disabled={showCustomEconomics}
@@ -163,7 +175,16 @@ export function EquipmentEditor({
         </>
       ) : (
         <PresetCaption>
-          {`$${inputs.capitalCost} upfront · $${inputs.subscriptionFeeMonthly}/mo · ${inputs.lifespanYears}-yr lifespan · ${inputs.powerGenWh} Wh/workout`}
+          {`$${inputs.capitalCost} upfront · $${inputs.subscriptionFeeMonthly}/mo · ${inputs.lifespanYears}-yr lifespan · `}
+          <span
+            style={
+              inputs.powerGenWh > 0
+                ? { color: theme.colors.primaryGreen, fontWeight: theme.typography.weight.bold }
+                : undefined
+            }
+          >
+            {formatPowerGenWh(inputs.powerGenWh)}
+          </span>
         </PresetCaption>
       )}
 

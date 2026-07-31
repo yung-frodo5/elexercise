@@ -23,3 +23,7 @@ export function formatGrams(value: number): string {
 export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
+
+export function formatPowerGenWh(powerGenWh: number): string {
+  return powerGenWh === 0 ? "-" : `${powerGenWh} Wh/workout`;
+}

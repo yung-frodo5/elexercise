@@ -1,15 +1,18 @@
 "use client";
 
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import type { CalculatorColumn } from "../../lib/calculator";
+import type { CalculatorColumn, CalculatorInputs } from "../../lib/calculator";
+import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
 
 function RosterPill({
-  label,
+  name,
+  inputs,
   active,
   onSelect,
   onRemove,
 }: {
-  label: string;
+  name: string;
+  inputs?: CalculatorInputs;
   active: boolean;
   onSelect: () => void;
   onRemove?: () => void;
@@ -44,13 +47,13 @@ function RosterPill({
           wordBreak: "break-word",
         }}
       >
-        {label}
+        {inputs ? <BrandedEquipmentLabel inputs={inputs}>{name}</BrandedEquipmentLabel> : name}
       </button>
       {onRemove && (
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${label}`}
+          aria-label={`Remove ${name}`}
           style={{
             border: "none",
             background: "none",
@@ -86,13 +89,14 @@ export function EquipmentRoster({
       {equipment.map((item) => (
         <RosterPill
           key={item.id}
-          label={item.name}
+          name={item.name}
+          inputs={item.inputs}
           active={selectedId === item.id}
           onSelect={() => onRequestSelect(item.id)}
           onRemove={() => onRemove(item.id)}
         />
       ))}
-      <RosterPill label="+ New equipment" active={selectedId === "new"} onSelect={onRequestNew} />
+      <RosterPill name="+ New equipment" active={selectedId === "new"} onSelect={onRequestNew} />
     </div>
   );
 }

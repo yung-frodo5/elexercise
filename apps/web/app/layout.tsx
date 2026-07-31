@@ -25,8 +25,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             inherited body font-family -- this is the standard fix so inputs,
             selects, textareas, and buttons match the rest of the page instead
             of falling back to the system default. Buttons also get a shared
-            background per design feedback. */}
-        <style>{`
+            background per design feedback.
+            Uses dangerouslySetInnerHTML (not JSX text children) because the
+            `"` characters in the attribute selectors below get HTML-escaped
+            by React's server renderer but left un-decoded by the browser's
+            HTML parser inside <style> (a raw-text element) -- the resulting
+            server/client text mismatch was throwing a hydration error on
+            every page. Raw innerHTML sidesteps the escaping entirely. */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
           input, textarea, select, button {
             font-family: inherit;
             font-size: inherit;
@@ -40,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             font-size: inherit;
             background-color: #FFFFFF;
           }
-        `}</style>
+        `,
+          }}
+        />
         <SiteHeader />
         {/* Vertical accent ribbon along the left edge, as wide as the
             footer is tall -- fixed, spanning between the header and

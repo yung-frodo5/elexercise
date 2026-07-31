@@ -2,9 +2,15 @@ export type { UsageRate, CalculatorInputs, CalculatorResult, CalculatorColumn, E
 export { YEARLY_WORKOUTS, USAGE_RATE_OPTIONS } from "./usageRates";
 export { DEFAULT_CALCULATOR_INPUTS, NAME_PLACEHOLDER } from "./defaults";
 export { annuityFactor, computeCostPerWorkout } from "./computeCostPerWorkout";
-export { formatUsdPerWorkout, formatKwh, formatKg, formatGrams, formatPercent } from "./format";
+export { formatUsdPerWorkout, formatKwh, formatKg, formatGrams, formatPercent, formatPowerGenWh } from "./format";
 export type { EquipmentPresetValues } from "./equipmentPresets";
-export { EQUIPMENT_PRESETS, EQUIPMENT_TYPE_OPTIONS, applyEquipmentType } from "./equipmentPresets";
+export {
+  EQUIPMENT_PRESETS,
+  EQUIPMENT_TYPE_OPTIONS,
+  applyEquipmentType,
+  isElexerciseEquipment,
+  isElexerciseEquipmentType,
+} from "./equipmentPresets";
 export type { LocationPresetValues } from "./locationPresets";
 export { LOCATION_PRESETS, LOCATION_OPTIONS, applyLocation } from "./locationPresets";
 export type { EquipmentDraftField, EquipmentDraftFieldErrors } from "./validation";

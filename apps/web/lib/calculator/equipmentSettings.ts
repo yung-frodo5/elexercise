@@ -1,6 +1,7 @@
 import { EQUIPMENT_TYPE_OPTIONS } from "./equipmentPresets";
 import { LOCATION_OPTIONS } from "./locationPresets";
 import { USAGE_RATE_OPTIONS } from "./usageRates";
+import { formatPowerGenWh } from "./format";
 import type { CalculatorInputs } from "./types";
 
 function optionLabel<T extends string>(options: { value: T; label: string }[], value: T): string {
@@ -10,6 +11,9 @@ function optionLabel<T extends string>(options: { value: T; label: string }[], v
 export interface EquipmentSetting {
   label: string;
   format: (inputs: CalculatorInputs) => string;
+  // When true, the results table renders format(inputs) wrapped in BrandedEquipmentLabel instead of as
+  // plain text -- set only on "Equipment preset", the one row that can show an elexercise-branded name.
+  isEquipmentPreset?: boolean;
 }
 
 // The raw Equipment Editor fields, in the same top-to-bottom order they appear in the editor
@@ -20,6 +24,7 @@ export interface EquipmentSetting {
 export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
   {
     label: "Equipment preset",
+    isEquipmentPreset: true,
     format: (inputs) =>
       inputs.customizeEconomics ? "Custom" : optionLabel(EQUIPMENT_TYPE_OPTIONS, inputs.equipmentType),
   },
@@ -32,7 +37,7 @@ export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
     label: "Location",
     format: (inputs) => (inputs.customizeEnergy ? "Custom" : optionLabel(LOCATION_OPTIONS, inputs.location)),
   },
-  { label: "Power generation", format: (inputs) => `${inputs.powerGenWh} Wh/workout` },
+  { label: "Power generation", format: (inputs) => formatPowerGenWh(inputs.powerGenWh) },
   { label: "Electricity price", format: (inputs) => `$${inputs.electricityPricePerKwh}/kWh` },
   { label: "Carbon price", format: (inputs) => `$${inputs.carbonPricePerTon}/ton CO2e` },
   { label: "Grid carbon intensity", format: (inputs) => `${inputs.gridCarbonIntensityGPerKwh} gCO2e/kWh` },

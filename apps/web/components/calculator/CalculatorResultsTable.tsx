@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { EQUIPMENT_SETTINGS, RESULT_METRIC_SECTIONS, RESULT_METRICS } from "../../lib/calculator";
 import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
+import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
 
 const dividerStyle = `1px solid ${withAlpha(theme.colors.border, 0.35)}`;
 
@@ -143,7 +144,12 @@ export function CalculatorResultsTable({
       <TableRow
         header
         label=" "
-        values={equipment.map((item, i) => `${item.name}${i === 0 ? " (baseline)" : ""}`)}
+        values={equipment.map((item, i) => (
+          <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
+            {item.name}
+            {i === 0 ? " (baseline)" : ""}
+          </BrandedEquipmentLabel>
+        ))}
       />
 
       <SectionHeading
@@ -157,7 +163,15 @@ export function CalculatorResultsTable({
           <TableRow
             key={setting.label}
             label={setting.label}
-            values={equipment.map((item) => setting.format(item.inputs))}
+            values={equipment.map((item) =>
+              setting.isEquipmentPreset ? (
+                <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
+                  {setting.format(item.inputs)}
+                </BrandedEquipmentLabel>
+              ) : (
+                setting.format(item.inputs)
+              ),
+            )}
           />
         ))}
 
