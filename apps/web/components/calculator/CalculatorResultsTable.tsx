@@ -8,17 +8,20 @@ import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
 import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
 
 const dividerStyle = `1px solid ${withAlpha(theme.colors.border, 0.35)}`;
+const LABEL_COLUMN_MIN_WIDTH = 280;
 
 function GridCell({
   children,
   bold,
   header,
   divider,
+  sticky,
 }: {
   children: ReactNode;
   bold?: boolean;
   header?: boolean;
   divider?: boolean;
+  sticky?: boolean;
 }) {
   return (
     <div
@@ -28,6 +31,11 @@ function GridCell({
         color: theme.colors.navy,
         wordBreak: "break-word",
         borderRight: divider ? dividerStyle : undefined,
+        // Keeps the row name in view while scrolling the equipment columns horizontally. The background
+        // has to be opaque and match the Results panel's own (Calculator.tsx's hardcoded "#D6E9FF" -- the
+        // same one-off hex this codebase already repeats at each of its call sites, e.g. app/page.tsx),
+        // since scrolled-under column content would otherwise show through a sticky box with no fill.
+        ...(sticky ? { position: "sticky" as const, left: 0, zIndex: 1, backgroundColor: "#D6E9FF" } : {}),
       }}
     >
       {children}
@@ -36,7 +44,8 @@ function GridCell({
 }
 
 // One label cell + one cell per equipment column, with a vertical divider between the label column and
-// the first equipment column, and between each subsequent pair of equipment columns.
+// the first equipment column, and between each subsequent pair of equipment columns. The label cell is
+// sticky so row names stay visible while the equipment columns scroll horizontally underneath.
 function TableRow({
   label,
   values,
@@ -50,7 +59,7 @@ function TableRow({
 }) {
   return (
     <>
-      <GridCell bold={bold} header={header} divider>
+      <GridCell bold={bold} header={header} divider sticky>
         {label}
       </GridCell>
       {values.map((value, i) => (
@@ -132,68 +141,82 @@ export function CalculatorResultsTable({
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: `minmax(140px, auto) repeat(${equipment.length}, minmax(90px, 1fr))`,
-        columnGap: theme.spacing.md,
-        rowGap: theme.spacing.xs,
-        width: "100%",
-      }}
-    >
-      <TableRow
-        header
-        label=" "
-        values={equipment.map((item, i) => (
-          <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
-            {item.name}
-            {i === 0 ? " (baseline)" : ""}
-          </BrandedEquipmentLabel>
-        ))}
-      />
-
-      <SectionHeading
-        title="Settings"
-        columnCount={equipment.length}
-        collapsed={collapsedSections.has("Settings")}
-        onToggle={() => toggleSection("Settings")}
-      />
-      {!collapsedSections.has("Settings") &&
-        EQUIPMENT_SETTINGS.map((setting) => (
+    // minmax(...)'s explicit lower bound keeps each column readable — once that pushes the grid wider
+    // than this wrapper, overflowX turns it into a horizontal scrollbar instead of squishing columns.
+    <div style={{ overflowX: "auto", width: "100%" }}>
+      {/* The flex row (not the grid itself) is what actually overflows and scrolls -- the trailing spacer
+          sibling is unfilled space, not an extra grid column, so it can't disturb the grid's implicit
+          row-wrapping (which depends on exactly (1 label + equipment.length value) cells per logical row).
+          It exists so the sticky row-name column (below) has room to stay stuck for the entire real
+          scroll range: position: sticky naturally detaches once the remaining scroll distance drops below
+          the sticky item's own width, so without this trailing space it would let go right as the last
+          equipment column scrolled into view. */}
+      <div style={{ display: "flex" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `minmax(${LABEL_COLUMN_MIN_WIDTH}px, auto) repeat(${equipment.length}, minmax(180px, 1fr))`,
+            columnGap: theme.spacing.md,
+            rowGap: theme.spacing.xs,
+            flex: "1 0 auto",
+          }}
+        >
           <TableRow
-            key={setting.label}
-            label={setting.label}
-            values={equipment.map((item) =>
-              setting.isEquipmentPreset ? (
-                <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
-                  {setting.format(item.inputs)}
-                </BrandedEquipmentLabel>
-              ) : (
-                setting.format(item.inputs)
-              ),
-            )}
+            header
+            label=" "
+            values={equipment.map((item, i) => (
+              <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
+                {item.name}
+                {i === 0 ? " (baseline)" : ""}
+              </BrandedEquipmentLabel>
+            ))}
           />
-        ))}
 
-      {RESULT_METRIC_SECTIONS.map((section) => (
-        <Fragment key={section}>
           <SectionHeading
-            title={section}
+            title="Settings"
             columnCount={equipment.length}
-            collapsed={collapsedSections.has(section)}
-            onToggle={() => toggleSection(section)}
+            collapsed={collapsedSections.has("Settings")}
+            onToggle={() => toggleSection("Settings")}
           />
-          {!collapsedSections.has(section) &&
-            RESULT_METRICS.filter((metric) => metric.section === section).map((metric) => (
+          {!collapsedSections.has("Settings") &&
+            EQUIPMENT_SETTINGS.map((setting) => (
               <TableRow
-                key={metric.label}
-                bold={metric.bold}
-                label={metric.label}
-                values={results.map((result) => metric.format(result))}
+                key={setting.label}
+                label={setting.label}
+                values={equipment.map((item) =>
+                  setting.isEquipmentPreset ? (
+                    <BrandedEquipmentLabel key={item.id} inputs={item.inputs}>
+                      {setting.format(item.inputs)}
+                    </BrandedEquipmentLabel>
+                  ) : (
+                    setting.format(item.inputs)
+                  ),
+                )}
               />
             ))}
-        </Fragment>
-      ))}
+
+          {RESULT_METRIC_SECTIONS.map((section) => (
+            <Fragment key={section}>
+              <SectionHeading
+                title={section}
+                columnCount={equipment.length}
+                collapsed={collapsedSections.has(section)}
+                onToggle={() => toggleSection(section)}
+              />
+              {!collapsedSections.has(section) &&
+                RESULT_METRICS.filter((metric) => metric.section === section).map((metric) => (
+                  <TableRow
+                    key={metric.label}
+                    bold={metric.bold}
+                    label={metric.label}
+                    values={results.map((result) => metric.format(result))}
+                  />
+                ))}
+            </Fragment>
+          ))}
+        </div>
+        <div aria-hidden style={{ flex: `0 0 ${LABEL_COLUMN_MIN_WIDTH}px` }} />
+      </div>
     </div>
   );
 }
