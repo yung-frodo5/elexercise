@@ -140,7 +140,20 @@ export default function LeaderboardPage() {
           value={nameInput}
           onChange={(e) => setNameInput(e.target.value)}
         />
-        <button type="submit" disabled={adding}>
+        <button
+          type="submit"
+          disabled={adding}
+          style={{
+            padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+            borderRadius: theme.radii.pill,
+            border: "none",
+            background: theme.colors.primaryGreen,
+            color: "#FFFFFF",
+            fontWeight: theme.typography.weight.semibold,
+            fontFamily: theme.typography.fontFamily.web,
+            cursor: "pointer",
+          }}
+        >
           {adding ? "Adding…" : "Add friend"}
         </button>
       </form>

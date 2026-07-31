@@ -108,7 +108,21 @@ export default function ProfilePage() {
           ))}
         </select>
 
-        <button type="submit" disabled={saving} style={{ marginTop: theme.spacing.sm }}>
+        <button
+          type="submit"
+          disabled={saving}
+          style={{
+            marginTop: theme.spacing.sm,
+            padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+            borderRadius: theme.radii.pill,
+            border: "none",
+            background: theme.colors.primaryGreen,
+            color: "#FFFFFF",
+            fontWeight: theme.typography.weight.semibold,
+            fontFamily: theme.typography.fontFamily.web,
+            cursor: "pointer",
+          }}
+        >
           {saving ? "Saving…" : "Save"}
         </button>
 
