@@ -11,17 +11,49 @@ exercise-tracker/
 │   ├── mobile/    # Expo / React Native iOS app (see apps/mobile/README.md)
 │   └── api/       # Express API, storage-backend-agnostic
 ├── packages/
-│   ├── shared-types/   # TS types shared by api, web, and mobile (see packages/shared-types/README.md)
-│   ├── design-tokens/  # colors/typography/spacing/icons shared by web and mobile (see packages/design-tokens/README.md)
-│   └── content/        # article/rich-text content shared by web and mobile (see packages/content/README.md)
+│   ├── shared-types/     # TS types shared by api, web, and mobile (see packages/shared-types/README.md)
+│   ├── design-tokens/    # colors/typography/spacing/icons shared by web and mobile (see packages/design-tokens/README.md)
+│   ├── content/          # article/rich-text content shared by web and mobile (see packages/content/README.md)
+│   ├── leveling/         # XP-curve math (xpForLevel/levelForXp/progressToNextLevel), shared by api (awarding levels) and both frontends (progress bars)
+│   └── workout-history/  # power-sample downsampling, activity colors, and history formatting/sort helpers, consumed by mobile
 └── supabase/      # Postgres schema (migrations), RLS policies
 ```
+
+`apps/web` currently has its own parallel, non-shared copies of the
+`workout-history` logic under `apps/web/lib/` (`activityColors.ts`,
+`format.ts`, `historySessions.ts`, `downsamplePowerSamples.ts`,
+`usePowerSamples.ts`) rather than importing the package — a known
+duplication, not an intentional split.
+
+## Features
+
+- **Workout tracking** — machines, sessions, and (simulated) power, per
+  "Storage strategy" below.
+- **Leveling/XP** — a progress bar toward the next level on both web
+  (`apps/web/app/(app)/profile/page.tsx`) and mobile
+  (`apps/mobile/screens/ProfileScreen.tsx`), backed by `packages/leveling`.
+- **Leaderboard + friends** (`apps/web/app/(app)/leaderboard/page.tsx`,
+  `apps/web/lib/useFriends.ts`) — ranks the current user and their friends
+  by elexir. **Web-only, no mobile screen yet.** The leaderboard currently
+  mixes real friends with three hardcoded `PLACEHOLDER_FRIENDS` demo rows.
+- **Badges** — `badges`/`user_badges` tables exist (see "Storage strategy")
+  but there's no earning logic or badge display screen yet anywhere; only a
+  marketing mention in `LevelProgress.tsx`.
+- **Equipment Builder** (`apps/web/app/resources/equipment-builder/page.tsx`)
+  — a cost-per-workout calculator. Web-only.
+- **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
+  `packages/workout-history`; web's `history/page.tsx` has its own parallel
+  implementation (see the `packages/workout-history` note above).
 
 ## Storage strategy
 
 Data lives in Supabase (Postgres) — see `supabase/migrations/` for the
-schema (`machines`, `workouts`, `sessions`, `power_samples`) and RLS
-policies. All reads/writes go through the `WorkoutRepository` interface in
+schema (`machines`, `workouts`, `sessions`, `power_samples`, `profiles`
+— including `level`/`elexir` columns — `badges`/`user_badges`, and
+`friends`) and RLS policies. `badges`/`user_badges` are schema-only so
+far: there's no earning logic implemented anywhere yet. `friends` is a
+one-directional friend table backing the leaderboard. All reads/writes go
+through the `WorkoutRepository` interface in
 `apps/api/src/repositories/WorkoutRepository.ts`; the only concrete
 implementation is `SupabaseWorkoutRepository`, constructed with the
 service-role key (see `apps/api/.env.example`). Route handlers never import

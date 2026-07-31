@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
@@ -211,7 +212,7 @@ export function SiteHeader() {
           justifySelf: "center",
         }}
       >
-        <img src={logo.src} alt="" width={44} height={44} />
+        <Image src={logo} alt="" width={44} height={44} />
         <span className="site-header-wordmark-text">elexercise!</span>
       </Link>
 
