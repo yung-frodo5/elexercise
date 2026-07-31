@@ -14,4 +14,5 @@ export const icons = {
   calculator: "🧮",
   expand: "▸",
   collapse: "▾",
+  info: "ⓘ",
 } as const;

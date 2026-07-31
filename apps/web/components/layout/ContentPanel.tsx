@@ -12,6 +12,10 @@ import { theme } from "@exercise-tracker/design-tokens";
 // <main>'s xl padding-top).
 const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resources/calculator", "/resources"]);
 
+// Per design feedback, the calculator page's title should sit close to the top of the page rather
+// than get the standard 0.75in margin-top + xxl padding-top every other page uses.
+const REDUCED_TOP_SPACING_ROUTES = new Set(["/resources/calculator"]);
+
 // Used to frame page content against the page canvas -- white now, not the
 // dark green it used to be (removed per design feedback). Every page gets
 // 0.75in of margin on top/sides except the home page,
@@ -35,6 +39,7 @@ const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resourc
 export function ContentPanel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const hasReducedTopSpacing = Boolean(pathname && REDUCED_TOP_SPACING_ROUTES.has(pathname));
   const paddingBottom =
     pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)
       ? theme.spacing.xxl + theme.spacing.xl
@@ -74,10 +79,10 @@ export function ContentPanel({ children }: { children: ReactNode }) {
                 width: "90%",
                 maxWidth: 1040,
                 boxSizing: "border-box",
-                margin: "0.75in auto 1in auto",
+                margin: hasReducedTopSpacing ? `${theme.spacing.sm}px auto 1in auto` : "0.75in auto 1in auto",
                 backgroundColor: "#FFFFFF",
                 color: theme.colors.navy,
-                paddingTop: theme.spacing.xxl,
+                paddingTop: hasReducedTopSpacing ? theme.spacing.sm : theme.spacing.xxl,
                 paddingLeft: theme.spacing.xxl,
                 paddingRight: theme.spacing.xxl,
                 paddingBottom,

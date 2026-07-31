@@ -14,19 +14,25 @@ describe("annuityFactor", () => {
 });
 
 describe("computeCostPerWorkout", () => {
-  it("matches hand-computed values at the default inputs", () => {
+  it("matches hand-computed values at the default inputs (Stationary bike - basic + California)", () => {
     const result = computeCostPerWorkout(DEFAULT_CALCULATOR_INPUTS);
-    expect(result.annuityFactor).toBeCloseTo(7.023581541, 6);
-    expect(result.costPerWorkoutExercise).toBeCloseTo(1.642817339, 6);
-    expect(result.costPerWorkoutElectricity).toBeCloseTo(-0.057, 6);
-    expect(result.costPerWorkoutCarbon).toBeCloseTo(-0.00117, 6);
-    expect(result.totalCostPerWorkout).toBeCloseTo(1.584647339, 6);
-    expect(result.valueRatioElectricityToExercise).toBeCloseTo(0.034696493, 6);
-    expect(result.valueRatioCarbonToExercise).toBeCloseTo(0.000712191, 6);
+    expect(result.annuityFactor).toBeCloseTo(5.389289402, 6);
+    expect(result.costPerWorkoutExercise).toBeCloseTo(1.427332459, 6);
+    // Stationary bike - basic isn't elexercise-branded gear, so its powerGenWh default is 0 — every
+    // electricity/carbon-derived figure below is correspondingly zero, not negative. toBeCloseTo (rather
+    // than toBe) since `0 * -something` can produce a floating-point -0, which Object.is treats as
+    // distinct from +0.
+    expect(result.costPerWorkoutElectricity).toBeCloseTo(0, 6);
+    expect(result.costPerWorkoutCarbon).toBeCloseTo(0, 6);
+    expect(result.totalCostPerWorkout).toBeCloseTo(1.427332459, 6);
+    expect(result.valueRatioElectricityToExercise).toBeCloseTo(0, 6);
+    expect(result.valueRatioCarbonToExercise).toBeCloseTo(0, 6);
     expect(result.yearlyWorkouts).toBe(156);
-    expect(result.electricityGeneratedLifetimeKwh).toBeCloseTo(234, 6);
-    expect(result.carbonOffsetPerWorkoutGrams).toBeCloseTo(29.25, 6);
-    expect(result.carbonOffsetLifetimeKg).toBeCloseTo(45.63, 6);
+    expect(result.electricityGeneratedLifetimeKwh).toBeCloseTo(0, 6);
+    expect(result.carbonOffsetPerWorkoutGrams).toBeCloseTo(0, 6);
+    expect(result.carbonOffsetLifetimeKg).toBeCloseTo(0, 6);
+    expect(result.lifetimeElectricityValueUsd).toBeCloseTo(0, 6);
+    expect(result.lifetimeCarbonValueUsd).toBeCloseTo(0, 6);
   });
 
   it("reproduces the spreadsheet's 'Rack + barbell + plates' row (capital=1800, sub=0, lifespan=15) across every usage rate", () => {
@@ -42,7 +48,7 @@ describe("computeCostPerWorkout", () => {
       regular: 1.266861054,
       committed: 0.760116633,
       shared: 0.253372211,
-      public: 0.050674442,
+      public: 0.076011663,
     };
     for (const usageRate of Object.keys(expected) as CalculatorInputs["usageRate"][]) {
       const result = computeCostPerWorkout({ ...base, usageRate });
@@ -76,14 +82,16 @@ describe("computeCostPerWorkout", () => {
   });
 
   it("keeps electricity and carbon cost-per-workout negative (they represent savings/credits)", () => {
-    const result = computeCostPerWorkout(DEFAULT_CALCULATOR_INPUTS);
+    // Defaults to 0 power generation now (see the elexercise-branding comment above) — use an
+    // elexercise-branded preset's power generation to exercise the actual credit calculation.
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150 });
     expect(result.costPerWorkoutElectricity).toBeLessThan(0);
     expect(result.costPerWorkoutCarbon).toBeLessThan(0);
   });
 
   it("scales lifetime electricity and carbon offset with usage rate", () => {
-    const sporadic = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, usageRate: "sporadic" });
-    const publicRate = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, usageRate: "public" });
+    const sporadic = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, usageRate: "sporadic" });
+    const publicRate = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, usageRate: "public" });
     expect(publicRate.electricityGeneratedLifetimeKwh).toBeGreaterThan(sporadic.electricityGeneratedLifetimeKwh);
     expect(publicRate.carbonOffsetLifetimeKg).toBeGreaterThan(sporadic.carbonOffsetLifetimeKg);
     // Carbon offset per workout doesn't depend on usage rate or lifespan.
@@ -101,12 +109,16 @@ describe("computeCostPerWorkout", () => {
     expect(freeAndSilent.valueRatioElectricityToExercise).toBe(0);
     expect(freeAndSilent.valueRatioCarbonToExercise).toBe(0);
 
+    // Distinct from the case above: exercise cost is still 0, but a nonzero powerGenWh gives a nonzero
+    // electricity/carbon credit — this exercises the guard clause (would otherwise divide by zero).
     const freeWithPower = computeCostPerWorkout({
       ...DEFAULT_CALCULATOR_INPUTS,
       capitalCost: 0,
       subscriptionFeeMonthly: 0,
+      powerGenWh: 150,
     });
     expect(freeWithPower.costPerWorkoutExercise).toBe(0);
+    expect(freeWithPower.costPerWorkoutElectricity).toBeLessThan(0);
     expect(freeWithPower.valueRatioElectricityToExercise).toBe(0);
     expect(freeWithPower.valueRatioCarbonToExercise).toBe(0);
   });

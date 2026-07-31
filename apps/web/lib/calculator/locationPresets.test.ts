@@ -1,0 +1,34 @@
+import { describe, it, expect } from "vitest";
+import { applyLocation, LOCATION_OPTIONS, LOCATION_PRESETS } from "./locationPresets";
+import { DEFAULT_CALCULATOR_INPUTS } from "./defaults";
+import type { LocationPreset } from "./types";
+
+describe("LOCATION_PRESETS", () => {
+  it("matches the spec'd numbers exactly", () => {
+    expect(LOCATION_PRESETS).toEqual({
+      california: { electricityPricePerKwh: 0.27, gridCarbonIntensityGPerKwh: 195 },
+      hawaii: { electricityPricePerKwh: 0.38, gridCarbonIntensityGPerKwh: 680 },
+    });
+  });
+
+  it("has an option in LOCATION_OPTIONS for every preset key", () => {
+    const optionValues = LOCATION_OPTIONS.map((o) => o.value).sort();
+    const expectedValues: LocationPreset[] = (Object.keys(LOCATION_PRESETS) as LocationPreset[]).sort();
+    expect(optionValues).toEqual(expectedValues);
+  });
+});
+
+describe("applyLocation", () => {
+  it("overwrites electricityPricePerKwh/gridCarbonIntensityGPerKwh for a named preset", () => {
+    const result = applyLocation(DEFAULT_CALCULATOR_INPUTS, "hawaii");
+    expect(result.location).toBe("hawaii");
+    expect(result.electricityPricePerKwh).toBe(0.38);
+    expect(result.gridCarbonIntensityGPerKwh).toBe(680);
+  });
+
+  it("never touches powerGenWh or carbonPricePerTon", () => {
+    const result = applyLocation({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 321, carbonPricePerTon: 77 }, "hawaii");
+    expect(result.powerGenWh).toBe(321);
+    expect(result.carbonPricePerTon).toBe(77);
+  });
+});
