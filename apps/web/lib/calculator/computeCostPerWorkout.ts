@@ -38,6 +38,14 @@ export function computeCostPerWorkout(inputs: CalculatorInputs): CalculatorResul
   const carbonOffsetPerWorkoutGrams = (inputs.powerGenWh / 1000) * inputs.gridCarbonIntensityGPerKwh;
   const carbonOffsetLifetimeKg = (carbonOffsetPerWorkoutGrams * yearlyWorkouts * inputs.lifespanYears) / 1000;
 
+  // Lifetime energy value is a plain undiscounted sum of nominal per-workout credits across the
+  // equipment's life — NOT run through annuityFactor()/the discount rate the way the exercise-cost side
+  // is. Deliberate simplification: electricity prices are generally projected to rise over an equipment's
+  // lifespan, which would roughly offset the time-value discounting we'd otherwise apply, so future energy
+  // value is taken at face value rather than modeling both a rising price curve and a discount rate.
+  const lifetimeElectricityValueUsd = costPerWorkoutElectricity * yearlyWorkouts * inputs.lifespanYears;
+  const lifetimeCarbonValueUsd = costPerWorkoutCarbon * yearlyWorkouts * inputs.lifespanYears;
+
   return {
     annuityFactor: factor,
     costPerWorkoutExercise,
@@ -50,5 +58,7 @@ export function computeCostPerWorkout(inputs: CalculatorInputs): CalculatorResul
     electricityGeneratedLifetimeKwh,
     carbonOffsetPerWorkoutGrams,
     carbonOffsetLifetimeKg,
+    lifetimeElectricityValueUsd,
+    lifetimeCarbonValueUsd,
   };
 }
