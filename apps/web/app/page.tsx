@@ -16,8 +16,18 @@ export default function LandingPage() {
       {/* The rest of the article (and its diagram) now lives in a popup
           anchored to the definition, shown on hover/focus rather than
           always on the page -- a real <style> rule is needed for the
-          :hover/:focus-within pseudo-classes, which inline styles can't express. */}
-      <style>{`
+          :hover/:focus-within pseudo-classes, which inline styles can't express.
+          Set via dangerouslySetInnerHTML, not plain JSX text children --
+          React HTML-escapes plain children (quotes/">"/apostrophes in the
+          comments below become &quot;/&gt;/&#39;), but a <style> tag's
+          content is raw text per the HTML spec, so the browser keeps those
+          entities literal instead of decoding them. That desyncs the SSR
+          markup from what React computes on the client, causing a hydration
+          mismatch. dangerouslySetInnerHTML skips escaping entirely, so both
+          renders produce identical raw CSS. */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .definition-wrap { position: relative; display: inline-block; }
         .definition-popup {
           position: absolute;
@@ -61,7 +71,9 @@ export default function LandingPage() {
           .definition-headword { white-space: normal !important; font-size: 30px !important; }
           .definition-body-line { padding-left: 16px !important; }
         }
-      `}</style>
+      `,
+        }}
+      />
 
       <section
         style={{
