@@ -99,18 +99,17 @@ export function EquipmentEditor({
           name="economics-mode"
           label="Specify custom economics"
           checked={showCustomEconomics}
-          onChange={() => patchInputs({ customizeEconomics: true, equipmentType: "custom" })}
+          onChange={() => patchInputs({ customizeEconomics: true })}
         />
       </RadioRow>
-      {!showCustomEconomics && (
-        <SelectField<EquipmentType>
-          label="Equipment preset"
-          value={inputs.equipmentType}
-          options={EQUIPMENT_TYPE_OPTIONS}
-          onChange={(equipmentType) => patchInputs(applyEquipmentType(inputs, equipmentType))}
-          tooltip="Changing this resets Capital cost, Subscription fee, Lifespan, and Power generation below."
-        />
-      )}
+      <SelectField<EquipmentType>
+        label="Equipment preset"
+        value={inputs.equipmentType}
+        options={EQUIPMENT_TYPE_OPTIONS}
+        onChange={(equipmentType) => patchInputs(applyEquipmentType(inputs, equipmentType))}
+        tooltip="Changing this resets Capital cost, Subscription fee, Lifespan, and Power generation below."
+        disabled={showCustomEconomics}
+      />
       <SelectField<UsageRate>
         label="Usage rate"
         value={inputs.usageRate}
@@ -180,18 +179,17 @@ export function EquipmentEditor({
           name="energy-mode"
           label="Specify custom energy inputs"
           checked={showCustomEnergy}
-          onChange={() => patchInputs({ customizeEnergy: true, location: "custom" })}
+          onChange={() => patchInputs({ customizeEnergy: true })}
         />
       </RadioRow>
-      {!showCustomEnergy && (
-        <SelectField<LocationPreset>
-          label="Location"
-          value={inputs.location}
-          options={LOCATION_OPTIONS}
-          onChange={(location) => patchInputs(applyLocation(inputs, location))}
-          tooltip="Changing this resets Electricity price and Grid carbon intensity below."
-        />
-      )}
+      <SelectField<LocationPreset>
+        label="Location"
+        value={inputs.location}
+        options={LOCATION_OPTIONS}
+        onChange={(location) => patchInputs(applyLocation(inputs, location))}
+        tooltip="Changing this resets Electricity price and Grid carbon intensity below."
+        disabled={showCustomEnergy}
+      />
 
       {showCustomEnergy ? (
         <>

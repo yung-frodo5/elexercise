@@ -44,9 +44,13 @@ export function Calculator() {
     setErrors(draftErrors);
     if (Object.keys(draftErrors).length > 0) return draftErrors;
 
+    // Trimmed here (not in validateEquipmentDraft, which only checks emptiness) so a name like "  Bike  "
+    // is what actually gets persisted to the roster/results, not the untrimmed keystrokes.
+    const trimmed = { ...draft, name: draft.name.trim() };
+
     if (selectedId === "new") {
       const id = `eq-${nextId.current++}`;
-      const saved = { ...draft, id };
+      const saved = { ...trimmed, id };
       setEquipmentList((prev) => [...prev, saved]);
       // Also updates `draft` itself (not just the snapshot) and `selectedId` — otherwise draft.id stays
       // "" while draftSnapshot.id becomes the real id, which makes isDirty permanently true afterward.
@@ -54,8 +58,9 @@ export function Calculator() {
       setDraftSnapshot(saved);
       setSelectedId(id);
     } else {
-      setEquipmentList((prev) => prev.map((e) => (e.id === draft.id ? draft : e)));
-      setDraftSnapshot(draft);
+      setEquipmentList((prev) => prev.map((e) => (e.id === trimmed.id ? trimmed : e)));
+      setDraft(trimmed);
+      setDraftSnapshot(trimmed);
     }
     return {};
   }
@@ -138,7 +143,7 @@ export function Calculator() {
         <CalculatorResultsTable equipment={equipmentList} results={results} />
         {equipmentList.length > 0 && (
           <div style={{ marginTop: theme.spacing.xl }}>
-            <CashFlowChart equipment={equipmentList} />
+            <CashFlowChart equipment={equipmentList} results={results} />
           </div>
         )}
       </div>

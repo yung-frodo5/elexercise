@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 
 export const labelStyle: CSSProperties = {
   display: "flex",
@@ -171,19 +171,22 @@ function InfoTooltip({ text }: { text: string }) {
 
 // `tooltip`, when given, renders a small (i) glyph next to the label with a hover/focus-triggered tooltip
 // bubble — a genuine hover-only explanation, rather than always-visible caption text taking up permanent
-// space.
+// space. `disabled` greys the control out (e.g. a preset picker while its category's "custom" radio is
+// selected) rather than hiding it — the field stays visible so its current value is still legible.
 export function SelectField<T extends string>({
   label,
   value,
   options,
   onChange,
   tooltip,
+  disabled,
 }: {
   label: string;
   value: T;
   options: { value: T; label: string }[];
   onChange: (value: T) => void;
   tooltip?: string;
+  disabled?: boolean;
 }) {
   return (
     <label style={labelStyle}>
@@ -191,7 +194,21 @@ export function SelectField<T extends string>({
         {label}
         {tooltip && <InfoTooltip text={tooltip} />}
       </span>
-      <select value={value} onChange={(e) => onChange(e.target.value as T)} style={inputStyle}>
+      <select
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value as T)}
+        style={
+          disabled
+            ? {
+                ...inputStyle,
+                opacity: 0.5,
+                cursor: "not-allowed",
+                backgroundColor: withAlpha(theme.colors.border, 0.08),
+              }
+            : inputStyle
+        }
+      >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

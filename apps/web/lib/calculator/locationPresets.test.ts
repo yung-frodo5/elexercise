@@ -11,13 +11,9 @@ describe("LOCATION_PRESETS", () => {
     });
   });
 
-  it("has no entry for 'custom'", () => {
-    expect(LOCATION_PRESETS.custom).toBeUndefined();
-  });
-
-  it("has an option in LOCATION_OPTIONS for every preset key plus 'custom'", () => {
+  it("has an option in LOCATION_OPTIONS for every preset key", () => {
     const optionValues = LOCATION_OPTIONS.map((o) => o.value).sort();
-    const expectedValues: LocationPreset[] = ["custom", ...(Object.keys(LOCATION_PRESETS) as LocationPreset[])].sort();
+    const expectedValues: LocationPreset[] = (Object.keys(LOCATION_PRESETS) as LocationPreset[]).sort();
     expect(optionValues).toEqual(expectedValues);
   });
 });
@@ -34,17 +30,5 @@ describe("applyLocation", () => {
     const result = applyLocation({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 321, carbonPricePerTon: 77 }, "hawaii");
     expect(result.powerGenWh).toBe(321);
     expect(result.carbonPricePerTon).toBe(77);
-  });
-
-  it("never overwrites anything when selecting 'custom'", () => {
-    const customized = {
-      ...DEFAULT_CALCULATOR_INPUTS,
-      electricityPricePerKwh: 0.99,
-      gridCarbonIntensityGPerKwh: 42,
-    };
-    const result = applyLocation(customized, "custom");
-    expect(result.location).toBe("custom");
-    expect(result.electricityPricePerKwh).toBe(0.99);
-    expect(result.gridCarbonIntensityGPerKwh).toBe(42);
   });
 });

@@ -10,9 +10,9 @@ export interface EquipmentPresetValues {
 // Sourced from the repo-root "cost per workout calculator.xlsx" spreadsheet's "Equipment Per-Workout
 // Value" tab (Peloton/Tonal abstracted to generic category names), plus two user-supplied "basic" tiers.
 // Every preset besides the two "- elexercise" ones has powerGenWh: 0 — they're ordinary (non-power-
-// generating) exercise equipment, not actual elexercise gear. "custom" is intentionally absent —
-// selecting it never overwrites capitalCost/subscriptionFeeMonthly/lifespanYears/powerGenWh.
-export const EQUIPMENT_PRESETS: Partial<Record<EquipmentType, EquipmentPresetValues>> = {
+// generating) exercise equipment, not actual elexercise gear. Every EquipmentType has an entry here
+// (there's no "custom" member to omit — see the comment on EquipmentType in types.ts).
+export const EQUIPMENT_PRESETS: Record<EquipmentType, EquipmentPresetValues> = {
   rackBarbellPlates: { capitalCost: 1800, subscriptionFeeMonthly: 0, lifespanYears: 15, powerGenWh: 0 },
   powerRack: { capitalCost: 2500, subscriptionFeeMonthly: 0, lifespanYears: 15, powerGenWh: 0 },
   dumbbellFreeWeights: { capitalCost: 400, subscriptionFeeMonthly: 0, lifespanYears: 10, powerGenWh: 0 },
@@ -25,7 +25,6 @@ export const EQUIPMENT_PRESETS: Partial<Record<EquipmentType, EquipmentPresetVal
 };
 
 export const EQUIPMENT_TYPE_OPTIONS: { value: EquipmentType; label: string }[] = [
-  { value: "custom", label: "Custom" },
   { value: "stationaryBikeBasic", label: "Stationary bike - basic" },
   { value: "stationaryBikeSmart", label: "Stationary bike - smart" },
   { value: "stationaryBikeElexercise", label: "Stationary bike - elexercise" },
@@ -38,5 +37,5 @@ export const EQUIPMENT_TYPE_OPTIONS: { value: EquipmentType; label: string }[] =
 ];
 
 export function applyEquipmentType(inputs: CalculatorInputs, equipmentType: EquipmentType): CalculatorInputs {
-  return { ...inputs, equipmentType, ...(EQUIPMENT_PRESETS[equipmentType] ?? {}) };
+  return { ...inputs, equipmentType, ...EQUIPMENT_PRESETS[equipmentType] };
 }

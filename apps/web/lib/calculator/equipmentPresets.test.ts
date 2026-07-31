@@ -18,10 +18,6 @@ describe("EQUIPMENT_PRESETS", () => {
     });
   });
 
-  it("has no entry for 'custom'", () => {
-    expect(EQUIPMENT_PRESETS.custom).toBeUndefined();
-  });
-
   it("zeroes out power generation for every preset except the two elexercise ones", () => {
     for (const [equipmentType, preset] of Object.entries(EQUIPMENT_PRESETS)) {
       if (equipmentType === "stationaryBikeElexercise" || equipmentType === "strengthTrainingElexercise") {
@@ -32,12 +28,9 @@ describe("EQUIPMENT_PRESETS", () => {
     }
   });
 
-  it("has an option in EQUIPMENT_TYPE_OPTIONS for every preset key plus 'custom'", () => {
+  it("has an option in EQUIPMENT_TYPE_OPTIONS for every preset key", () => {
     const optionValues = EQUIPMENT_TYPE_OPTIONS.map((o) => o.value).sort();
-    const expectedValues: EquipmentType[] = [
-      "custom",
-      ...(Object.keys(EQUIPMENT_PRESETS) as EquipmentType[]),
-    ].sort();
+    const expectedValues: EquipmentType[] = (Object.keys(EQUIPMENT_PRESETS) as EquipmentType[]).sort();
     expect(optionValues).toEqual(expectedValues);
   });
 });
@@ -79,22 +72,6 @@ describe("applyEquipmentType", () => {
     expect(result.capitalCost).toBe(400);
     expect(result.lifespanYears).toBe(10);
     expect(result.powerGenWh).toBe(0);
-  });
-
-  it("never overwrites anything when selecting 'custom'", () => {
-    const customized = {
-      ...DEFAULT_CALCULATOR_INPUTS,
-      capitalCost: 12345,
-      subscriptionFeeMonthly: 67,
-      lifespanYears: 3,
-      powerGenWh: 42,
-    };
-    const result = applyEquipmentType(customized, "custom");
-    expect(result.equipmentType).toBe("custom");
-    expect(result.capitalCost).toBe(12345);
-    expect(result.subscriptionFeeMonthly).toBe(67);
-    expect(result.lifespanYears).toBe(3);
-    expect(result.powerGenWh).toBe(42);
   });
 
   it("leaves fields outside the preset (location, usage rate, electricity price) untouched", () => {

@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { theme } from "@exercise-tracker/design-tokens";
 import { activityColorForSport } from "../../lib/activityColors";
-import { buildCashFlowTimeSeries, computeCostPerWorkout } from "../../lib/calculator";
-import type { CalculatorColumn } from "../../lib/calculator";
+import { buildCashFlowTimeSeries } from "../../lib/calculator";
+import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
 
 // Reuses the same hashed-by-id color assignment as sport tags / MultiPowerChart series (see
 // lib/activityColors.ts) rather than introducing a separate chart-series palette token — this is already
@@ -14,8 +14,15 @@ function colorForEquipment(id: string): string {
   return activityColorForSport(id);
 }
 
-export function CashFlowChart({ equipment }: { equipment: CalculatorColumn[] }) {
-  const results = useMemo(() => equipment.map((item) => computeCostPerWorkout(item.inputs)), [equipment]);
+// `results` is passed in (rather than recomputed here) so it stays a single computeCostPerWorkout pass
+// per equipment item, shared with CalculatorResultsTable — see Calculator.tsx.
+export function CashFlowChart({
+  equipment,
+  results,
+}: {
+  equipment: CalculatorColumn[];
+  results: CalculatorResult[];
+}) {
   const data = useMemo(
     () =>
       buildCashFlowTimeSeries(

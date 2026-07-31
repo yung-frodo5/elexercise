@@ -1,5 +1,8 @@
 export type UsageRate = "sporadic" | "regular" | "committed" | "shared" | "public";
 
+// "Custom" isn't a member here — it's not a preset, it's the absence of one. Whether custom economics/
+// energy inputs are in effect is tracked separately via customizeEconomics/customizeEnergy below, so
+// this type only ever names a real, appliable preset.
 export type EquipmentType =
   | "rackBarbellPlates"
   | "powerRack"
@@ -9,11 +12,11 @@ export type EquipmentType =
   | "homeGymBasic"
   | "homeGymSmart"
   | "stationaryBikeElexercise"
-  | "strengthTrainingElexercise"
-  | "custom";
+  | "strengthTrainingElexercise";
 
-// Named `LocationPreset` (not `Location`) so it doesn't shadow the DOM `Location` type.
-export type LocationPreset = "california" | "hawaii" | "custom";
+// Named `LocationPreset` (not `Location`) so it doesn't shadow the DOM `Location` type. Like
+// EquipmentType, has no "custom" member — see the comment there.
+export type LocationPreset = "california" | "hawaii";
 
 export interface CalculatorInputs {
   equipmentType: EquipmentType; // drives capitalCost/subscriptionFeeMonthly/lifespanYears — see equipmentPresets.ts
