@@ -46,10 +46,8 @@ export function isElexerciseEquipmentType(equipmentType: EquipmentType): boolean
   return ELEXERCISE_EQUIPMENT_TYPES.includes(equipmentType);
 }
 
-// True only while the equipment is *currently* running one of the elexercise-branded presets verbatim --
-// once "Specify custom economics" is toggled on, the preset's numbers (including its power generation)
-// are no longer guaranteed to hold, so branding no longer strictly applies. Same condition the "Equipment
-// preset" results-table row already uses to fall back to "Custom" (see equipmentSettings.ts).
+// Branding tracks actual power generation, not preset identity -- any equipment generating power (whether
+// from an elexercise preset or custom economics with a hand-entered Power generation value) counts.
 export function isElexerciseEquipment(inputs: CalculatorInputs): boolean {
-  return !inputs.customizeEconomics && isElexerciseEquipmentType(inputs.equipmentType);
+  return inputs.powerGenWh > 0;
 }
