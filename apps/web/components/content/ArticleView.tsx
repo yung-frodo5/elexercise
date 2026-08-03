@@ -2,11 +2,31 @@ import type { Article } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
 import { Graphic } from "./Graphic";
 import { RichText } from "./RichText";
+import { ExternalLink } from "../ui/ExternalLink";
 
-export function ArticleHeader({ article }: { article: Article }) {
+export function ArticleHeader({
+  article,
+  titleSize = "md",
+  align = "left",
+}: {
+  article: Article;
+  // Default matches every existing usage (home page popup, About page);
+  // callers that want a more prominent title (e.g. a standalone article
+  // page) opt in explicitly rather than changing the shared default.
+  titleSize?: "md" | "xl";
+  align?: "left" | "center";
+}) {
   return (
     <>
-      <h2 style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.md }}>
+      <h2
+        style={{
+          margin: 0,
+          color: theme.colors.navyStatic,
+          fontSize: theme.typography.size[titleSize],
+          textAlign: align,
+          lineHeight: 1.5,
+        }}
+      >
         {article.title}
       </h2>
       <p
@@ -15,17 +35,37 @@ export function ArticleHeader({ article }: { article: Article }) {
           marginBottom: 0,
           color: theme.colors.navyStatic,
           fontSize: theme.typography.size.sm,
+          textAlign: align,
+          lineHeight: 1.5,
         }}
       >
         By: {article.authors.map((author) => author.name).join(", ")}
       </p>
+      {article.lastUpdated && (
+        <p
+          style={{
+            marginTop: theme.spacing.xs,
+            marginBottom: 0,
+            color: theme.colors.navyStatic,
+            fontSize: theme.typography.size.sm,
+            textAlign: align,
+            lineHeight: 1.5,
+          }}
+        >
+          Last updated: {article.lastUpdated}
+        </p>
+      )}
     </>
   );
 }
 
 export function ArticleBody({ article }: { article: Article }) {
   return (
-    <div>
+    // line-height set once here (inherited by every paragraph/list/reference
+    // below) rather than per element -- footnote markers render as <sup>,
+    // which otherwise inflates just its own line's height inconsistently
+    // against the rest of the article.
+    <div style={{ lineHeight: 1.5 }}>
       {article.body.map((block, index) => {
         switch (block.type) {
           case "paragraph":
@@ -60,12 +100,94 @@ export function ArticleBody({ article }: { article: Article }) {
                 <Graphic graphic={block} />
               </div>
             );
+          case "list":
+            return (
+              <ul
+                key={index}
+                style={{
+                  marginTop: theme.spacing.xl,
+                  marginBottom: 0,
+                  paddingLeft: theme.spacing.lg,
+                  color: theme.colors.navyStatic,
+                  fontSize: theme.typography.size.sm,
+                }}
+              >
+                {block.items.map((item, itemIndex) => (
+                  <li key={itemIndex}>
+                    <RichText nodes={item} />
+                  </li>
+                ))}
+              </ul>
+            );
+          case "callout":
+            return (
+              <div
+                key={index}
+                style={{
+                  marginTop: theme.spacing.xl,
+                  backgroundColor: "#D6E9FF",
+                  color: theme.colors.navyStatic,
+                  borderRadius: theme.radii.lg,
+                  padding: theme.spacing.lg,
+                }}
+              >
+                {block.heading && (
+                  <p
+                    style={{
+                      margin: 0,
+                      marginBottom: theme.spacing.sm,
+                      fontWeight: theme.typography.weight.bold,
+                      fontSize: theme.typography.size.sm,
+                    }}
+                  >
+                    {block.heading}
+                  </p>
+                )}
+                <ul
+                  style={{
+                    margin: 0,
+                    paddingLeft: theme.spacing.lg,
+                    fontSize: theme.typography.size.sm,
+                  }}
+                >
+                  {block.items.map((item, itemIndex) => (
+                    <li key={itemIndex}>
+                      <RichText nodes={item} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
           default: {
             const exhaustive: never = block;
             return exhaustive;
           }
         }
       })}
+      {article.references && article.references.length > 0 && (
+        <div style={{ marginTop: theme.spacing.xl }}>
+          <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.lg }}>References</p>
+          <ul
+            style={{
+              listStyle: "none",
+              marginTop: theme.spacing.sm,
+              marginBottom: 0,
+              padding: 0,
+              color: theme.colors.navyStatic,
+              fontSize: theme.typography.size.sm,
+            }}
+          >
+            {article.references.map((reference) => (
+              <li key={reference.id} id={`ref-${reference.id}`} style={{ marginTop: theme.spacing.xs }}>
+                {reference.id}.{" "}
+                <ExternalLink href={reference.url} style={{ color: theme.colors.secondaryGreen }}>
+                  {reference.url}
+                </ExternalLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

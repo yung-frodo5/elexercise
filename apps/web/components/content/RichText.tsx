@@ -12,13 +12,30 @@ export function RichText({ nodes }: { nodes: RichTextNode[] }) {
           color: node.href ? theme.colors.secondaryGreen : undefined,
           textDecoration: node.href || node.underline ? "underline" : undefined,
         };
-        return node.href ? (
-          <ExternalLink key={index} href={node.href} style={style}>
-            {node.text}
-          </ExternalLink>
-        ) : (
-          <span key={index} style={style}>
-            {node.text}
+        return (
+          <span key={index}>
+            {node.href ? (
+              <ExternalLink href={node.href} style={style}>
+                {node.text}
+              </ExternalLink>
+            ) : (
+              <span style={style}>{node.text}</span>
+            )}
+            {node.footnote !== undefined && (
+              <sup>
+                <a
+                  href={`#ref-${node.footnote}`}
+                  style={{
+                    color: theme.colors.secondaryGreen,
+                    fontSize: theme.typography.size.xxs,
+                    textDecoration: "none",
+                  }}
+                >
+                  [{node.footnote}]
+                </a>
+              </sup>
+            )}
+            {node.break && <br />}
           </span>
         );
       })}

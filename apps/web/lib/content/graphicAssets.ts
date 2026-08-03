@@ -5,6 +5,11 @@ import type { Crop } from "../../components/content/FramedImage";
 // export into a StaticImageData object ({ src, width, height, ... }), not a
 // plain URL string — hence the `.src` access at each call site.
 import landingHero from "../../assets/images/landing-hero.png";
+import powerGenerationPixiiMachine from "../../assets/images/power-generation-pixii-machine.png";
+import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-generation-bike-comp-no-carbon-price.png";
+import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike-comp-ca.png";
+import powerGenerationBikeCompHi from "../../assets/images/power-generation-bike-comp-hi.png";
+import powerGenerationTreadmillComp from "../../assets/images/power-generation-treadmill-comp.png";
 
 // Each app owns its own image files and maps the shared package's logical
 // GraphicKey to them here — packages/content never sees the binary. Typing
@@ -12,6 +17,11 @@ import landingHero from "../../assets/images/landing-hero.png";
 // without adding a matching entry here fails typecheck.
 export const graphicAssets: Record<GraphicKey, StaticImageData> = {
   "landing-hero": landingHero,
+  "power-generation-pixii-machine": powerGenerationPixiiMachine,
+  "power-generation-bike-comp-no-carbon-price": powerGenerationBikeCompNoCarbonPrice,
+  "power-generation-bike-comp-ca": powerGenerationBikeCompCa,
+  "power-generation-bike-comp-hi": powerGenerationBikeCompHi,
+  "power-generation-treadmill-comp": powerGenerationTreadmillComp,
 };
 
 // Optional per-asset crop (in the source image's native pixel space) for

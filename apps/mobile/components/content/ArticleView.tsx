@@ -9,6 +9,7 @@ export function ArticleView({ article }: { article: Article }) {
     <View>
       <Text style={styles.title}>{article.title}</Text>
       <Text style={styles.byline}>By: {article.authors.map((author) => author.name).join(", ")}</Text>
+      {article.lastUpdated && <Text style={styles.lastUpdated}>Last updated: {article.lastUpdated}</Text>}
 
       {article.body.map((block, index) => {
         switch (block.type) {
@@ -30,12 +31,50 @@ export function ArticleView({ article }: { article: Article }) {
                 <Graphic graphic={block} />
               </View>
             );
+          case "list":
+            return (
+              <View key={index} style={styles.listWrapper}>
+                {block.items.map((item, itemIndex) => (
+                  <View key={itemIndex} style={styles.listItemRow}>
+                    <Text style={styles.listItemText}>{"• "}</Text>
+                    <Text style={[styles.listItemText, styles.listItemTextBody]}>
+                      <RichText nodes={item} />
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            );
+          case "callout":
+            return (
+              <View key={index} style={styles.calloutWrapper}>
+                {block.heading && <Text style={styles.calloutHeading}>{block.heading}</Text>}
+                {block.items.map((item, itemIndex) => (
+                  <View key={itemIndex} style={styles.listItemRow}>
+                    <Text style={styles.calloutText}>{"• "}</Text>
+                    <Text style={[styles.calloutText, styles.listItemTextBody]}>
+                      <RichText nodes={item} />
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            );
           default: {
             const exhaustive: never = block;
             return exhaustive;
           }
         }
       })}
+
+      {article.references && article.references.length > 0 && (
+        <View style={styles.referencesWrapper}>
+          <Text style={styles.subtitle}>References</Text>
+          {article.references.map((reference) => (
+            <Text key={reference.id} style={styles.referenceItem}>
+              {reference.id}. <RichText nodes={[{ text: reference.url, href: reference.url }]} />
+            </Text>
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -51,6 +90,11 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.size.sm,
     color: theme.colors.textMuted,
   },
+  lastUpdated: {
+    marginTop: theme.spacing.xs,
+    fontSize: theme.typography.size.sm,
+    color: theme.colors.textMuted,
+  },
   paragraph: {
     marginTop: theme.spacing.xl,
     color: theme.colors.textMuted,
@@ -62,5 +106,40 @@ const styles = StyleSheet.create({
   },
   graphicWrapper: {
     marginTop: theme.spacing.xl,
+  },
+  listWrapper: {
+    marginTop: theme.spacing.xl,
+  },
+  listItemRow: {
+    flexDirection: "row",
+    marginTop: theme.spacing.xs,
+  },
+  listItemText: {
+    color: theme.colors.textMuted,
+  },
+  listItemTextBody: {
+    flex: 1,
+  },
+  calloutWrapper: {
+    marginTop: theme.spacing.xl,
+    backgroundColor: "#D6E9FF",
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.lg,
+  },
+  calloutHeading: {
+    marginBottom: theme.spacing.sm,
+    fontWeight: theme.typography.weight.bold,
+    fontSize: theme.typography.size.sm,
+    color: theme.colors.navyStatic,
+  },
+  calloutText: {
+    color: theme.colors.navyStatic,
+  },
+  referencesWrapper: {
+    marginTop: theme.spacing.xl,
+  },
+  referenceItem: {
+    marginTop: theme.spacing.xs,
+    color: theme.colors.textMuted,
   },
 });

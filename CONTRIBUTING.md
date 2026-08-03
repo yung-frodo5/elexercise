@@ -66,28 +66,52 @@ platforms.
 
 ## Content changes
 
-Article content (title, author(s), and an ordered body of paragraphs,
-subtitles, and graphics) lives in `packages/content` (`src/types.ts` for the
-model, one file per article, e.g. `src/landing.ts`, combined via
-`src/index.ts`). Both `apps/web` and `apps/mobile` import the same data —
-**author content once, here — don't hardcode copy or duplicate it per app.**
+Article content (title, author(s), an optional plain-text `lastUpdated`
+line, an ordered body of paragraphs, subtitles, graphics, lists, and
+callouts, plus optional numbered references) lives in `packages/content`
+(`src/types.ts` for the model, one file per article, e.g. `src/landing.ts`,
+combined via `src/index.ts`). Both `apps/web` and `apps/mobile` import the
+same data — **author content once, here — don't hardcode copy or duplicate
+it per app.**
 
 **Rich text.** A `RichTextNode` is a flat run — `{ text, bold?, italic?,
-underline?, href? }` — not a variant tag, so a single run can be bold *and*
-italic *and* a link at once (a variant tag can't express that without a
-combinatorial explosion of cases). `href` implies the run is a link
-(rendered underlined). Adding a new style (e.g. `strikethrough`)? Add the
-optional flag to `RichTextNode` in `src/types.ts`, then handle it in **both**
-platforms' `RichText.tsx` (`apps/web/components/content/RichText.tsx`,
+underline?, href?, footnote?, break? }` — not a variant tag, so a single run
+can be bold *and* italic *and* a link at once (a variant tag can't express
+that without a combinatorial explosion of cases). `href` implies the run is
+a link (rendered underlined); `footnote` marks the run as citing a numbered
+entry in the article's `references` list (see "References/footnotes"
+below); `break` inserts a soft line break right after the run (the
+shift+enter of this model) for lines that share a paragraph's spacing but
+still need to start a new line. Adding a new style (e.g. `strikethrough`)?
+Add the optional flag to `RichTextNode` in `src/types.ts`, then handle it in
+**both** platforms' `RichText.tsx`
+(`apps/web/components/content/RichText.tsx`,
 `apps/mobile/components/content/RichText.tsx`).
 
 **Block types.** An article `body` is an ordered list of `Paragraph`,
 `Subtitle` (identical to a `Paragraph` but rendered larger — e.g. a tagline
-directly under the title), and `Graphic` blocks. Adding a new block type?
-Add the interface in `src/types.ts`, add it to the `ArticleBodyBlock` union,
-then add a matching case to **both** platforms' `ArticleView.tsx` — they
-switch exhaustively (a `never` check), so a block type missed on one
-platform is a compile error, not silently-dropped content.
+directly under the title), `Graphic`, `List` (a bulleted list of items, each
+an ordered list of rich-text runs), and `Callout` (same shape as `List` plus
+an optional `heading`, but rendered on a rounded, tinted background — e.g.
+an executive summary) blocks. Adding a new block type? Add the interface in
+`src/types.ts`, add it to the `ArticleBodyBlock` union, then add a matching
+case to **both** platforms' `ArticleView.tsx` — they switch exhaustively (a
+`never` check), so a block type missed on one platform is a compile error,
+not silently-dropped content.
+
+**Last updated.** An `Article`'s optional `lastUpdated` is a plain authored
+display string (e.g. `"August 3rd, 2026"`), not a parsed date or something
+derived automatically (e.g. from git history) — update it by hand in the
+same commit as any other content change to that article, the same way you'd
+update the body copy itself.
+
+**References/footnotes.** An `Article`'s optional `references: Reference[]`
+(`{ id: number; url: string }`) lives at the article level rather than as a
+body block, since footnotes are always rendered once, in order, at the end
+of the article — there's no body position for an author to place them at.
+Mark the citing text with `footnote: <id>` on its `RichTextNode` run, and add
+the matching `{ id, url }` to `references`; both platforms' `ArticleView.tsx`
+render a "References" list after the body when present.
 
 **Assets.** Graphics are referenced by a logical `GraphicKey` only (a
 string-literal union in `src/types.ts`) — this package never stores or knows
@@ -99,6 +123,10 @@ about a binary image or a URL. Each app:
    `apps/<app>/lib/content/graphicAssets.ts`, typed `Record<GraphicKey, ...>`
    — adding a key in the shared package without a matching entry on both
    platforms fails typecheck there.
+
+A `Graphic` block may also carry an optional `caption?: RichTextNode[]` —
+rendered under the image (e.g. a photo/diagram's attribution), which can
+itself include a link.
 
 Each platform is free to use a different file, format, or crop for the same
 key — a wide landscape banner on web vs. a taller portrait crop on mobile,
@@ -116,9 +144,15 @@ not `next/image`.
 - Editing existing copy? Change the relevant fields in the article's file
   under `packages/content/src/`.
 - Adding a graphic? See "Assets" above.
-- Adding a new article? Add a new `packages/content/src/<name>.ts` file
-  exporting an `Article`, re-export it from `packages/content/src/index.ts`,
-  and wire it into the relevant screen/page in each app.
+- Adding a new article that should appear on the website's Articles listing?
+  Add a new `packages/content/src/<name>.ts` file exporting an `Article`,
+  re-export it from `packages/content/src/index.ts`, and add it to the
+  `articles` array in `packages/content/src/articles.ts`. That's the whole
+  checklist — `apps/web/app/resources/page.tsx`'s Articles table and
+  `apps/web/app/resources/articles/[slug]/page.tsx` both read from that
+  registry, so no new page file is needed. (A one-off article rendered
+  outside the Articles listing, like `/resources/about`, is instead wired
+  directly into its own page — see that file for the pattern.)
 - A purely decorative, page-layout image that's web-only and not yet
   confirmed for mobile may live directly in `apps/web` (imported straight
   into the page/component, clearly commented as web-only — see the

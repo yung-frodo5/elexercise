@@ -13,8 +13,14 @@ import { theme } from "@exercise-tracker/design-tokens";
 const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resources/equipment-analyzer", "/resources"]);
 
 // Per design feedback, the calculator page's title should sit close to the top of the page rather
-// than get the standard 0.75in margin-top + xxl padding-top every other page uses.
+// than get the standard 0.75in margin-top + xxl padding-top every other page uses. Article-detail
+// pages want the same treatment -- their large centered title reads oddly with a lot of empty
+// space above it.
 const REDUCED_TOP_SPACING_ROUTES = new Set(["/resources/equipment-analyzer"]);
+
+// Article-detail pages are dynamic (/resources/articles/<slug>), so they
+// can't be enumerated in either Set above -- checked separately by prefix.
+const ARTICLE_DETAIL_ROUTE_PREFIX = "/resources/articles/";
 
 // Used to frame page content against the page canvas -- white now, not the
 // dark green it used to be (removed per design feedback). Every page gets
@@ -39,9 +45,10 @@ const REDUCED_TOP_SPACING_ROUTES = new Set(["/resources/equipment-analyzer"]);
 export function ContentPanel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const hasReducedTopSpacing = Boolean(pathname && REDUCED_TOP_SPACING_ROUTES.has(pathname));
+  const isArticleDetail = Boolean(pathname?.startsWith(ARTICLE_DETAIL_ROUTE_PREFIX));
+  const hasReducedTopSpacing = Boolean(pathname && REDUCED_TOP_SPACING_ROUTES.has(pathname)) || isArticleDetail;
   const paddingBottom =
-    pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)
+    (pathname && EXTRA_BOTTOM_PADDING_ROUTES.has(pathname)) || isArticleDetail
       ? theme.spacing.xxl + theme.spacing.xl
       : theme.spacing.xxl;
 

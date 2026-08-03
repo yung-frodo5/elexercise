@@ -44,6 +44,13 @@ duplication, not an intentional split.
   comparison (including a year-by-year cost-over-time table matching the
   cash-flow chart) and a per-equipment color (preset swatches or a custom
   pick) that carries through to its roster pill and chart line. Web-only.
+- **Articles** (`apps/web/app/resources/page.tsx`,
+  `apps/web/app/resources/articles/[slug]/page.tsx`) — the `/resources` index
+  page lists Tools and Articles as two separate sections; article content
+  itself is authored in `packages/content`'s `articles` registry, and the
+  `[slug]` route renders whichever article `getArticleBySlug` finds, so a new
+  article never needs a new page file. First entry: "Is the Power Generation
+  Worth It?" by Noah Korotzer. Web-only.
 - **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
   `packages/workout-history`; web's `history/page.tsx` has its own parallel
   implementation (see the `packages/workout-history` note above).
@@ -95,18 +102,25 @@ in one place.
 ## Shared content model
 
 Article content (title, author(s), and an ordered body of paragraphs,
-subtitles, and graphics) for screens like the landing page is centralized in
+subtitles, graphics, and lists, plus optional numbered references) for
+screens like the landing page and the Articles listing is centralized in
 `packages/content` (same plain-TS, no-build-step conventions as
 `packages/shared-types`/`packages/design-tokens`) so it's authored once and
 consumed by both `apps/web` and `apps/mobile` — copy and article-integral
 imagery belong there, not hardcoded per app. Rich text is a flat run —
-`{ text, bold?, italic?, underline?, href? }` — rather than a variant tag, so
-a single run can be bold *and* italic *and* a link at once. Graphics are
-referenced by a logical key only, never a binary or a URL: each app keeps
-its own actual image file (any format or crop) and maps the key to it in its
-own `lib/content/graphicAssets.ts`. See `packages/content/README.md` and
-`CONTRIBUTING.md` ("Content changes") for the full model, asset conventions,
-and the one narrow exception for web-only decorative images.
+`{ text, bold?, italic?, underline?, href?, footnote? }` — rather than a
+variant tag, so a single run can be bold *and* italic *and* a link at once;
+`footnote` marks a run as citing a numbered entry in the article's
+`references` list, rendered as a superscript marker. Graphics are referenced
+by a logical key only, never a binary or a URL, and may carry an optional
+attribution `caption`: each app keeps its own actual image file (any format
+or crop) and maps the key to it in its own `lib/content/graphicAssets.ts`.
+Published articles are collected in `packages/content`'s `articles` registry,
+which `apps/web`'s `/resources/articles/[slug]` route renders by slug — a new
+article is a new data file plus one registry entry, no new page. See
+`packages/content/README.md` and `CONTRIBUTING.md` ("Content changes") for
+the full model, asset conventions, and the one narrow exception for web-only
+decorative images.
 
 See `CONTRIBUTING.md` for local setup and PR conventions.
 
