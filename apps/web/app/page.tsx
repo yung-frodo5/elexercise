@@ -1,71 +1,87 @@
 "use client";
 
+import Link from "next/link";
+import type { ReactNode } from "react";
+import type { GraphicKey } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
-import { landingArticle } from "@exercise-tracker/content";
-import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
-import { newsreader } from "../lib/fonts";
+import { SoftPanel } from "../components/ui/SoftPanel";
+import { FramedImage } from "../components/content/FramedImage";
+import { graphicAssets } from "../lib/content/graphicAssets";
+
+interface LandingLink {
+  href: string;
+  title: string;
+  description: ReactNode;
+  // Preview image shown alongside the title/description -- omitted for
+  // resources that don't have one yet.
+  graphicKey?: GraphicKey;
+  imageAlt?: string;
+  // Which side the image renders on -- defaults to "right".
+  imagePosition?: "left" | "right";
+}
+
+const LANDING_LINKS: LandingLink[] = [
+  {
+    href: "/resources/articles/what-is-elexercise",
+    title: "What is elexercise?",
+    description: (
+      <>
+        Elexercise takes aim at a global-scale absurdity:{" "}
+        <strong>humans currently do an immense amount of useless work</strong>. Pedal to spin a wheel for a little
+        while. Lift weights up and down, repeatedly. Climb up a wall, then climb back down. Meanwhile, gyms consume
+        power to run power-intensive HVAC systems and cardio equipment. Step back for a second and think about the
+        fitness industry at large: we burn fossil fuels to generate electricity so that we can do useless work more
+        comfortably. If we could physically feel how much work is required to generate the electricity we use, would
+        it impact our consumption habits?
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+    graphicKey: "what-is-elexercise-diagram",
+    imageAlt:
+      "Diagram of a gym designed as a community resilience hub, with rooftop solar panels, exercise equipment, bicycle parking, EV charging, and backup power.",
+  },
+  {
+    href: "/resources/articles/is-the-power-generation-worth-it",
+    title: "Is the Power Generation Worth It?",
+    description: (
+      <>
+        We assert that <strong>elexercise equipment is cheaper than its traditional counterparts</strong> in many
+        scenarios, when accounting for the electricity generation over its lifetime. This cost-benefit analysis
+        depends on many factors, including capital costs, electricity prices, energy generation per workout, and
+        more.
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+    graphicKey: "power-generation-treadmill-comp",
+    imageAlt:
+      "Line chart comparing lifetime cost across a passive, motorized, and electricity-generating treadmill in Hawaii, showing the motorized treadmill costing over $1,800 more than the electricity-generating option over 7 years",
+    imagePosition: "left",
+  },
+];
 
 export default function LandingPage() {
   return (
     <>
-      {/* The rest of the article (and its diagram) now lives in a popup
-          anchored to the definition, shown on hover/focus rather than
-          always on the page -- a real <style> rule is needed for the
-          :hover/:focus-within pseudo-classes, which inline styles can't express.
-          Set via dangerouslySetInnerHTML, not plain JSX text children --
-          React HTML-escapes plain children (quotes/">"/apostrophes in the
-          comments below become &quot;/&gt;/&#39;), but a <style> tag's
-          content is raw text per the HTML spec, so the browser keeps those
-          entities literal instead of decoding them. That desyncs the SSR
-          markup from what React computes on the client, causing a hydration
-          mismatch. dangerouslySetInnerHTML skips escaping entirely, so both
-          renders produce identical raw CSS. */}
+      {/* A real <style> rule is needed for the mobile media query below,
+          which inline styles can't express. Set via dangerouslySetInnerHTML,
+          not plain JSX text children -- React HTML-escapes plain children
+          (quotes/">"/apostrophes in the comments below become
+          &quot;/&gt;/&#39;), but a <style> tag's content is raw text per the
+          HTML spec, so the browser keeps those entities literal instead of
+          decoding them. That desyncs the SSR markup from what React computes
+          on the client, causing a hydration mismatch. dangerouslySetInnerHTML
+          skips escaping entirely, so both renders produce identical raw
+          CSS. */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        .definition-wrap { position: relative; display: inline-block; }
-        .definition-popup {
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
-          transition: opacity 150ms ease;
-          z-index: 10;
-        }
-        .definition-wrap:hover .definition-popup,
-        .definition-wrap:focus-within .definition-popup {
-          opacity: 1;
-          visibility: visible;
-          pointer-events: auto;
-        }
-        /* ArticleHeader/ArticleBody default to navy text (correct on the
-           white About page, their other use site) -- override here per
-           design feedback: the title (h2, the only one in this subtree)
-           green, everything else black. The byline ("By: ...") is hidden
-           entirely -- ">" targets it specifically since it's a direct
-           child of the popup, unlike ArticleBody's paragraphs which are
-           nested one level deeper inside ArticleBody's own wrapper div. */
-        .definition-popup h2 {
-          color: #228B22 !important;
-          /* Less bold than the browser's default h2 weight (700) --
-             !important to beat that UA default. */
-          font-weight: 600 !important;
-        }
-        .definition-popup > p {
-          display: none;
-        }
-        .definition-popup p {
-          color: #000000 !important;
-          line-height: 1.4;
-        }
         /* The definition panel itself has no background of its own -- it
            sits directly on the home page's canvas, which inverts to dark
-           navy in dark mode, so its black text needs to flip to white too.
-           The popup above keeps its own light-blue background regardless
-           of theme, so it isn't included here. */
+           navy in dark mode, so its black text needs to flip to white too. */
         html[data-theme="dark"] .definition-panel {
           color: #FFFFFF !important;
         }
@@ -73,10 +89,34 @@ export default function LandingPage() {
            -- without this it forces the whole page to scroll horizontally.
            !important is needed to beat the matching inline styles. */
         @media (max-width: 600px) {
-          .definition-wrap { display: block; width: 100%; box-sizing: border-box; }
+          .definition-wrap { width: 100%; box-sizing: border-box; }
           .definition-panel { font-size: 26px !important; padding: 16px !important; }
           .definition-headword { white-space: normal !important; font-size: 30px !important; }
           .definition-body-line { padding-left: 16px !important; }
+        }
+        /* Below the row/column breakpoint, every card stacks in DOM order
+           (image, then text) regardless of imagePosition -- the image-left
+           vs. image-right choice only applies once there's room for a row.
+           Keyed off the cards container's own rendered width via a
+           container query, not the viewport -- the page's fixed sidebar
+           ribbon eats a chunk of horizontal space that a viewport-width
+           media query can't see, which previously caused the row layout to
+           kick in before there was actually enough room and squeeze the
+           text column down to a sliver. */
+        .landing-cards { container-type: inline-size; }
+        .landing-card-row {
+          display: flex;
+          flex-direction: column;
+          gap: ${theme.spacing.lg}px;
+        }
+        .landing-card-image { width: 100%; max-width: 480px; }
+        .landing-card-text { width: 100%; }
+        @container (min-width: 720px) {
+          .landing-card-row { flex-direction: row; align-items: center; }
+          .landing-card-image { width: auto; flex: 0 0 400px; }
+          .landing-card-text { width: auto; flex: 1 1 260px; }
+          .landing-card-row--right > .landing-card-image { order: 2; }
+          .landing-card-row--right > .landing-card-text { order: 1; }
         }
       `,
         }}
@@ -85,18 +125,16 @@ export default function LandingPage() {
       <section
         style={{
           paddingTop: theme.spacing.xxl,
-          // Generous bottom padding so the page has real scroll room below
-          // the trigger -- the popup can be tall (up to 80vh) and is
-          // absolutely positioned, so without this there isn't guaranteed
-          // room to scroll down far enough to read all the way to its end.
-          paddingBottom: "80vh",
+          paddingBottom: theme.spacing.xxl,
           paddingLeft: theme.spacing.xxl,
           paddingRight: theme.spacing.xxl,
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: theme.spacing.xxl,
         }}
       >
-        <div className="definition-wrap" tabIndex={0}>
+        <div className="definition-wrap">
           <div
             className="definition-panel"
             style={{
@@ -139,32 +177,61 @@ export default function LandingPage() {
               className="definition-body-line"
               style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
             >
-              <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> the act of
-              producing electricity through exercise
+              <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> a
+              movement; an ideal; an empowerment of people to meet their personal health goals and help contribute to
+              planetary health, together
             </p>
           </div>
+        </div>
 
-          <div
-            className="definition-popup"
-            style={{
-              width: "min(90vw, 840px)",
-              maxHeight: "80vh",
-              overflowY: "auto",
-              marginTop: theme.spacing.sm,
-              backgroundColor: "#D6E9FF",
-              color: "#000000",
-              borderRadius: theme.radii.lg,
-              padding: theme.spacing.xxl,
-              boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
-              // The h2 title inside ArticleHeader still gets Clash Display
-              // from the global h1/h2/h3 rule (layout.tsx) regardless --
-              // this only reaches the body text/byline.
-              fontFamily: newsreader.style.fontFamily,
-            }}
-          >
-            <ArticleHeader article={landingArticle} />
-            <ArticleBody article={landingArticle} />
-          </div>
+        <div
+          className="landing-cards"
+          style={{
+            width: "100%",
+            maxWidth: 960,
+            display: "flex",
+            flexDirection: "column",
+            gap: theme.spacing.lg,
+          }}
+        >
+          {LANDING_LINKS.map((link) => {
+            const image = link.graphicKey ? graphicAssets[link.graphicKey] : undefined;
+            return (
+              <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
+                <SoftPanel style={{ padding: theme.spacing.lg }}>
+                  <div className={`landing-card-row landing-card-row--${link.imagePosition ?? "right"}`}>
+                    {image && (
+                      <div className="landing-card-image">
+                        <FramedImage image={image} alt={link.imageAlt ?? ""} />
+                      </div>
+                    )}
+                    <div className="landing-card-text">
+                      <p
+                        style={{
+                          margin: 0,
+                          color: theme.colors.navyStatic,
+                          fontWeight: theme.typography.weight.semibold,
+                          fontSize: theme.typography.size.lg,
+                        }}
+                      >
+                        {link.title}
+                      </p>
+                      <div
+                        style={{
+                          marginTop: theme.spacing.sm,
+                          color: theme.colors.navyStatic,
+                          fontSize: theme.typography.size.sm,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {link.description}
+                      </div>
+                    </div>
+                  </div>
+                </SoftPanel>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </>
