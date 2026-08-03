@@ -127,6 +127,37 @@ not `next/image`.
   exception, not a default — if it's part of what the article actually says
   (copy, an illustrative diagram), it belongs in `packages/content`.
 
+## Equipment Analyzer (calculator) conventions
+
+`apps/web/lib/calculator/` + `apps/web/components/calculator/` (the
+`/resources/equipment-analyzer` page). A few non-obvious conventions if
+you're touching this area:
+
+- **Numeric fields can be emptied.** `NumberField`
+  (`apps/web/components/calculator/formFields.tsx`) reads
+  `e.target.valueAsNumber`, not `Number(e.target.value)` — the latter turns
+  an emptied field into `0` instead of `NaN`, which used to force the field
+  back to "0" the instant a user cleared it. Required-field validation
+  happens once, at Save time (`apps/web/lib/calculator/validation.ts`), by
+  checking `Number.isNaN(...)` / `!(value >= constraint)` — not per
+  keystroke. Follow this pattern for any new numeric field rather than
+  clamping/coercing on `onChange`.
+- **CSV export mirrors the display definitions, but isn't the same data.**
+  `apps/web/lib/calculator/csv.ts`'s `CSV_SETTINGS_ROWS`/`CSV_RESULT_ROWS`
+  intentionally duplicate `EQUIPMENT_SETTINGS`/`RESULT_METRICS`' rows and
+  ordering rather than reusing them directly, because the CSV wants raw
+  numbers with a unit folded into the label (e.g. "Capital cost ($)") where
+  the on-screen table wants a formatted display string (e.g. "$1,200").
+  Keep both lists' row order in sync by hand when adding a new
+  setting/metric.
+- **`position: sticky` inside a CSS Grid item needs a non-grid-item
+  wrapper.** A direct grid item that spans multiple columns (e.g.
+  `CalculatorResultsTable.tsx`'s section-heading row) stretches to fill its
+  entire grid area, which leaves `position: sticky` no room to shift — it
+  silently behaves like `static`. Make the *sticky* element a content-sized
+  child nested one level inside the (non-sticky, full-width) grid item
+  instead, the way `SectionHeading`'s inner `<span>` does.
+
 ## Mobile-specific instructions
 
 Before writing any `apps/mobile` code, read `apps/mobile/AGENTS.md` (also
