@@ -188,7 +188,7 @@ export function SiteHeader() {
             All Resources
           </NavMenuItemLink>
           <NavMenuItemLink
-            href="/resources/about"
+            href="/resources/articles/what-is-elexercise"
             onClick={() => setMenuOpen(false)}
             style={{
               fontWeight: navSectionLabelStyle.fontWeight,

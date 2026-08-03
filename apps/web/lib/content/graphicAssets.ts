@@ -4,7 +4,7 @@ import type { Crop } from "../../components/content/FramedImage";
 // Next's built-in next-image-loader webpack rule turns this import's default
 // export into a StaticImageData object ({ src, width, height, ... }), not a
 // plain URL string — hence the `.src` access at each call site.
-import landingHero from "../../assets/images/landing-hero.png";
+import whatIsElexerciseDiagram from "../../assets/images/what-is-elexercise.svg";
 import powerGenerationPixiiMachine from "../../assets/images/power-generation-pixii-machine.png";
 import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-generation-bike-comp-no-carbon-price.png";
 import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike-comp-ca.png";
@@ -16,7 +16,7 @@ import powerGenerationTreadmillComp from "../../assets/images/power-generation-t
 // this as Record<GraphicKey, ...> means adding a key in the shared package
 // without adding a matching entry here fails typecheck.
 export const graphicAssets: Record<GraphicKey, StaticImageData> = {
-  "landing-hero": landingHero,
+  "what-is-elexercise-diagram": whatIsElexerciseDiagram,
   "power-generation-pixii-machine": powerGenerationPixiiMachine,
   "power-generation-bike-comp-no-carbon-price": powerGenerationBikeCompNoCarbonPrice,
   "power-generation-bike-comp-ca": powerGenerationBikeCompCa,

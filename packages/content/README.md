@@ -66,12 +66,14 @@ under the image (e.g. crediting a photo/diagram's source), which can itself
 include a link.
 
 **The `articles` registry.** `src/articles.ts` exports `articles: Article[]`
-(every article that appears in the website's Articles listing — distinct
-from `landingArticle`, which backs the home page/About and isn't part of
-that listing) and `getArticleBySlug(slug)` for looking one up. `apps/web`'s
+(every article that appears in the website's Articles listing) and
+`getArticleBySlug(slug)` for looking one up. `apps/web`'s
 `/resources/articles/[slug]` route renders whichever article this returns,
 so publishing a new article never requires a new page file — see "Adding or
-changing content" below.
+changing content" below. `landingArticle` is a normal entry in this
+registry (rendered at `/resources/articles/what-is-elexercise`) that's
+*also* rendered as an excerpt directly on the home page's hover popup —
+that dual use is expected, not a duplication to clean up.
 
 ## Usage
 
