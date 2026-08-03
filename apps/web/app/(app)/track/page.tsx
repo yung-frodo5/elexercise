@@ -33,7 +33,7 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
         // which is exactly the bug: it inherited white in dark mode).
         color: theme.colors.navyStatic,
         padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-        fontSize: theme.typography.size.md,
+        fontSize: theme.typography.size.lg,
       }}
     >
       {children}
