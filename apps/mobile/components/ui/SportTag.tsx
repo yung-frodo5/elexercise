@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
   },
   label: {
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     fontWeight: theme.typography.weight.semibold,
     // System font — Menlo can miss glyphs; tags are short Latin labels.
   },

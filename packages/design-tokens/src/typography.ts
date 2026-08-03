@@ -17,12 +17,15 @@ export const typography = {
   size: {
     // Compact uppercase labels (table headers, chart titles).
     xxs: 11,
-    xs: 13,
+    // Was two steps (xs: 13, sm: 14) -- merged since the 1px gap wasn't
+    // tracking any real semantic distinction across call sites, just
+    // whichever token a given file happened to reach for.
     sm: 14,
     md: 16,
     lg: 24,
+    // Was two steps (xl: 28, xxl: 32) -- dropped xxl, its one consumer
+    // (mobile's LoginScreen title) now uses xl instead.
     xl: 28,
-    xxl: 32,
   },
   weight: {
     regular: "400",

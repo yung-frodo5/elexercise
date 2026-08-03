@@ -2,6 +2,7 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { landingArticle } from "@exercise-tracker/content";
 import { ArticleBody, ArticleHeader } from "../../../components/content/ArticleView";
 import { FramedImage } from "../../../components/content/FramedImage";
+import { newsreader } from "../../../lib/fonts";
 // Web-only image — not part of the shared `packages/content` article data,
 // since it isn't confirmed for mobile yet.
 import articleDiagram from "../../../assets/images/what-is-elexercise.svg";
@@ -38,6 +39,12 @@ export default function AboutPage() {
           paddingTop: theme.spacing.xl,
           paddingLeft: theme.spacing.xxl * 2,
           paddingBottom: theme.spacing.xl,
+          // The h2 title inside ArticleHeader below isn't affected by this --
+          // the global h1/h2/h3 rule (see layout.tsx) sets its font-family
+          // directly, which always wins over an inherited value regardless
+          // of that rule's low specificity. So this only actually reaches
+          // the body text (paragraphs, byline).
+          fontFamily: newsreader.style.fontFamily,
         }}
       >
         <div style={{ maxWidth: 720 }}>

@@ -9,7 +9,7 @@ export const labelStyle: CSSProperties = {
   flexDirection: "column",
   gap: theme.spacing.xs,
   fontSize: theme.typography.size.sm,
-  color: theme.colors.navy,
+  color: theme.colors.navyStatic,
 };
 
 export const inputStyle: CSSProperties = {
@@ -24,7 +24,7 @@ export const inputStyle: CSSProperties = {
 // in one generic list — the field itself also gets an error-colored border via `errorInputStyle`.
 export function FieldError({ children }: { children: ReactNode }) {
   return (
-    <p style={{ fontSize: theme.typography.size.xs, color: theme.colors.error, margin: 0 }}>{children}</p>
+    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.error, margin: 0 }}>{children}</p>
   );
 }
 
@@ -36,8 +36,8 @@ export function FieldNote({ children }: { children: ReactNode }) {
   return (
     <p
       style={{
-        fontSize: theme.typography.size.xs,
-        color: theme.colors.navy,
+        fontSize: theme.typography.size.sm,
+        color: theme.colors.navyStatic,
         margin: 0,
         // Grows faster than the field next to it, so extra horizontal space
         // goes to the descriptive text rather than the (fixed-content) input.
@@ -145,9 +145,9 @@ export function HoverTooltip({ children, content }: { children: ReactNode; conte
             marginTop: theme.spacing.xs,
             minWidth: 220,
             padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-            background: theme.colors.navy,
+            background: theme.colors.navyStatic,
             color: "#FFFFFF",
-            fontSize: theme.typography.size.xs,
+            fontSize: theme.typography.size.sm,
             fontWeight: theme.typography.weight.regular,
             borderRadius: theme.radii.sm,
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
@@ -193,9 +193,9 @@ function InfoTooltip({ text }: { text: string }) {
             marginTop: theme.spacing.xs,
             width: 220,
             padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-            background: theme.colors.navy,
+            background: theme.colors.navyStatic,
             color: "#FFFFFF",
-            fontSize: theme.typography.size.xs,
+            fontSize: theme.typography.size.sm,
             fontWeight: theme.typography.weight.regular,
             borderRadius: theme.radii.sm,
             boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
@@ -279,7 +279,7 @@ export function RadioOption({
         alignItems: "center",
         gap: theme.spacing.xs,
         fontSize: theme.typography.size.sm,
-        color: theme.colors.navy,
+        color: theme.colors.navyStatic,
         cursor: "pointer",
       }}
     >

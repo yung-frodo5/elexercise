@@ -6,14 +6,14 @@ import { RichText } from "./RichText";
 export function ArticleHeader({ article }: { article: Article }) {
   return (
     <>
-      <h2 style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.xl }}>
+      <h2 style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.md }}>
         {article.title}
       </h2>
       <p
         style={{
           marginTop: theme.spacing.xs,
           marginBottom: 0,
-          color: theme.colors.navy,
+          color: theme.colors.navyStatic,
           fontSize: theme.typography.size.sm,
         }}
       >
@@ -30,7 +30,14 @@ export function ArticleBody({ article }: { article: Article }) {
         switch (block.type) {
           case "paragraph":
             return (
-              <p key={index} style={{ marginTop: theme.spacing.xl, color: theme.colors.navy }}>
+              <p
+                key={index}
+                style={{
+                  marginTop: theme.spacing.xl,
+                  color: theme.colors.navyStatic,
+                  fontSize: theme.typography.size.sm,
+                }}
+              >
                 <RichText nodes={block.content} />
               </p>
             );
@@ -40,7 +47,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.navy,
+                  color: theme.colors.navyStatic,
                   fontSize: theme.typography.size.lg,
                 }}
               >

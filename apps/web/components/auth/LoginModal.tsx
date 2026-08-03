@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 
 type Mode = "signIn" | "signUp";
+
+// Same green-pill style as Add/Connect/Add friend/Save elsewhere.
+const pillButtonStyle: CSSProperties = {
+  padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+  borderRadius: theme.radii.pill,
+  border: "none",
+  background: theme.colors.primaryGreen,
+  color: "#FFFFFF",
+  fontWeight: theme.typography.weight.semibold,
+  fontFamily: "'Clash Display', sans-serif",
+  fontSize: theme.typography.size.sm,
+  cursor: "pointer",
+};
 
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { session } = useSupabaseSession();
@@ -83,7 +96,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
         >
           {theme.icons.close}
         </button>
-        <p style={{ color: "#FFFFFF", marginTop: 0 }}>
+        <p style={{ color: "#FFFFFF", marginTop: 0, fontSize: theme.typography.size.sm }}>
           {mode === "signIn" ? "Sign in to continue" : "Create an account"}
         </p>
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: theme.spacing.sm }}>
@@ -94,9 +107,13 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p style={{ color: theme.colors.error }}>{error}</p>}
-          {info && <p style={{ color: "#FFFFFF" }}>{info}</p>}
-          <button type="submit">{mode === "signIn" ? "Sign in" : "Create account"}</button>
+          {error && (
+            <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>{error}</p>
+          )}
+          {info && <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>{info}</p>}
+          <button type="submit" style={pillButtonStyle}>
+            {mode === "signIn" ? "Sign in" : "Create account"}
+          </button>
         </form>
         <button
           onClick={() => {
@@ -104,6 +121,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             setError(null);
             setInfo(null);
           }}
+          style={{ ...pillButtonStyle, background: theme.colors.error, marginTop: theme.spacing.sm }}
         >
           {mode === "signIn" ? "Need an account? Create one" : "Have an account? Sign in"}
         </button>

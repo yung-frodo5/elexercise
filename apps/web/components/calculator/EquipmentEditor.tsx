@@ -25,7 +25,15 @@ import { FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, Tex
 
 function CategoryHeading({ children }: { children: string }) {
   return (
-    <p style={{ fontWeight: theme.typography.weight.bold, margin: 0, marginTop: theme.spacing.sm, color: theme.colors.navy }}>
+    <p
+      style={{
+        fontWeight: theme.typography.weight.bold,
+        margin: 0,
+        marginTop: theme.spacing.sm,
+        color: theme.colors.navyStatic,
+        fontSize: theme.typography.size.sm,
+      }}
+    >
       {children}
     </p>
   );
@@ -33,7 +41,7 @@ function CategoryHeading({ children }: { children: string }) {
 
 function PresetCaption({ children }: { children: ReactNode }) {
   return (
-    <p style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy, margin: 0, opacity: 0.75 }}>
+    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic, margin: 0, opacity: 0.75 }}>
       {children}
     </p>
   );
@@ -256,7 +264,7 @@ export function EquipmentEditor({
             note={
               <>
                 Grid carbon intensity varies by time of day, season, regional grid makeup, and more. For reference (
-                <ExternalLink href="https://www.epa.gov/egrid/summary-data" style={{ color: theme.colors.navy }}>
+                <ExternalLink href="https://www.epa.gov/egrid/summary-data" style={{ color: theme.colors.navyStatic }}>
                   eGRID
                 </ExternalLink>
                 ): CAMX (California) is 195 gCO2e/kWh; HIOA (Hawaii) is 680 gCO2e/kWh.
@@ -289,7 +297,8 @@ export function EquipmentEditor({
             background: theme.colors.primaryGreen,
             color: "#FFFFFF",
             fontWeight: theme.typography.weight.semibold,
-            fontFamily: theme.typography.fontFamily.web,
+            fontFamily: "'Clash Display', sans-serif",
+            fontSize: theme.typography.size.sm,
             cursor: "pointer",
           }}
         >
@@ -298,7 +307,7 @@ export function EquipmentEditor({
         {saveErrorMessages.length > 0 && (
           <HoverTooltip
             content={
-              <ul style={{ margin: 0, paddingLeft: theme.spacing.md }}>
+              <ul style={{ margin: 0, paddingLeft: theme.spacing.md, fontSize: theme.typography.size.sm }}>
                 {saveErrorMessages.map((message) => (
                   <li key={message}>{message}</li>
                 ))}
@@ -313,7 +322,7 @@ export function EquipmentEditor({
                 borderRadius: theme.radii.pill,
                 background: withAlpha(theme.colors.error, 0.15),
                 color: theme.colors.error,
-                fontSize: theme.typography.size.xs,
+                fontSize: theme.typography.size.sm,
                 fontWeight: theme.typography.weight.semibold,
                 cursor: "help",
               }}

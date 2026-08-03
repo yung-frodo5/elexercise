@@ -13,6 +13,8 @@ export function SiteFooter() {
           .site-footer-icon-credit { display: none; }
         }
       `}</style>
+      {/* Stays light blue in dark mode -- per design feedback, unlike the
+          header/body/content panel, this doesn't invert. */}
       <footer
         style={{
           position: "fixed",
@@ -30,12 +32,20 @@ export function SiteFooter() {
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
           backgroundColor: "#D6E9FF",
           boxSizing: "border-box",
+          fontFamily: "'Clash Display', sans-serif",
         }}
       >
-        <span style={{ color: theme.colors.error, whiteSpace: "nowrap" }}>Est. 2026</span>
+        <span style={{ color: theme.colors.error, whiteSpace: "nowrap", fontSize: theme.typography.size.sm }}>
+          Est. 2026
+        </span>
         <a
           href="mailto:noah.c.korotzer@gmail.com"
-          style={{ color: theme.colors.error, textDecoration: "underline", whiteSpace: "nowrap" }}
+          style={{
+            color: theme.colors.error,
+            textDecoration: "underline",
+            whiteSpace: "nowrap",
+            fontSize: theme.typography.size.sm,
+          }}
         >
           Contact Us
         </a>
@@ -43,7 +53,7 @@ export function SiteFooter() {
           className="site-footer-icon-credit"
           href="https://www.flaticon.com/free-icons/renewable-energy"
           title="renewable energy icons"
-          style={{ color: theme.colors.error, fontSize: 12 }}
+          style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}
         >
           Icon by Indah Rusiati
         </ExternalLink>

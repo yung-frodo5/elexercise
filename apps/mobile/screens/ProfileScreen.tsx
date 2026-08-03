@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
   },
   label: {
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     color: theme.colors.textMuted,
     marginTop: theme.spacing.md,
   },

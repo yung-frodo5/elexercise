@@ -11,8 +11,11 @@ const headerCell: CSSProperties = {
   textAlign: "left",
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
   borderBottom: `1px solid #D6E9FF`,
-  color: theme.colors.navy,
-  fontSize: theme.typography.size.xs,
+  // Static, not the flipping token -- this header row's own background
+  // (#D6E9FF, set where it's rendered) stays light blue in dark mode, so
+  // its text must stay navy rather than inverting to white.
+  color: theme.colors.navyStatic,
+  fontSize: theme.typography.size.sm,
   textTransform: "uppercase",
 };
 
@@ -20,6 +23,7 @@ const cell: CSSProperties = {
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
   borderBottom: `1px solid #D6E9FF`,
   color: theme.colors.navy,
+  fontSize: theme.typography.size.sm,
 };
 
 // Standing in for real friends until there's actual social data to show --
@@ -83,7 +87,7 @@ export default function LeaderboardPage() {
 
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 640, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-      <h1 style={{ color: theme.colors.navy }}>Leaderboard</h1>
+      <h1 style={{ color: theme.colors.navy, fontSize: theme.typography.size.lg }}>Leaderboard</h1>
 
       {error && <p style={{ color: theme.colors.error }}>{error}</p>}
 
@@ -103,7 +107,9 @@ export default function LeaderboardPage() {
           </thead>
           <tbody>
             {rows.map((row, index) => {
-              const rowColor = row.isMe ? { color: theme.colors.navy } : undefined;
+              // Static -- the "isMe" row's own white background (below)
+              // doesn't invert in dark mode either.
+              const rowColor = row.isMe ? { color: theme.colors.navyStatic } : undefined;
               return (
               <tr key={row.id} style={row.isMe ? { backgroundColor: "#FFFFFF" } : undefined}>
                 <td style={{ ...cell, ...rowColor }}>
@@ -150,7 +156,8 @@ export default function LeaderboardPage() {
             background: theme.colors.primaryGreen,
             color: "#FFFFFF",
             fontWeight: theme.typography.weight.semibold,
-            fontFamily: theme.typography.fontFamily.web,
+            fontFamily: "'Clash Display', sans-serif",
+            fontSize: theme.typography.size.sm,
             cursor: "pointer",
           }}
         >

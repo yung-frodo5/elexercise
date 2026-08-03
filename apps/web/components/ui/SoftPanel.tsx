@@ -20,7 +20,7 @@ export function SoftPanel({
         backgroundColor: "#FFFFFF",
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
         borderRadius: theme.radii.lg,
-        boxShadow: `0 4px 16px ${withAlpha(theme.colors.navy, 0.06)}`,
+        boxShadow: `0 4px 16px ${withAlpha(theme.colors.navyStatic, 0.06)}`,
         ...style,
       }}
     >

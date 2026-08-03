@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
   },
   elexir: {
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     color: theme.colors.textMuted,
   },
   track: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   remaining: {
     marginTop: theme.spacing.xs,
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     color: theme.colors.textMuted,
   },
 });

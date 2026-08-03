@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
+import { newsreader } from "../../lib/fonts";
 import { SearchIcon } from "./SearchIcon";
 
 const STYLES_ID = "elex-expandable-search-styles";
@@ -30,7 +31,7 @@ function ensureStyles() {
       padding: 4px 0;
       color: ${theme.colors.navy};
       font-size: ${theme.typography.size.sm}px;
-      font-family: ${theme.typography.fontFamily.web};
+      font-family: ${newsreader.style.fontFamily};
     }
     .elex-expandable-search::-webkit-search-decoration,
     .elex-expandable-search::-webkit-search-cancel-button,

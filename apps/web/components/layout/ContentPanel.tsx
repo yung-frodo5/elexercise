@@ -60,6 +60,9 @@ export function ContentPanel({ children }: { children: ReactNode }) {
             padding: 12px 12px 20px 12px !important;
           }
         }
+        html[data-theme="dark"] .content-panel {
+          background-color: #001F3F !important;
+        }
       `}</style>
       <div
         className={isHome ? "content-panel content-panel-home" : "content-panel"}

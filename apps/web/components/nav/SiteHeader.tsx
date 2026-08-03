@@ -21,8 +21,10 @@ import {
   navSectionLabelStyle,
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
+import { ThemeToggle } from "./ThemeToggle";
+import { newsreader } from "../../lib/fonts";
 
-const pressedBg = withAlpha(theme.colors.navy, 0.08);
+const pressedBg = withAlpha(theme.colors.navyStatic, 0.08);
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
@@ -72,8 +74,15 @@ export function SiteHeader() {
           .site-header-display-name { display: none; }
           .site-header-level { display: none; }
         }
+        /* Dark mode: only the white portion of the header's gradient
+           inverts -- the #002FA7 strip stays #002FA7, matching the
+           vertical ribbon below it, which also doesn't change in dark mode. */
+        html[data-theme="dark"] .site-header {
+          background: linear-gradient(to right, #002FA7 ${FOOTER_HEIGHT}px, #001F3F ${FOOTER_HEIGHT}px) !important;
+        }
       `}</style>
       <header
+        className="site-header"
         style={{
         position: "fixed",
         top: 0,
@@ -145,6 +154,7 @@ export function SiteHeader() {
             style={{
               fontWeight: navSectionLabelStyle.fontWeight,
               fontSize: navSectionLabelStyle.fontSize,
+              fontFamily: navSectionLabelStyle.fontFamily,
               letterSpacing: navSectionLabelStyle.letterSpacing,
               textTransform: navSectionLabelStyle.textTransform,
               color: theme.colors.error,
@@ -183,6 +193,7 @@ export function SiteHeader() {
             style={{
               fontWeight: navSectionLabelStyle.fontWeight,
               fontSize: navSectionLabelStyle.fontSize,
+              fontFamily: navSectionLabelStyle.fontFamily,
               color: navSectionLabelStyle.color,
               letterSpacing: navSectionLabelStyle.letterSpacing,
               textTransform: navSectionLabelStyle.textTransform,
@@ -203,6 +214,7 @@ export function SiteHeader() {
           color: "#228B22",
           fontSize: theme.typography.size.lg,
           fontWeight: theme.typography.weight.bold,
+          fontFamily: "'Clash Display', sans-serif",
           textDecoration: "none",
           // The hamburger's wrapper is position:absolute now (see above),
           // which takes it out of grid auto-placement entirely -- without
@@ -216,7 +228,18 @@ export function SiteHeader() {
         <span className="site-header-wordmark-text">elexercise!</span>
       </Link>
 
-      <div ref={profileMenuRef} style={{ position: "relative", gridColumn: 3, justifySelf: "end", minWidth: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: theme.spacing.xs,
+          gridColumn: 3,
+          justifySelf: "end",
+          minWidth: 0,
+        }}
+      >
+        <ThemeToggle />
+        <div ref={profileMenuRef} style={{ position: "relative", minWidth: 0 }}>
         {!loading && (
           <>
             {session ? (
@@ -251,7 +274,8 @@ export function SiteHeader() {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
-                      fontWeight: theme.typography.weight.bold,
+                      fontWeight: theme.typography.weight.semibold,
+                      fontFamily: "'Clash Display', sans-serif",
                       minWidth: 0,
                     }}
                   >
@@ -262,7 +286,11 @@ export function SiteHeader() {
                 {level !== null && elexir !== null && (
                   <div
                     className="site-header-level"
-                    style={{ padding: `0 ${theme.spacing.sm}px`, color: theme.colors.navy }}
+                    style={{
+                      padding: `0 ${theme.spacing.sm}px`,
+                      color: theme.colors.navy,
+                      fontFamily: newsreader.style.fontFamily,
+                    }}
                   >
                     <LevelProgress level={level} elexir={elexir} compact />
                   </div>
@@ -299,6 +327,7 @@ export function SiteHeader() {
             )}
           </>
         )}
+        </div>
       </div>
 
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />

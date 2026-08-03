@@ -47,7 +47,7 @@ export function CashFlowChart({
           textAlign: "center",
           fontSize: theme.typography.size.md,
           fontWeight: theme.typography.weight.bold,
-          color: theme.colors.navy,
+          color: theme.colors.navyStatic,
         }}
       >
         Cost over time
@@ -57,8 +57,8 @@ export function CashFlowChart({
           margin: 0,
           marginBottom: theme.spacing.sm,
           textAlign: "center",
-          fontSize: theme.typography.size.xs,
-          color: theme.colors.navy,
+          fontSize: theme.typography.size.sm,
+          color: theme.colors.navyStatic,
           opacity: 0.75,
         }}
       >
@@ -73,18 +73,18 @@ export function CashFlowChart({
             domain={[0, "dataMax"]}
             allowDecimals={false}
             tickFormatter={(value: number) => `${Math.round(value)}`}
-            stroke={theme.colors.navy}
+            stroke={theme.colors.navyStatic}
             tickLine={false}
             axisLine={false}
-            fontSize={theme.typography.size.xs}
-            label={{ value: "Years", position: "insideBottom", offset: -8, fill: theme.colors.navy }}
+            fontSize={theme.typography.size.sm}
+            label={{ value: "Years", position: "insideBottom", offset: -8, fill: theme.colors.navyStatic }}
           />
           <YAxis
             tickFormatter={(value: number) => `$${Math.round(value)}`}
-            stroke={theme.colors.navy}
+            stroke={theme.colors.navyStatic}
             tickLine={false}
             axisLine={false}
-            fontSize={theme.typography.size.xs}
+            fontSize={theme.typography.size.sm}
             width={56}
           />
           <Tooltip
@@ -100,7 +100,7 @@ export function CashFlowChart({
                     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                   }}
                 >
-                  <div style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy, marginBottom: 4 }}>
+                  <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic, marginBottom: 4 }}>
                     {Math.round(Number(label))} {Math.round(Number(label)) === 1 ? "year" : "years"}
                   </div>
                   {payload.map((entry) => {

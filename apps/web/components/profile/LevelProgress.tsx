@@ -2,6 +2,7 @@
 
 import { theme } from "@exercise-tracker/design-tokens";
 import { progressToNextLevel } from "@exercise-tracker/leveling";
+import { newsreader } from "../../lib/fonts";
 
 // compact drops the elexir-earned/elexir-remaining captions and shrinks
 // everything else -- for showing progress somewhere small (e.g. the header),
@@ -79,10 +80,16 @@ export function LevelProgress({
           marginBottom: theme.spacing.xs,
         }}
       >
-        <span style={{ fontSize: theme.typography.size.lg, fontWeight: theme.typography.weight.semibold }}>
+        <span
+          style={{
+            fontSize: theme.typography.size.md,
+            fontWeight: theme.typography.weight.semibold,
+            fontFamily: newsreader.style.fontFamily,
+          }}
+        >
           Level {level}
         </span>
-        <span style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
+        <span style={{ fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
           {elexir}{" "}
           <span className="elexir-tooltip-wrap" tabIndex={0}>
             <span style={{ textDecoration: "underline dashed", cursor: "help" }}>elexir</span>
@@ -93,8 +100,10 @@ export function LevelProgress({
                 width: 220,
                 marginBottom: theme.spacing.xs,
                 backgroundColor: "#D6E9FF",
-                color: theme.colors.navy,
-                fontSize: theme.typography.size.xs,
+                // Static -- this popup's own light-blue background doesn't
+                // invert in dark mode.
+                color: theme.colors.navyStatic,
+                fontSize: theme.typography.size.sm,
                 lineHeight: 1.4,
                 padding: theme.spacing.sm,
                 borderRadius: theme.radii.md,
@@ -129,7 +138,7 @@ export function LevelProgress({
         />
       </div>
 
-      <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
+      <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
         {progress.xpRemaining} elexir to level {level + 1}
       </div>
     </div>

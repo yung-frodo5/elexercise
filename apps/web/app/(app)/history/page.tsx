@@ -18,6 +18,7 @@ import { formatDurationHoursMinutes, formatEnergy, formatEnergyComparison } from
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
+import { newsreader } from "../../../lib/fonts";
 
 const mainStyle: CSSProperties = {
   padding: `${theme.spacing.xxl}px ${theme.spacing.xl}px`,
@@ -25,7 +26,7 @@ const mainStyle: CSSProperties = {
   margin: "0 auto",
   width: "100%",
   boxSizing: "border-box",
-  fontFamily: theme.typography.fontFamily.web,
+  fontFamily: newsreader.style.fontFamily,
   color: theme.colors.navy,
 };
 
@@ -57,7 +58,7 @@ export default function HistoryPage() {
   );
   const shareText =
     `I've generated ${formatEnergy(totalEnergyJ)} by exercising for ` +
-    `${formatDurationHoursMinutes(totalDurationS)}-${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
+    `${formatDurationHoursMinutes(totalDurationS)}—${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
     `Join elexercise to generate some electricity of your own. Learn more at elexercise.org`;
 
   async function toggleExpand(workoutId: string) {
@@ -75,14 +76,16 @@ export default function HistoryPage() {
         <h1
           style={{
             margin: 0,
-            fontSize: theme.typography.size.xl,
+            fontSize: theme.typography.size.lg,
             fontWeight: theme.typography.weight.bold,
             letterSpacing: "-0.02em",
           }}
         >
           Workout Log
         </h1>
-        <p style={{ marginTop: theme.spacing.md, color: theme.colors.navy }}>Loading your workouts…</p>
+        <p style={{ marginTop: theme.spacing.md, color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+          Loading your workouts…
+        </p>
         <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
           First load can take up to 30 seconds if the API has been idle.
         </p>
@@ -115,7 +118,7 @@ export default function HistoryPage() {
           <h1
             style={{
               margin: 0,
-              fontSize: theme.typography.size.xl,
+              fontSize: theme.typography.size.lg,
               fontWeight: theme.typography.weight.bold,
               letterSpacing: "-0.02em",
               color: theme.colors.navy,
@@ -130,7 +133,7 @@ export default function HistoryPage() {
               marginTop: theme.spacing.xs,
               color: theme.colors.navy,
               fontSize: theme.typography.size.sm,
-              lineHeight: 1.45,
+              lineHeight: 1.4,
               maxWidth: 420,
             }}
           >
@@ -157,13 +160,15 @@ export default function HistoryPage() {
               <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold }}>
                 {workouts.length === 0 ? "No past workouts yet." : "No workouts match these filters."}
               </p>
+              {/* Static -- SoftPanel's own background is always white,
+                  never inverting in dark mode. */}
               <p
                 style={{
                   margin: 0,
                   marginTop: theme.spacing.xs,
-                  color: theme.colors.navy,
+                  color: theme.colors.navyStatic,
                   fontSize: theme.typography.size.sm,
-                  lineHeight: 1.45,
+                  lineHeight: 1.4,
                 }}
               >
                 {workouts.length === 0
@@ -201,8 +206,8 @@ export default function HistoryPage() {
                 Total energy generated:{" "}
                 <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
                   {formatEnergy(totalEnergyJ)}
-                </span>{" "}
-                — {formatEnergyComparison(totalEnergyJ / 3600)}!
+                </span>
+                —{formatEnergyComparison(totalEnergyJ / 3600)}!
               </span>
               {/* A real <a href="sms:..."> rather than a button + JS
                   location.href assignment -- several mobile browsers only
@@ -226,13 +231,15 @@ export default function HistoryPage() {
                 }}
                 style={{
                   display: "inline-block",
-                  fontFamily: "inherit",
-                  fontSize: "inherit",
-                  backgroundColor: "#FFFFFF",
-                  color: "#000000",
-                  padding: "1px 7px",
-                  border: "1px solid",
-                  borderRadius: 3,
+                  marginLeft: theme.spacing.md,
+                  fontFamily: "'Clash Display', sans-serif",
+                  fontSize: theme.typography.size.sm,
+                  padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+                  borderRadius: theme.radii.pill,
+                  border: "none",
+                  background: theme.colors.primaryGreen,
+                  color: "#FFFFFF",
+                  fontWeight: theme.typography.weight.semibold,
                   textDecoration: "none",
                   cursor: "pointer",
                 }}
@@ -240,12 +247,14 @@ export default function HistoryPage() {
                 Share
               </a>
               {shareCopied && (
+                // Static -- this badge's own light-blue background doesn't
+                // invert in dark mode.
                 <span
                   style={{
                     display: "inline-block",
                     marginLeft: theme.spacing.xs,
                     backgroundColor: "#D6E9FF",
-                    color: theme.colors.navy,
+                    color: theme.colors.navyStatic,
                     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                     borderRadius: theme.radii.md,
                   }}

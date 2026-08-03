@@ -109,13 +109,14 @@ export function Calculator() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xl, width: "100%" }}>
       <div>
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Instructions</h2>
+        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>Instructions</h2>
         <ol
           style={{
             margin: 0,
             paddingLeft: theme.spacing.xl,
             color: theme.colors.navy,
             fontSize: theme.typography.size.sm,
+            lineHeight: 1.4,
           }}
         >
           <li>Create equipment for analysis using the Equipment Builder below.</li>
@@ -132,10 +133,11 @@ export function Calculator() {
           backgroundColor: "#D6E9FF",
           borderRadius: theme.radii.lg,
           padding: theme.spacing.xl,
-          color: theme.colors.navy,
+          // Static -- this panel's own light-blue background doesn't
+          // invert in dark mode.
+          color: theme.colors.navyStatic,
         }}
       >
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Editor</h2>
         <div style={{ marginBottom: theme.spacing.lg }}>
           <EquipmentRoster
             equipment={equipmentList}
@@ -162,10 +164,12 @@ export function Calculator() {
           backgroundColor: "#D6E9FF",
           borderRadius: theme.radii.lg,
           padding: theme.spacing.xl,
-          color: theme.colors.navy,
+          // Static -- this panel's own light-blue background doesn't
+          // invert in dark mode.
+          color: theme.colors.navyStatic,
         }}
       >
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline" }}>Results</h2>
+        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>Results</h2>
         <CalculatorResultsTable equipment={equipmentList} results={results} />
         {equipmentList.length > 0 && (
           <div style={{ marginTop: theme.spacing.xl }}>

@@ -3,6 +3,7 @@
 import { theme } from "@exercise-tracker/design-tokens";
 import { landingArticle } from "@exercise-tracker/content";
 import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
+import { newsreader } from "../lib/fonts";
 
 export default function LandingPage() {
   // hero used to be an image (landing-hero.png) rendered via the shared
@@ -55,12 +56,24 @@ export default function LandingPage() {
            nested one level deeper inside ArticleBody's own wrapper div. */
         .definition-popup h2 {
           color: #228B22 !important;
+          /* Less bold than the browser's default h2 weight (700) --
+             !important to beat that UA default. */
+          font-weight: 600 !important;
         }
         .definition-popup > p {
           display: none;
         }
         .definition-popup p {
           color: #000000 !important;
+          line-height: 1.4;
+        }
+        /* The definition panel itself has no background of its own -- it
+           sits directly on the home page's canvas, which inverts to dark
+           navy in dark mode, so its black text needs to flip to white too.
+           The popup above keeps its own light-blue background regardless
+           of theme, so it isn't included here. */
+        html[data-theme="dark"] .definition-panel {
+          color: #FFFFFF !important;
         }
         /* The headword's 60px nowrap text is wider than any phone viewport
            -- without this it forces the whole page to scroll horizontally.
@@ -149,6 +162,10 @@ export default function LandingPage() {
               borderRadius: theme.radii.lg,
               padding: theme.spacing.xxl,
               boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
+              // The h2 title inside ArticleHeader still gets Clash Display
+              // from the global h1/h2/h3 rule (layout.tsx) regardless --
+              // this only reaches the body text/byline.
+              fontFamily: newsreader.style.fontFamily,
             }}
           >
             <ArticleHeader article={landingArticle} />

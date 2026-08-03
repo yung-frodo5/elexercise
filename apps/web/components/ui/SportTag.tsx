@@ -2,6 +2,7 @@
 
 import { theme } from "@exercise-tracker/design-tokens";
 import { sportTagColors } from "../../lib/activityColors";
+import { newsreader } from "../../lib/fonts";
 
 /** Read-only sport pill for table cells (Datadog-style tags). */
 export function SportTag({ label }: { label: string }) {
@@ -15,9 +16,9 @@ export function SportTag({ label }: { label: string }) {
         borderRadius: theme.radii.pill,
         background: bg,
         color: fg,
-        fontSize: theme.typography.size.xs,
+        fontSize: theme.typography.size.sm,
         fontWeight: theme.typography.weight.semibold,
-        fontFamily: theme.typography.fontFamily.web,
+        fontFamily: newsreader.style.fontFamily,
         lineHeight: 1.3,
         whiteSpace: "nowrap",
       }}

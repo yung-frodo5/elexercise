@@ -37,8 +37,8 @@ const itemStyle: CSSProperties = {
   border: "none",
   cursor: "pointer",
   textAlign: "left",
-  fontFamily: "inherit",
-  lineHeight: 1.35,
+  fontFamily: "'Clash Display', sans-serif",
+  lineHeight: 1.4,
   transition: "background-color 120ms ease, color 120ms ease",
   fontWeight: theme.typography.weight.medium,
 };
@@ -49,7 +49,10 @@ export const navSectionLabelStyle: CSSProperties = {
   margin: 0,
   padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
   fontSize: theme.typography.size.md,
-  fontWeight: theme.typography.weight.bold,
+  // Clash Display is capped at Semibold everywhere except the header
+  // wordmark ("elexercise!").
+  fontWeight: theme.typography.weight.semibold,
+  fontFamily: "'Clash Display', sans-serif",
   color: "#228B22",
   letterSpacing: "0.04em",
   textTransform: "uppercase",
@@ -143,7 +146,7 @@ export function NavDropdownPanel({
           overflowY: "auto",
           backgroundColor: "#002FA7",
           borderRight: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navy, 0.1)}`,
+          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navyStatic, 0.1)}`,
           zIndex: 150,
           animation: "elexNavDrawerIn 180ms ease-out",
         }
@@ -158,7 +161,7 @@ export function NavDropdownPanel({
           backgroundColor: "#002FA7",
           border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
           borderRadius: theme.radii.pill,
-          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navy, 0.1)}`,
+          boxShadow: `0 10px 28px ${withAlpha(theme.colors.navyStatic, 0.1)}`,
           zIndex: 2,
           animation: "elexNavMenuIn 160ms ease-out",
           transformOrigin: "top right",
