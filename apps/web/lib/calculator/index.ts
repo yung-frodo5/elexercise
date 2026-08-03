@@ -30,3 +30,4 @@ export { RESULT_METRICS, RESULT_METRIC_SECTIONS } from "./resultMetrics";
 export type { EquipmentSetting } from "./equipmentSettings";
 export { EQUIPMENT_SETTINGS } from "./equipmentSettings";
 export { buildResultsCsv } from "./csv";
+export { EQUIPMENT_COLOR_PALETTE, defaultEquipmentColor } from "./colors";

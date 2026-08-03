@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { validateEquipmentDraft } from "./validation";
 import { DEFAULT_CALCULATOR_INPUTS } from "./defaults";
+import { defaultEquipmentColor } from "./colors";
 import type { CalculatorColumn } from "./types";
 
 function draft(overrides: Partial<CalculatorColumn> = {}): CalculatorColumn {
-  return { id: "eq-0", name: "Bike", inputs: { ...DEFAULT_CALCULATOR_INPUTS }, ...overrides };
+  return { id: "eq-0", name: "Bike", color: defaultEquipmentColor(0), inputs: { ...DEFAULT_CALCULATOR_INPUTS }, ...overrides };
 }
 
 describe("validateEquipmentDraft", () => {

@@ -2,10 +2,11 @@ import { describe, it, expect } from "vitest";
 import { buildResultsCsv } from "./csv";
 import { computeCostPerWorkout } from "./computeCostPerWorkout";
 import { DEFAULT_CALCULATOR_INPUTS } from "./defaults";
+import { defaultEquipmentColor } from "./colors";
 import type { CalculatorColumn, CalculatorInputs } from "./types";
 
 function equipment(name: string, overrides: Partial<CalculatorInputs> = {}): CalculatorColumn {
-  return { id: name, name, inputs: { ...DEFAULT_CALCULATOR_INPUTS, ...overrides } };
+  return { id: name, name, color: defaultEquipmentColor(0), inputs: { ...DEFAULT_CALCULATOR_INPUTS, ...overrides } };
 }
 
 function buildFor(items: CalculatorColumn[]): string {
@@ -35,6 +36,12 @@ describe("buildResultsCsv", () => {
     // The label itself contains a comma ("(net, Wh/workout)"), so it's quoted -- but the numeric value
     // is untouched: no leading apostrophe defusing its "-", unlike a string field would get.
     expect(powerRow).toBe('"Power generation (net, Wh/workout)",-150');
+  });
+
+  it("does not include equipment color in the exported CSV -- it's a display concern like Name, not a Settings/CSV row", () => {
+    const csv = buildFor([{ ...equipment("Bike"), color: "#ff00ff" }]);
+    expect(csv).not.toContain("#ff00ff");
+    expect(csv).not.toContain("Color");
   });
 
   it("keeps settings/result sections and rows in the documented order", () => {

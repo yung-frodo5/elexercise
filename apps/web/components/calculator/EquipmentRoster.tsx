@@ -3,7 +3,6 @@
 import { theme } from "@exercise-tracker/design-tokens";
 import type { CalculatorColumn, CalculatorInputs } from "../../lib/calculator";
 import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
-import { colorForEquipment } from "./CashFlowChart";
 
 // Light, warm fill for pills -- distinct from the app's usual light-blue panel background, chosen so
 // dark text/borders read clearly against it regardless of which accent color a given pill's border uses.
@@ -14,28 +13,28 @@ const PILL_FILL = "#FAF3E0";
 const ACTIVE_PILL_FILL = "#D6E9FF";
 
 // The dark-navy-backdrop version of this (accent-colored border AND fill, white text) that these pills
-// used to have read poorly -- some of the per-equipment accent colors (from colorForEquipment) didn't
-// have enough contrast against navy. Solid light fill + black text sidesteps that regardless of which
-// accent color a given pill lands on; only the border still carries that color.
+// used to have read poorly -- some of the per-equipment accent colors didn't have enough contrast against
+// navy. Solid light fill + black text sidesteps that regardless of which accent color a given pill lands
+// on; only the border still carries that color.
 function RosterPill({
-  id,
   name,
   inputs,
+  color,
   active,
   onSelect,
   onRemove,
 }: {
-  id?: string;
   name: string;
   inputs?: CalculatorInputs;
+  color?: string;
   active: boolean;
   onSelect: () => void;
   onRemove?: () => void;
 }) {
-  // Saved equipment (has an id) gets a border tinted with the same color as its line in the results graph
-  // (CashFlowChart.tsx's colorForEquipment) -- makes it easy to match a pill to its line at a glance. The
-  // "+ New equipment" pill has no id/graph line, so its border is just the app's usual green accent.
-  const borderColor = id ? colorForEquipment(id) : theme.colors.primaryGreen;
+  // Saved equipment gets a border in its own stored color (the Equipment Editor's Color field) -- makes it
+  // easy to match a pill to its line in the results graph at a glance. The "+ New equipment" pill has no
+  // equipment/color of its own, so its border is just the app's usual green accent.
+  const borderColor = color ?? theme.colors.primaryGreen;
 
   return (
     <span
@@ -120,9 +119,9 @@ export function EquipmentRoster({
       {equipment.map((item) => (
         <RosterPill
           key={item.id}
-          id={item.id}
           name={item.name}
           inputs={item.inputs}
+          color={item.color}
           active={selectedId === item.id}
           onSelect={() => onRequestSelect(item.id)}
           onRemove={() => onRemove(item.id)}

@@ -157,6 +157,20 @@ you're touching this area:
   silently behaves like `static`. Make the *sticky* element a content-sized
   child nested one level inside the (non-sticky, full-width) grid item
   instead, the way `SectionHeading`'s inner `<span>` does.
+- **Equipment color is stored, not derived.** `CalculatorColumn.color`
+  (`apps/web/lib/calculator/types.ts`) is a real, user-editable field set via
+  the Equipment Editor's Color field (`ColorField` in
+  `apps/web/components/calculator/formFields.tsx`) — it is *not* hashed from
+  `id` the way real sport tags are
+  (`packages/workout-history/src/activityColors.ts`). A brand-new draft's
+  initial color comes from `defaultEquipmentColor()`
+  (`apps/web/lib/calculator/colors.ts`), round-robining through
+  `EQUIPMENT_COLOR_PALETTE` by `Calculator.tsx`'s `nextId.current` — not by
+  hashing `id`, since an unsaved draft's `id` is `""` until Save. Don't
+  reintroduce a hash-derived color for equipment, and don't reuse
+  `activityColorForSport`/`sportTagColors` here — those back real sport tags
+  elsewhere in the app (`SportTag.tsx`, `WorkoutHistoryRow.tsx`) and
+  intentionally stay a separate, unrelated palette.
 
 ## Mobile-specific instructions
 

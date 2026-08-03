@@ -5,6 +5,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import {
   applyEquipmentType,
   applyLocation,
+  EQUIPMENT_COLOR_PALETTE,
   EQUIPMENT_TYPE_OPTIONS,
   formatPowerGenWh,
   isElexerciseEquipmentType,
@@ -21,7 +22,7 @@ import type {
   UsageRate,
 } from "../../lib/calculator";
 import { ExternalLink } from "../ui/ExternalLink";
-import { FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
+import { ColorField, FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
 
 function CategoryHeading({ children }: { children: string }) {
   return (
@@ -109,6 +110,13 @@ export function EquipmentEditor({
         placeholder={NAME_PLACEHOLDER}
         onChange={(name) => onChange({ name })}
         error={errors.name}
+      />
+      <ColorField
+        label="Color"
+        value={draft.color}
+        presets={EQUIPMENT_COLOR_PALETTE}
+        onChange={(color) => onChange({ color })}
+        tooltip="Shown as this equipment's line color in the chart below and its pill border in the roster above."
       />
 
       <CategoryHeading>Exercise</CategoryHeading>
