@@ -45,7 +45,7 @@ export interface Subtitle {
 // lib/content/graphicAssets.ts in apps/web and apps/mobile). Adding a key
 // here without a matching entry on both platforms fails typecheck there.
 export type GraphicKey =
-  | "landing-hero"
+  | "what-is-elexercise-diagram"
   | "power-generation-pixii-machine"
   | "power-generation-bike-comp-no-carbon-price"
   | "power-generation-bike-comp-ca"

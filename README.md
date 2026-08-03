@@ -49,8 +49,11 @@ duplication, not an intentional split.
   page lists Tools and Articles as two separate sections; article content
   itself is authored in `packages/content`'s `articles` registry, and the
   `[slug]` route renders whichever article `getArticleBySlug` finds, so a new
-  article never needs a new page file. First entry: "Is the Power Generation
-  Worth It?" by Noah Korotzer. Web-only.
+  article never needs a new page file. Current entries: "What is
+  elexercise?" (`landingArticle` — also excerpted on the home page's hover
+  popup) and "Is the Power Generation Worth It?" by Noah Korotzer. The
+  Articles route itself is web-only, though the underlying article data is
+  shared with mobile.
 - **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
   `packages/workout-history`; web's `history/page.tsx` has its own parallel
   implementation (see the `packages/workout-history` note above).

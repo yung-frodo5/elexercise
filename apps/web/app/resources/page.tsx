@@ -20,6 +20,7 @@ const TOOLS: ResourceRow[] = [
 // this is just the short teaser shown in the index table, keyed by slug so
 // it doesn't need to change if an article's title or body changes.
 const ARTICLE_DESCRIPTIONS: Record<string, string> = {
+  "what-is-elexercise": "An introduction to elexercise and the idea behind it.",
   "is-the-power-generation-worth-it":
     "A look at the unit economics behind electricity-generating exercise equipment.",
 };

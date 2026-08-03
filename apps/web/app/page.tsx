@@ -6,12 +6,6 @@ import { ArticleBody, ArticleHeader } from "../components/content/ArticleView";
 import { newsreader } from "../lib/fonts";
 
 export default function LandingPage() {
-  // hero used to be an image (landing-hero.png) rendered via the shared
-  // "graphic" block type; per design feedback it's now real text on the
-  // page instead, with its own verb/noun entries that don't exist in that
-  // block's alt copy, so it's hardcoded here rather than derived from it.
-  const [, ...rest] = landingArticle.body;
-
   return (
     <>
       {/* The rest of the article (and its diagram) now lives in a popup
@@ -169,7 +163,7 @@ export default function LandingPage() {
             }}
           >
             <ArticleHeader article={landingArticle} />
-            <ArticleBody article={{ ...landingArticle, body: rest }} />
+            <ArticleBody article={landingArticle} />
           </div>
         </div>
       </section>
