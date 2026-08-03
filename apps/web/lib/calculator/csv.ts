@@ -30,7 +30,7 @@ const CSV_SETTINGS_ROWS: CsvSettingsRow[] = [
   { label: "Subscription fee ($/month)", value: (inputs) => inputs.subscriptionFeeMonthly },
   { label: "Discount factor (%)", value: (inputs) => inputs.discountFactor * 100 },
   {
-    label: "Location",
+    label: "Location preset",
     value: (inputs) => (inputs.customizeEnergy ? "Custom" : optionLabel(LOCATION_OPTIONS, inputs.location)),
   },
   { label: "Power generation (net, Wh/workout)", value: (inputs) => inputs.powerGenWh },
