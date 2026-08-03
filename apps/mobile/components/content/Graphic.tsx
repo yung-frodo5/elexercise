@@ -1,15 +1,24 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import type { Graphic as GraphicBlock } from "@exercise-tracker/content";
+import { theme } from "@exercise-tracker/design-tokens";
 import { graphicAssets } from "../../lib/content/graphicAssets";
+import { RichText } from "./RichText";
 
 export function Graphic({ graphic }: { graphic: GraphicBlock }) {
   return (
-    <Image
-      source={graphicAssets[graphic.key]}
-      accessibilityLabel={graphic.alt}
-      style={styles.image}
-      resizeMode="contain"
-    />
+    <View>
+      <Image
+        source={graphicAssets[graphic.key]}
+        accessibilityLabel={graphic.alt}
+        style={styles.image}
+        resizeMode="contain"
+      />
+      {graphic.caption && (
+        <Text style={styles.caption}>
+          <RichText nodes={graphic.caption} />
+        </Text>
+      )}
+    </View>
   );
 }
 
@@ -22,5 +31,12 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 480,
+  },
+  caption: {
+    marginTop: theme.spacing.xs,
+    fontSize: theme.typography.size.xxs,
+    fontStyle: "italic",
+    color: theme.colors.textMuted,
+    textAlign: "center",
   },
 });
