@@ -69,6 +69,7 @@ export function NumberField({
   min,
   step,
   error,
+  tooltip,
 }: {
   label: string;
   value: number;
@@ -76,16 +77,23 @@ export function NumberField({
   min?: number;
   step?: number;
   error?: string;
+  tooltip?: string;
 }) {
   return (
     <label style={labelStyle}>
-      {label}
+      <span>
+        {label}
+        {tooltip && <InfoTooltip text={tooltip} />}
+      </span>
       <input
         type="number"
-        value={value}
+        // valueAsNumber (not Number(e.target.value)) is what actually yields NaN for an emptied or
+        // otherwise incomplete/invalid field -- Number("") is 0, which used to force the field back to "0"
+        // the instant a user cleared it instead of letting it sit blank until Save.
+        value={Number.isNaN(value) ? "" : value}
         min={min}
         step={step}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => onChange(e.target.valueAsNumber)}
         style={fieldInputStyle(error)}
       />
       {error && <FieldError>{error}</FieldError>}

@@ -152,9 +152,9 @@ export function EquipmentEditor({
           <NumberField
             label="Power generation per workout (Wh)"
             value={inputs.powerGenWh}
-            min={0}
             onChange={(powerGenWh) => patchInputs({ powerGenWh })}
             error={errors.powerGenWh}
+            tooltip="Positive values represent equipment that generates power (e.g. a power-generating stationary bike); negative values represent equipment that consumes power (e.g. a motorized treadmill)."
           />
         </>
       )}
@@ -177,7 +177,9 @@ export function EquipmentEditor({
             error={errors.subscriptionFeeMonthly}
           />
           <NumberField
-            label={`Annualized discount factor: ${Math.round(inputs.discountFactor * 1e8) / 1e6}%`}
+            label={`Annualized discount factor${
+              Number.isNaN(inputs.discountFactor) ? "" : `: ${Math.round(inputs.discountFactor * 1e8) / 1e6}%`
+            }`}
             value={inputs.discountFactor}
             min={0}
             step={0.01}

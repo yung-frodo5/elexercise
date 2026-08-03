@@ -28,7 +28,10 @@ export function validateEquipmentDraft(draft: CalculatorColumn): EquipmentDraftF
   if (!(inputs.capitalCost >= 0)) errors.capitalCost = "Capital cost must be zero or greater.";
   if (!(inputs.subscriptionFeeMonthly >= 0)) errors.subscriptionFeeMonthly = "Subscription fee must be zero or greater.";
   if (!(inputs.lifespanYears >= 1)) errors.lifespanYears = "Lifespan must be at least 1 year.";
-  if (!(inputs.powerGenWh >= 0)) errors.powerGenWh = "Power generation must be zero or greater.";
+  // No lower bound -- negative values are valid here, modeling equipment that consumes power (e.g. a
+  // motorized treadmill) rather than only equipment that generates it. Still required, though: NaN (an
+  // emptied field) is rejected the same way the other numeric fields reject it.
+  if (Number.isNaN(inputs.powerGenWh)) errors.powerGenWh = "Power generation is required.";
   if (!(inputs.electricityPricePerKwh >= 0)) errors.electricityPricePerKwh = "Electricity price must be zero or greater.";
   if (!(inputs.discountFactor >= 0)) errors.discountFactor = "Discount factor must be zero or greater.";
   if (!(inputs.carbonPricePerTon >= 0)) errors.carbonPricePerTon = "Carbon price must be zero or greater.";

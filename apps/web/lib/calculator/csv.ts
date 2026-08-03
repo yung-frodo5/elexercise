@@ -33,7 +33,7 @@ const CSV_SETTINGS_ROWS: CsvSettingsRow[] = [
     label: "Location",
     value: (inputs) => (inputs.customizeEnergy ? "Custom" : optionLabel(LOCATION_OPTIONS, inputs.location)),
   },
-  { label: "Power generation (Wh/workout)", value: (inputs) => inputs.powerGenWh },
+  { label: "Power generation (net, Wh/workout)", value: (inputs) => inputs.powerGenWh },
   { label: "Electricity price ($/kWh)", value: (inputs) => inputs.electricityPricePerKwh },
   { label: "Carbon price ($/ton CO2e)", value: (inputs) => inputs.carbonPricePerTon },
   { label: "Grid carbon intensity (gCO2e/kWh)", value: (inputs) => inputs.gridCarbonIntensityGPerKwh },
@@ -55,10 +55,10 @@ const CSV_RESULT_ROWS: CsvResultRow[] = [
   { section: "Cost per workout", label: "Total ($/workout)", value: (r) => r.totalCostPerWorkout },
   { section: "Value ratios", label: "Electricity vs. exercise (%)", value: (r) => r.valueRatioElectricityToExercise * 100 },
   { section: "Value ratios", label: "Carbon vs. exercise (%)", value: (r) => r.valueRatioCarbonToExercise * 100 },
-  { section: "Lifetime impact", label: "Electricity generated (kWh)", value: (r) => r.electricityGeneratedLifetimeKwh },
+  { section: "Lifetime impact", label: "Electricity generated (net, kWh)", value: (r) => r.electricityGeneratedLifetimeKwh },
   { section: "Lifetime impact", label: "Electricity cost ($)", value: (r) => r.lifetimeElectricityValueUsd },
-  { section: "Lifetime impact", label: "Carbon offset (kg CO2e)", value: (r) => r.carbonOffsetLifetimeKg },
-  { section: "Lifetime impact", label: "Carbon offset per workout (g CO2e)", value: (r) => r.carbonOffsetPerWorkoutGrams },
+  { section: "Lifetime impact", label: "Carbon offset (net, kg CO2e)", value: (r) => r.carbonOffsetLifetimeKg },
+  { section: "Lifetime impact", label: "Carbon offset per workout (net, g CO2e)", value: (r) => r.carbonOffsetPerWorkoutGrams },
   { section: "Lifetime impact", label: "Carbon cost ($)", value: (r) => r.lifetimeCarbonValueUsd },
 ];
 

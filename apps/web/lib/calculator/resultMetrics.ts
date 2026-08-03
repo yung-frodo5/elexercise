@@ -47,7 +47,11 @@ export const RESULT_METRICS: ResultMetric[] = [
   },
   {
     section: "Lifetime impact",
-    label: "Electricity generated",
+    // "(net)" -- powerGenWh can be negative (equipment that consumes power, e.g. a motorized treadmill),
+    // in which case this reads as a negative number under the same label. Since this is a shared row
+    // compared across equipment of possibly-mixed sign, the label can't flip per column, so it has to be
+    // one wording that's sensible either way.
+    label: "Electricity generated (net)",
     format: (r) => formatKwh(r.electricityGeneratedLifetimeKwh),
   },
   {
@@ -57,12 +61,12 @@ export const RESULT_METRICS: ResultMetric[] = [
   },
   {
     section: "Lifetime impact",
-    label: "Carbon offset",
+    label: "Carbon offset (net)",
     format: (r) => formatKg(r.carbonOffsetLifetimeKg),
   },
   {
     section: "Lifetime impact",
-    label: "Carbon offset per workout",
+    label: "Carbon offset per workout (net)",
     format: (r) => formatGrams(r.carbonOffsetPerWorkoutGrams),
   },
   {

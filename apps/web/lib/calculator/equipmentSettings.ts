@@ -37,7 +37,9 @@ export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
     label: "Location",
     format: (inputs) => (inputs.customizeEnergy ? "Custom" : optionLabel(LOCATION_OPTIONS, inputs.location)),
   },
-  { label: "Power generation", format: (inputs) => formatPowerGenWh(inputs.powerGenWh) },
+  // "(net)" -- this can be negative for equipment that consumes power (e.g. a motorized treadmill)
+  // rather than generates it.
+  { label: "Power generation (net)", format: (inputs) => formatPowerGenWh(inputs.powerGenWh) },
   { label: "Electricity price", format: (inputs) => `$${inputs.electricityPricePerKwh}/kWh` },
   { label: "Carbon price", format: (inputs) => `$${inputs.carbonPricePerTon}/ton CO2e` },
   { label: "Grid carbon intensity", format: (inputs) => `${inputs.gridCarbonIntensityGPerKwh} gCO2e/kWh` },
