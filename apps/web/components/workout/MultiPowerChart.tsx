@@ -15,6 +15,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { downsamplePowerSamples, powerAxisMaxW } from "../../lib/downsamplePowerSamples";
 import { formatDuration } from "../../lib/format";
 import { overlineStyle } from "../../lib/uiStyles";
+import { newsreader } from "../../lib/fonts";
 import type { PowerSamplePoint } from "../../lib/usePowerSamples";
 
 type SeriesInput = {
@@ -90,7 +91,7 @@ export function MultiPowerChart({
 
   if (active.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
         Select an activity to show power output.
       </p>
     );
@@ -98,7 +99,7 @@ export function MultiPowerChart({
 
   if (data.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
         No power data recorded for these activities.
       </p>
     );
@@ -118,28 +119,28 @@ export function MultiPowerChart({
               dataKey="tMs"
               domain={[xMin, xMax || "auto"]}
               tickFormatter={(tMs: number) => formatDuration(tMs / 1000)}
-              stroke={theme.colors.navy}
+              stroke={theme.colors.navyStatic}
               tickLine={false}
               axisLine={false}
-              fontSize={theme.typography.size.xs}
+              fontSize={theme.typography.size.sm}
               minTickGap={40}
               label={{
                 value: "Time",
                 position: "insideBottom",
                 offset: -8,
                 style: {
-                  fill: theme.colors.navy,
+                  fill: theme.colors.navyStatic,
                   fontSize: theme.typography.size.xxs,
-                  fontFamily: theme.typography.fontFamily.web,
+                  fontFamily: newsreader.style.fontFamily,
                 },
               }}
             />
             <YAxis
               domain={[0, yMax]}
-              stroke={theme.colors.navy}
+              stroke={theme.colors.navyStatic}
               tickLine={false}
               axisLine={false}
-              fontSize={theme.typography.size.xs}
+              fontSize={theme.typography.size.sm}
               width={52}
               label={{
                 value: "Watts",
@@ -147,9 +148,9 @@ export function MultiPowerChart({
                 position: "insideLeft",
                 offset: -6,
                 style: {
-                  fill: theme.colors.navy,
+                  fill: theme.colors.navyStatic,
                   fontSize: theme.typography.size.xxs,
-                  fontFamily: theme.typography.fontFamily.web,
+                  fontFamily: newsreader.style.fontFamily,
                   textAnchor: "middle",
                 },
               }}
@@ -165,14 +166,14 @@ export function MultiPowerChart({
                       border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
                       borderRadius: theme.radii.md,
                       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-                      fontFamily: theme.typography.fontFamily.web,
+                      fontFamily: newsreader.style.fontFamily,
                       whiteSpace: "nowrap",
                     }}
                   >
                     <div
                       style={{
-                        fontSize: theme.typography.size.xs,
-                        color: theme.colors.navy,
+                        fontSize: theme.typography.size.sm,
+                        color: theme.colors.navyStatic,
                         marginBottom: 4,
                       }}
                     >
@@ -186,7 +187,7 @@ export function MultiPowerChart({
                           key={String(entry.dataKey)}
                           style={{
                             color: String(entry.color),
-                            fontFamily: theme.typography.fontFamily.mono,
+                            fontFamily: newsreader.style.fontFamily,
                             fontWeight: theme.typography.weight.semibold,
                             fontSize: theme.typography.size.sm,
                           }}

@@ -6,6 +6,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { EQUIPMENT_SETTINGS, RESULT_METRIC_SECTIONS, RESULT_METRICS } from "../../lib/calculator";
 import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
 import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
+import { newsreader } from "../../lib/fonts";
 
 const dividerStyle = `1px solid ${withAlpha(theme.colors.border, 0.35)}`;
 const LABEL_COLUMN_MIN_WIDTH = 280;
@@ -27,8 +28,20 @@ function GridCell({
     <div
       style={{
         padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-        fontWeight: bold || header ? theme.typography.weight.bold : theme.typography.weight.regular,
-        color: theme.colors.navy,
+        fontSize: theme.typography.size.sm,
+        // Header cells are Clash Display, capped at Semibold (not Bold,
+        // like `bold` rows below get in Newsreader -- that cap only
+        // applies to Clash Display text).
+        fontWeight: header
+          ? theme.typography.weight.semibold
+          : bold
+            ? theme.typography.weight.bold
+            : theme.typography.weight.regular,
+        color: theme.colors.navyStatic,
+        // This is the header row of a div-based grid, not a real <th> --
+        // the global `th { ... }` rule (layout.tsx) can't reach it, so set
+        // explicitly to match every other table header on the site.
+        ...(header ? { fontFamily: "'Clash Display', sans-serif" } : {}),
         wordBreak: "break-word",
         borderRight: divider ? dividerStyle : undefined,
         // Keeps the row name in view while scrolling the equipment columns horizontally. The background
@@ -94,10 +107,15 @@ function SectionHeading({
         display: "flex",
         alignItems: "center",
         gap: theme.spacing.xs,
-        fontSize: theme.typography.size.lg,
-        fontWeight: theme.typography.weight.bold,
-        color: theme.colors.navy,
-        fontFamily: theme.typography.fontFamily.web,
+        // The parent "Results" h2 moved from lg(24) to md(16) in the site-
+        // wide heading-size pass, which would have tied it with this
+        // subheading. Dropped to sm(14) to stay one tier below its parent
+        // -- now ties with GridCell's body text instead, differentiated by
+        // font-weight (semibold here vs regular there).
+        fontSize: theme.typography.size.sm,
+        fontWeight: theme.typography.weight.semibold,
+        color: theme.colors.navyStatic,
+        fontFamily: newsreader.style.fontFamily,
         marginTop: theme.spacing.md,
         background: "none",
         border: "none",
@@ -106,7 +124,7 @@ function SectionHeading({
         textAlign: "left",
       }}
     >
-      <span aria-hidden style={{ fontSize: theme.typography.size.lg, lineHeight: 1 }}>
+      <span aria-hidden style={{ fontSize: theme.typography.size.sm, lineHeight: 1 }}>
         {collapsed ? theme.icons.expand : theme.icons.collapse}
       </span>
       {title}
@@ -125,7 +143,7 @@ export function CalculatorResultsTable({
 
   if (equipment.length === 0) {
     return (
-      <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+      <p style={{ color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
         Add equipment to see results.
       </p>
     );

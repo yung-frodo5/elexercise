@@ -30,7 +30,19 @@ export const colors = {
   // apps/web's replacement for textPrimary/textMuted now that its canvas
   // is white -- not shared with mobile (see note above). Brightened from
   // an earlier near-black #001F3F per design feedback ("more blue").
-  navy: "#0033A0",
+  //
+  // A CSS var (not a plain hex) so every existing `color: theme.colors.navy`
+  // call site automatically flips to white for dark mode with no per-file
+  // changes -- apps/web/app/layout.tsx defines --elex-navy: <this hex> at
+  // :root and swaps it to white under html[data-theme="dark"]. Anything
+  // that needs the literal navy hex regardless of theme (background fills,
+  // withAlpha() shadows -- both would break on a var string, since
+  // withAlpha parses its input as raw hex) uses navyStatic instead.
+  navy: "var(--elex-navy, #0033A0)",
+  // Raw hex twin of `navy`, for the handful of call sites (background
+  // fills, withAlpha() shadow tints) that need a real hex value that
+  // doesn't participate in the dark-mode text-color flip. See `navy` above.
+  navyStatic: "#0033A0",
   // Extra accents for hashed sport tags / multi-series charts.
   accentBlue: "#1f4e79",
   accentBlueMuted: "#2a6f97",

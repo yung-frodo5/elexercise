@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   metaDate: {
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     color: withAlpha(INK, 0.7),
   },
   metaStatus: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   chartMsg: {
     color: INK,
     textAlign: "center",
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     paddingVertical: theme.spacing.sm,
   },
 });

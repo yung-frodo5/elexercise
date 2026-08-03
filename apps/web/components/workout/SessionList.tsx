@@ -1,6 +1,7 @@
 "use client";
 
 import type { Session } from "@exercise-tracker/shared-types";
+import { theme } from "@exercise-tracker/design-tokens";
 
 export function SessionList({
   sessions,
@@ -12,7 +13,7 @@ export function SessionList({
   busy?: boolean;
 }) {
   return (
-    <ul>
+    <ul style={{ fontSize: theme.typography.size.sm }}>
       {sessions.map((s) => (
         <li key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span>

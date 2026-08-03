@@ -21,15 +21,25 @@ export function LivePowerChart({ sessionId, activityType }: { sessionId: string;
   }, [samples]);
 
   if (error) {
-    return <p style={{ color: theme.colors.error }}>Couldn&rsquo;t load live power: {error}</p>;
+    return (
+      <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>
+        Couldn&rsquo;t load live power: {error}
+      </p>
+    );
   }
 
   return (
     <div>
-      <h3>Live power — {activityType}</h3>
+      {/* One tier below its parent h2 (LightBlueHeading on the Track page,
+          now also md after the site-wide heading-size pass) -- sm ties it
+          with body text instead, differentiated by the global h1/h2/h3
+          Clash Display + semibold styling. */}
+      <h3 style={{ fontSize: theme.typography.size.sm }}>Live power — {activityType}</h3>
 
       {!loading && !stats && (
-        <p style={{ color: theme.colors.navy }}>Waiting for the first reading…</p>
+        <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+          Waiting for the first reading…
+        </p>
       )}
 
       {stats && (

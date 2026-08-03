@@ -27,7 +27,13 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
         display: "inline-block",
         margin: 0,
         backgroundColor: "#D6E9FF",
+        // Static, not inherited -- this heading's own light-blue background
+        // doesn't invert in dark mode, so its text can't rely on inheriting
+        // the canvas's flipping default color (it never set its own before,
+        // which is exactly the bug: it inherited white in dark mode).
+        color: theme.colors.navyStatic,
         padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+        fontSize: theme.typography.size.md,
       }}
     >
       {children}
@@ -127,7 +133,7 @@ export default function TrackPage() {
   if (dataLoading) {
     return (
       <main style={{ padding: theme.spacing.xl }}>
-        <p>Loading your workouts…</p>
+        <p style={{ fontSize: theme.typography.size.sm }}>Loading your workouts…</p>
         <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
           First load can take up to 30 seconds if the API has been idle.
         </p>
@@ -148,7 +154,7 @@ export default function TrackPage() {
         margin: "0 auto",
       }}
     >
-      {error && <p style={{ color: theme.colors.error }}>{error}</p>}
+      {error && <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>{error}</p>}
 
       <section>
         {currentWorkout ? (
@@ -168,17 +174,23 @@ export default function TrackPage() {
               {inProgressSession ? (
                 <LivePowerChart sessionId={inProgressSession.id} activityType={inProgressSession.activityType} />
               ) : (
-                <p style={{ color: theme.colors.navy }}>No active session — start one to see live power.</p>
+                <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
+                  No active session — start one to see live power.
+                </p>
               )}
             </section>
 
-            <p style={{ marginTop: theme.spacing.lg }}>Add another activity:</p>
+            <p style={{ marginTop: theme.spacing.lg, fontSize: theme.typography.size.sm }}>Add another activity:</p>
             <StartActivityForm onStart={handleStart} busy={busy} />
-            <p style={{ marginTop: theme.spacing.xxl }}>
+            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
               Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />
-            <button onClick={() => void handleEnd()} disabled={busy} style={{ marginTop: theme.spacing.sm }}>
+            <button
+              onClick={() => void handleEnd()}
+              disabled={busy}
+              style={{ marginTop: theme.spacing.sm, fontSize: theme.typography.size.sm }}
+            >
               End workout
             </button>
           </>
@@ -188,7 +200,7 @@ export default function TrackPage() {
             <div style={{ marginTop: theme.spacing.xxl }}>
               <StartActivityForm onStart={handleStart} busy={busy} />
             </div>
-            <p style={{ marginTop: theme.spacing.xxl }}>
+            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
               Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />

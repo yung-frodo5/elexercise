@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
+import { newsreader } from "../../lib/fonts";
 
 /** Additive filter pill — reusable across list screens. */
 export function FilterChip({
@@ -21,9 +22,9 @@ export function FilterChip({
     }`,
     background: active ? withAlpha(theme.colors.primaryGreen, 0.2) : "transparent",
     color: active ? theme.colors.secondaryGreen : theme.colors.navy,
-    fontSize: theme.typography.size.xs,
+    fontSize: theme.typography.size.sm,
     fontWeight: active ? theme.typography.weight.semibold : theme.typography.weight.medium,
-    fontFamily: theme.typography.fontFamily.web,
+    fontFamily: newsreader.style.fontFamily,
     cursor: "pointer",
     transition: "background-color 140ms ease, color 140ms ease, border-color 140ms ease",
   };

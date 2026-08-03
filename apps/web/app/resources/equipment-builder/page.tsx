@@ -12,12 +12,12 @@ const INTRO_LINES: { label: string; quote: string; align: "left" | "right" }[] =
 export default function EquipmentBuilderPage() {
   return (
     <main style={{ padding: theme.spacing.xl, paddingTop: theme.spacing.xs, maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center", marginTop: 0 }}>Equipment Builder</h1>
+      <h1 style={{ textAlign: "center", marginTop: 0, fontSize: theme.typography.size.lg }}>Equipment Builder</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs, color: theme.colors.navy }}>
         {INTRO_LINES.map(({ label, quote, align }, i) => (
           <Fragment key={label}>
             {i === 2 && <div aria-hidden style={{ height: theme.spacing.xl }} />}
-            <p style={{ margin: 0, textAlign: align }}>
+            <p style={{ margin: 0, textAlign: align, fontSize: theme.typography.size.sm, fontStyle: "italic" }}>
               {label}: &ldquo;{quote}&rdquo;
             </p>
           </Fragment>

@@ -28,7 +28,8 @@ export function StartMachineForm({ onStart, busy }: { onStart: (scanToken: strin
           background: theme.colors.primaryGreen,
           color: "#FFFFFF",
           fontWeight: theme.typography.weight.semibold,
-          fontFamily: theme.typography.fontFamily.web,
+          fontFamily: "'Clash Display', sans-serif",
+          fontSize: theme.typography.size.sm,
           cursor: "pointer",
         }}
       >

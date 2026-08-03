@@ -17,6 +17,7 @@ import {
 import { SportTag } from "../ui/SportTag";
 import { MultiPowerChart } from "./MultiPowerChart";
 import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
+import { newsreader } from "../../lib/fonts";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
 const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
@@ -157,16 +158,16 @@ export function WorkoutHistoryRow({
   const cell: CSSProperties = {
     padding: `${theme.spacing.md}px`,
     fontSize: theme.typography.size.sm,
-    color: theme.colors.navy,
+    color: theme.colors.navyStatic,
     verticalAlign: "middle",
-    fontFamily: theme.typography.fontFamily.web,
+    fontFamily: newsreader.style.fontFamily,
     borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
   };
 
   const numericCell: CSSProperties = {
     ...cell,
-    fontFamily: theme.typography.fontFamily.mono,
-    fontSize: theme.typography.size.xs,
+    fontFamily: newsreader.style.fontFamily,
+    fontSize: theme.typography.size.sm,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
     textAlign: "right",
@@ -183,11 +184,11 @@ export function WorkoutHistoryRow({
 
   const subNumeric: CSSProperties = {
     ...subCell,
-    fontFamily: theme.typography.fontFamily.mono,
-    fontSize: theme.typography.size.xs,
+    fontFamily: newsreader.style.fontFamily,
+    fontSize: theme.typography.size.sm,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
-    color: theme.colors.navy,
+    color: theme.colors.navyStatic,
     textAlign: "right",
     fontVariantNumeric: "tabular-nums",
   };
@@ -224,7 +225,7 @@ export function WorkoutHistoryRow({
               style={{
                 display: "inline-block",
                 marginTop: 2,
-                color: theme.colors.navy,
+                color: theme.colors.navyStatic,
                 fontSize: theme.typography.size.xxs,
                 lineHeight: 1.2,
                 flexShrink: 0,
@@ -236,9 +237,9 @@ export function WorkoutHistoryRow({
               <span
                 style={{
                   display: "block",
-                  color: theme.colors.navy,
+                  color: theme.colors.navyStatic,
                   fontWeight: theme.typography.weight.semibold,
-                  fontSize: theme.typography.size.md,
+                  fontSize: theme.typography.size.sm,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -251,8 +252,8 @@ export function WorkoutHistoryRow({
                   style={{
                     display: "block",
                     marginTop: 2,
-                    fontSize: theme.typography.size.xs,
-                    color: theme.colors.navy,
+                    fontSize: theme.typography.size.sm,
+                    color: theme.colors.navyStatic,
                   }}
                 >
                   {statusLabel}
@@ -265,9 +266,9 @@ export function WorkoutHistoryRow({
         <td
           style={{
             ...cell,
-            color: theme.colors.navy,
+            color: theme.colors.navyStatic,
             whiteSpace: "nowrap",
-            fontSize: theme.typography.size.xs,
+            fontSize: theme.typography.size.sm,
           }}
         >
           {formatWorkoutDate(workout.startedAt)}
@@ -312,11 +313,25 @@ export function WorkoutHistoryRow({
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <div style={{ width: "100%", maxWidth: 820, height: 260 }}>
                 {powerError ? (
-                  <p style={{ color: theme.colors.error, margin: 0, textAlign: "center" }}>
+                  <p
+                    style={{
+                      color: theme.colors.error,
+                      margin: 0,
+                      textAlign: "center",
+                      fontSize: theme.typography.size.sm,
+                    }}
+                  >
                     Couldn&rsquo;t load power: {powerError}
                   </p>
                 ) : powerLoading ? (
-                  <p style={{ color: theme.colors.navy, margin: 0, textAlign: "center" }}>
+                  <p
+                    style={{
+                      color: theme.colors.navyStatic,
+                      margin: 0,
+                      textAlign: "center",
+                      fontSize: theme.typography.size.sm,
+                    }}
+                  >
                     Loading power profile…
                   </p>
                 ) : (
@@ -377,7 +392,7 @@ function ActivitySubRow({
             style={{
               fontSize: theme.typography.size.sm,
               fontWeight: theme.typography.weight.medium,
-              color: theme.colors.navy,
+              color: theme.colors.navyStatic,
             }}
           >
             {session.activityType || "Activity"}

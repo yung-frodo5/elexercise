@@ -69,7 +69,9 @@ export default function ProfilePage() {
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 360, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
-        <h1 style={{ margin: 0, color: "#228B22" }}>{displayNameInput || "Profile Details"}</h1>
+        <h1 style={{ margin: 0, color: "#228B22", fontSize: theme.typography.size.lg }}>
+          {displayNameInput || "Profile Details"}
+        </h1>
         <AvatarCircle src={avatarUrlInput} size={40} />
       </div>
 
@@ -83,18 +85,26 @@ export default function ProfilePage() {
         onSubmit={handleSubmit}
         style={{ marginTop: theme.spacing.xl, display: "flex", flexDirection: "column", gap: theme.spacing.sm }}
       >
-        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs }}>Display name</label>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>Display name</label>
         <input value={displayNameInput} onChange={(e) => setDisplayNameInput(e.target.value)} />
 
-        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.lg }}>
           Avatar
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
           <AvatarCircle src={avatarUrlInput} size={40} />
-          <input type="file" accept="image/*" onChange={handleAvatarFileChange} />
+          {/* fontSize here also reaches the native "Choose File" button --
+              its ::file-selector-button rule (layout.tsx) inherits from
+              this input. */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarFileChange}
+            style={{ fontSize: theme.typography.size.xxs }}
+          />
         </div>
 
-        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.xs, marginTop: theme.spacing.lg }}>
+        <label style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.lg }}>
           Home Region
         </label>
         <select value={homeRegionInput} onChange={(e) => setHomeRegionInput(e.target.value)}>
@@ -119,7 +129,8 @@ export default function ProfilePage() {
             background: theme.colors.primaryGreen,
             color: "#FFFFFF",
             fontWeight: theme.typography.weight.semibold,
-            fontFamily: theme.typography.fontFamily.web,
+            fontFamily: "'Clash Display', sans-serif",
+            fontSize: theme.typography.size.sm,
             cursor: "pointer",
           }}
         >

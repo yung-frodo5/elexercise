@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   title: {
-    fontSize: theme.typography.size.xxl,
+    fontSize: theme.typography.size.xl,
     fontWeight: theme.typography.weight.bold,
     color: theme.colors.textPrimary,
   },

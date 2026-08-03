@@ -33,10 +33,12 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
         padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       }}
     >
-      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.navy }}>
+      {/* Static -- this tooltip's own white background doesn't invert in
+          dark mode. */}
+      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.navyStatic }}>
         {Math.round(point.powerW)} W
       </div>
-      <div style={{ fontSize: theme.typography.size.xs, color: theme.colors.navy }}>
+      <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic }}>
         {formatDuration(point.tMs / 1000)}
       </div>
     </div>
@@ -57,7 +59,7 @@ export function PowerChart({ samples, peakPowerW }: { samples: PowerSamplePoint[
           stroke={theme.colors.navy}
           tickLine={false}
           axisLine={false}
-          fontSize={theme.typography.size.xs}
+          fontSize={theme.typography.size.sm}
           minTickGap={40}
         />
         <YAxis
@@ -66,7 +68,7 @@ export function PowerChart({ samples, peakPowerW }: { samples: PowerSamplePoint[
           stroke={theme.colors.navy}
           tickLine={false}
           axisLine={false}
-          fontSize={theme.typography.size.xs}
+          fontSize={theme.typography.size.sm}
           width={48}
         />
         <Tooltip content={ChartTooltip} cursor={{ stroke: theme.colors.border, strokeDasharray: "4 4" }} />

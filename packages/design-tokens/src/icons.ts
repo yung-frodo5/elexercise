@@ -15,4 +15,6 @@ export const icons = {
   expand: "▸",
   collapse: "▾",
   info: "ⓘ",
+  sun: "☀️",
+  moon: "🌙",
 } as const;
