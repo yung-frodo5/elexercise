@@ -5,9 +5,9 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { isElexerciseEquipment } from "../../lib/calculator";
 import type { CalculatorInputs } from "../../lib/calculator";
 
-// Wraps `children` in bold + a lightning bolt whenever `inputs` is currently running one of the
-// elexercise-branded presets, uncustomized (see isElexerciseEquipment) -- passes `children` through
-// unstyled otherwise. Single source of truth for the three call sites that need this treatment: the
+// Wraps `children` in bold + a lightning bolt whenever `inputs` currently has positive power generation
+// (see isElexerciseEquipment) -- passes `children` through unstyled otherwise. Single source of truth for
+// the three call sites that need this treatment: the
 // results table's "Equipment preset" row, EquipmentEditor's preset caption, and roster pills/column
 // headers (see CalculatorResultsTable.tsx, EquipmentEditor.tsx, EquipmentRoster.tsx). Uses a plain ⚡
 // glyph rather than the brand logo image -- at the small size this renders inline, the logo (a lightbulb)

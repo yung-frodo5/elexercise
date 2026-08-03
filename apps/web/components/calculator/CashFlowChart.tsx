@@ -3,22 +3,8 @@
 import { useMemo } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { theme } from "@exercise-tracker/design-tokens";
-import { activityColorForSport } from "../../lib/activityColors";
 import { buildCashFlowTimeSeries } from "../../lib/calculator";
 import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
-
-// Reuses the same hashed-by-id color assignment as sport tags / MultiPowerChart series (see
-// lib/activityColors.ts) rather than introducing a separate chart-series palette token — this is already
-// the app's convention for "assign each entity in a list/chart a stable, distinguishable color." Exported
-// so EquipmentRoster's pills can pick up the exact same per-equipment color as this chart's lines.
-//
-// That shared palette's one blue entry (accentBlue) reads fine against the light backgrounds sport tags
-// use it on, but is too close to this app's own navy (both the pill fill and, previously, this chart's
-// panel) to read here -- swapped for a color outside the blue family whenever the hash lands there.
-export function colorForEquipment(id: string): string {
-  const color = activityColorForSport(id);
-  return color === theme.colors.accentBlue ? theme.colors.error : color;
-}
 
 // `results` is passed in (rather than recomputed here) so it stays a single computeCostPerWorkout pass
 // per equipment item, shared with CalculatorResultsTable — see Calculator.tsx.
@@ -131,7 +117,7 @@ export function CashFlowChart({
               type="monotone"
               dataKey={item.id}
               name={item.name}
-              stroke={colorForEquipment(item.id)}
+              stroke={item.color}
               strokeWidth={2}
               dot={false}
               connectNulls={false}

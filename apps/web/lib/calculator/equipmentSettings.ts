@@ -19,7 +19,7 @@ export interface EquipmentSetting {
 // The raw Equipment Editor fields, in the same top-to-bottom order they appear in the editor
 // (Exercise, then Cost, then Energy) — shown as their own "Settings" section in the results table,
 // above "Cost per workout", regardless of whether "customize economics"/"customize energy inputs" is toggled.
-// "Equipment preset"/"Location" read customizeEconomics/customizeEnergy (not a stored "custom" enum value —
+// "Equipment preset"/"Location preset" read customizeEconomics/customizeEnergy (not a stored "custom" enum value —
 // EquipmentType/LocationPreset no longer have one) to decide whether to show "Custom" or the preset's label.
 export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
   {
@@ -34,10 +34,12 @@ export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
   { label: "Subscription fee", format: (inputs) => `$${inputs.subscriptionFeeMonthly}/mo` },
   { label: "Discount factor", format: (inputs) => `${Math.round(inputs.discountFactor * 1e8) / 1e6}%` },
   {
-    label: "Location",
+    label: "Location preset",
     format: (inputs) => (inputs.customizeEnergy ? "Custom" : optionLabel(LOCATION_OPTIONS, inputs.location)),
   },
-  { label: "Power generation", format: (inputs) => formatPowerGenWh(inputs.powerGenWh) },
+  // "(net)" -- this can be negative for equipment that consumes power (e.g. a motorized treadmill)
+  // rather than generates it.
+  { label: "Power generation (net)", format: (inputs) => formatPowerGenWh(inputs.powerGenWh) },
   { label: "Electricity price", format: (inputs) => `$${inputs.electricityPricePerKwh}/kWh` },
   { label: "Carbon price", format: (inputs) => `$${inputs.carbonPricePerTon}/ton CO2e` },
   { label: "Grid carbon intensity", format: (inputs) => `${inputs.gridCarbonIntensityGPerKwh} gCO2e/kWh` },

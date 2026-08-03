@@ -39,8 +39,11 @@ duplication, not an intentional split.
 - **Badges** — `badges`/`user_badges` tables exist (see "Storage strategy")
   but there's no earning logic or badge display screen yet anywhere; only a
   marketing mention in `LevelProgress.tsx`.
-- **Equipment Builder** (`apps/web/app/resources/equipment-builder/page.tsx`)
-  — a cost-per-workout calculator. Web-only.
+- **Equipment Analyzer** (`apps/web/app/resources/equipment-analyzer/page.tsx`)
+  — a cost-per-workout calculator, with a CSV export of the current
+  comparison (including a year-by-year cost-over-time table matching the
+  cash-flow chart) and a per-equipment color (preset swatches or a custom
+  pick) that carries through to its roster pill and chart line. Web-only.
 - **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
   `packages/workout-history`; web's `history/page.tsx` has its own parallel
   implementation (see the `packages/workout-history` note above).

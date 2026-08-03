@@ -10,11 +10,11 @@ import { theme } from "@exercise-tracker/design-tokens";
 // per design feedback, so the space below the content is at least as deep
 // as the space above it (this panel's own xxl padding-top plus that
 // <main>'s xl padding-top).
-const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resources/equipment-builder", "/resources"]);
+const EXTRA_BOTTOM_PADDING_ROUTES = new Set(["/track", "/leaderboard", "/resources/equipment-analyzer", "/resources"]);
 
 // Per design feedback, the calculator page's title should sit close to the top of the page rather
 // than get the standard 0.75in margin-top + xxl padding-top every other page uses.
-const REDUCED_TOP_SPACING_ROUTES = new Set(["/resources/equipment-builder"]);
+const REDUCED_TOP_SPACING_ROUTES = new Set(["/resources/equipment-analyzer"]);
 
 // Used to frame page content against the page canvas -- white now, not the
 // dark green it used to be (removed per design feedback). Every page gets

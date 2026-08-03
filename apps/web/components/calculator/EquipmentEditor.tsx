@@ -5,6 +5,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import {
   applyEquipmentType,
   applyLocation,
+  EQUIPMENT_COLOR_PALETTE,
   EQUIPMENT_TYPE_OPTIONS,
   formatPowerGenWh,
   isElexerciseEquipmentType,
@@ -21,7 +22,7 @@ import type {
   UsageRate,
 } from "../../lib/calculator";
 import { ExternalLink } from "../ui/ExternalLink";
-import { FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
+import { ColorField, FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
 
 function CategoryHeading({ children }: { children: string }) {
   return (
@@ -110,6 +111,13 @@ export function EquipmentEditor({
         onChange={(name) => onChange({ name })}
         error={errors.name}
       />
+      <ColorField
+        label="Color"
+        value={draft.color}
+        presets={EQUIPMENT_COLOR_PALETTE}
+        onChange={(color) => onChange({ color })}
+        tooltip="Shown as this equipment's line color in the chart below and its pill border in the roster above."
+      />
 
       <CategoryHeading>Exercise</CategoryHeading>
       <RadioRow>
@@ -152,9 +160,9 @@ export function EquipmentEditor({
           <NumberField
             label="Power generation per workout (Wh)"
             value={inputs.powerGenWh}
-            min={0}
             onChange={(powerGenWh) => patchInputs({ powerGenWh })}
             error={errors.powerGenWh}
+            tooltip="Positive values represent equipment that generates power (e.g. a power-generating stationary bike); negative values represent equipment that consumes power (e.g. a motorized treadmill)."
           />
         </>
       )}
@@ -177,7 +185,9 @@ export function EquipmentEditor({
             error={errors.subscriptionFeeMonthly}
           />
           <NumberField
-            label={`Annualized discount factor: ${Math.round(inputs.discountFactor * 1e8) / 1e6}%`}
+            label={`Annualized discount factor${
+              Number.isNaN(inputs.discountFactor) ? "" : `: ${Math.round(inputs.discountFactor * 1e8) / 1e6}%`
+            }`}
             value={inputs.discountFactor}
             min={0}
             step={0.01}

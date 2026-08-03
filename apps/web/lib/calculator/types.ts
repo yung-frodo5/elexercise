@@ -50,10 +50,15 @@ export interface CalculatorResult {
   lifetimeCarbonValueUsd: number;
 }
 
-// One piece of equipment as it appears in the roster/results — `name` is a display concern, not a math
-// input, so it lives here rather than on `CalculatorInputs`. `id` is "" for an unsaved draft.
+// One piece of equipment as it appears in the roster/results — `name`/`color` are display concerns, not
+// math inputs, so they live here rather than on `CalculatorInputs`. `id` is "" for an unsaved draft.
 export interface CalculatorColumn {
   id: string;
   name: string;
+  // Always a 6-digit lowercase hex string (e.g. "#386641") -- both the preset swatches and the native
+  // <input type="color"> that make up the Color field (formFields.tsx's ColorField) only ever produce that
+  // shape, so there's nothing for validation.ts to check. Chart line stroke / roster pill border color; see
+  // CashFlowChart.tsx / EquipmentRoster.tsx.
+  color: string;
   inputs: CalculatorInputs;
 }

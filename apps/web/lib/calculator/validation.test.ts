@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { validateEquipmentDraft } from "./validation";
 import { DEFAULT_CALCULATOR_INPUTS } from "./defaults";
+import { defaultEquipmentColor } from "./colors";
 import type { CalculatorColumn } from "./types";
 
 function draft(overrides: Partial<CalculatorColumn> = {}): CalculatorColumn {
-  return { id: "eq-0", name: "Bike", inputs: { ...DEFAULT_CALCULATOR_INPUTS }, ...overrides };
+  return { id: "eq-0", name: "Bike", color: defaultEquipmentColor(0), inputs: { ...DEFAULT_CALCULATOR_INPUTS }, ...overrides };
 }
 
 describe("validateEquipmentDraft", () => {
@@ -42,13 +43,12 @@ describe("validateEquipmentDraft", () => {
     expect(errors.lifespanYears).toBe("Lifespan must be at least 1 year.");
   });
 
-  it("rejects negative subscription fee, power generation, electricity price, discount factor, carbon price, and grid carbon intensity, each keyed under its own field", () => {
+  it("rejects negative subscription fee, electricity price, discount factor, carbon price, and grid carbon intensity, each keyed under its own field", () => {
     const errors = validateEquipmentDraft(
       draft({
         inputs: {
           ...DEFAULT_CALCULATOR_INPUTS,
           subscriptionFeeMonthly: -1,
-          powerGenWh: -1,
           electricityPricePerKwh: -1,
           discountFactor: -1,
           carbonPricePerTon: -1,
@@ -58,11 +58,20 @@ describe("validateEquipmentDraft", () => {
     );
     expect(errors).toEqual({
       subscriptionFeeMonthly: "Subscription fee must be zero or greater.",
-      powerGenWh: "Power generation must be zero or greater.",
       electricityPricePerKwh: "Electricity price must be zero or greater.",
       discountFactor: "Discount factor must be zero or greater.",
       carbonPricePerTon: "Carbon price must be zero or greater.",
       gridCarbonIntensityGPerKwh: "Grid carbon intensity must be zero or greater.",
     });
+  });
+
+  it("accepts a negative power generation, keyed under 'powerGenWh' -- models equipment that consumes power (e.g. a motorized treadmill) rather than generates it", () => {
+    const errors = validateEquipmentDraft(draft({ inputs: { ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: -150 } }));
+    expect(errors.powerGenWh).toBeUndefined();
+  });
+
+  it("still requires power generation to be filled in -- NaN (an emptied field) is rejected even though negative values are allowed", () => {
+    const errors = validateEquipmentDraft(draft({ inputs: { ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: NaN } }));
+    expect(errors.powerGenWh).toBe("Power generation is required.");
   });
 });

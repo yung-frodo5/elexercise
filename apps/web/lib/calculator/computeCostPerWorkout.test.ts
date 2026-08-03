@@ -89,6 +89,13 @@ describe("computeCostPerWorkout", () => {
     expect(result.costPerWorkoutCarbon).toBeLessThan(0);
   });
 
+  it("flips electricity and carbon cost-per-workout positive for negative power generation (equipment that consumes power, e.g. a motorized treadmill)", () => {
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: -150 });
+    expect(result.costPerWorkoutElectricity).toBeGreaterThan(0);
+    expect(result.costPerWorkoutCarbon).toBeGreaterThan(0);
+    expect(result.totalCostPerWorkout).toBeGreaterThan(result.costPerWorkoutExercise);
+  });
+
   it("scales lifetime electricity and carbon offset with usage rate", () => {
     const sporadic = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, usageRate: "sporadic" });
     const publicRate = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, usageRate: "public" });

@@ -69,6 +69,7 @@ export function NumberField({
   min,
   step,
   error,
+  tooltip,
 }: {
   label: string;
   value: number;
@@ -76,20 +77,96 @@ export function NumberField({
   min?: number;
   step?: number;
   error?: string;
+  tooltip?: string;
 }) {
   return (
     <label style={labelStyle}>
-      {label}
+      <span>
+        {label}
+        {tooltip && <InfoTooltip text={tooltip} />}
+      </span>
       <input
         type="number"
-        value={value}
+        // valueAsNumber (not Number(e.target.value)) is what actually yields NaN for an emptied or
+        // otherwise incomplete/invalid field -- Number("") is 0, which used to force the field back to "0"
+        // the instant a user cleared it instead of letting it sit blank until Save.
+        value={Number.isNaN(value) ? "" : value}
         min={min}
         step={step}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => onChange(e.target.valueAsNumber)}
         style={fieldInputStyle(error)}
       />
       {error && <FieldError>{error}</FieldError>}
     </label>
+  );
+}
+
+// Presets + a native color input share one `value` -- no separate "is this custom" flag. A swatch button
+// sets `value` to that exact preset string; the native input sets it to whatever the OS picker returns.
+// Selection is shown two ways: a swatch gets a highlighted ring when its color case-insensitively matches
+// `value`, and the native input's own square always renders the current `value` regardless of whether it
+// matches a preset -- so a fully custom color still has a clear "this is selected" indicator even when no
+// preset ring lights up. No `error` prop -- a color can never be invalid (see validation.ts).
+//
+// Deliberately a <div>, not a <label>, unlike every other field in this file -- a <label> can only validly
+// associate with one control, but this field has six (five swatches + the native input). A <label> wrapping
+// several labelable elements implicitly associates with the *first* one (the first swatch), so any click
+// landing in the label's box that isn't itself swallowed by a more specific element -- e.g. a click just
+// outside the native OS color-picker popup, meant to dismiss it, that lands back on this field's own
+// container -- gets forwarded as a click on that first swatch, silently overwriting whatever color was just
+// picked. Same class of bug InfoTooltip below guards against with stopPropagation(); here the fix is to not
+// use a <label> at all. Each swatch/the native input already carries its own `aria-label`, so nothing is
+// lost for accessibility.
+export function ColorField({
+  label,
+  value,
+  presets,
+  onChange,
+  tooltip,
+}: {
+  label: string;
+  value: string;
+  presets: readonly string[];
+  onChange: (value: string) => void;
+  tooltip?: string;
+}) {
+  return (
+    <div style={labelStyle}>
+      <span>
+        {label}
+        {tooltip && <InfoTooltip text={tooltip} />}
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs, flexWrap: "wrap" }}>
+        {presets.map((preset) => {
+          const selected = preset.toLowerCase() === value.toLowerCase();
+          return (
+            <button
+              key={preset}
+              type="button"
+              aria-label={`Use color ${preset}`}
+              aria-pressed={selected}
+              onClick={() => onChange(preset)}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: theme.radii.pill,
+                border: selected ? `2px solid ${theme.colors.navyStatic}` : `1px solid ${theme.colors.border}`,
+                background: preset,
+                padding: 0,
+                cursor: "pointer",
+              }}
+            />
+          );
+        })}
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label="Choose a custom color"
+          style={{ width: 32, height: 24, padding: 0, border: `1px solid ${theme.colors.border}`, cursor: "pointer" }}
+        />
+      </div>
+    </div>
   );
 }
 

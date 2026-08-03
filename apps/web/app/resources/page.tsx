@@ -3,8 +3,8 @@ import { theme } from "@exercise-tracker/design-tokens";
 
 const RESOURCES: { href: string; title: string; description: string }[] = [
   {
-    href: "/resources/equipment-builder",
-    title: "Equipment Builder",
+    href: "/resources/equipment-analyzer",
+    title: "Equipment Analyzer",
     description: "Calculate how much power you could generate and how much it'd be worth.",
   },
 ];

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { applyEquipmentType, EQUIPMENT_PRESETS, EQUIPMENT_TYPE_OPTIONS } from "./equipmentPresets";
+import { applyEquipmentType, EQUIPMENT_PRESETS, EQUIPMENT_TYPE_OPTIONS, isElexerciseEquipment } from "./equipmentPresets";
 import { DEFAULT_CALCULATOR_INPUTS } from "./defaults";
 import type { EquipmentType } from "./types";
 
@@ -79,5 +79,32 @@ describe("applyEquipmentType", () => {
     expect(result.location).toBe(DEFAULT_CALCULATOR_INPUTS.location);
     expect(result.usageRate).toBe(DEFAULT_CALCULATOR_INPUTS.usageRate);
     expect(result.electricityPricePerKwh).toBe(DEFAULT_CALCULATOR_INPUTS.electricityPricePerKwh);
+  });
+});
+
+describe("isElexerciseEquipment", () => {
+  it("brands any equipment with positive power generation, not just the elexercise presets", () => {
+    expect(isElexerciseEquipment({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150 })).toBe(true);
+    expect(
+      isElexerciseEquipment({
+        ...DEFAULT_CALCULATOR_INPUTS,
+        equipmentType: "dumbbellFreeWeights",
+        customizeEconomics: true,
+        powerGenWh: 42,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not brand equipment with zero or negative power generation, even an elexercise preset with hand-edited economics", () => {
+    expect(isElexerciseEquipment({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 0 })).toBe(false);
+    expect(isElexerciseEquipment({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: -150 })).toBe(false);
+    expect(
+      isElexerciseEquipment({
+        ...DEFAULT_CALCULATOR_INPUTS,
+        equipmentType: "stationaryBikeElexercise",
+        customizeEconomics: true,
+        powerGenWh: 0,
+      }),
+    ).toBe(false);
   });
 });
