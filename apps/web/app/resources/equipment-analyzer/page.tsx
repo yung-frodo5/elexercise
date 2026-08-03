@@ -9,10 +9,10 @@ const INTRO_LINES: { label: string; quote: string; align: "left" | "right" }[] =
   { label: "Our second favorite answer", quote: "It’s complicated. Let me explain…", align: "right" },
 ];
 
-export default function EquipmentBuilderPage() {
+export default function EquipmentAnalyzerPage() {
   return (
     <main style={{ padding: theme.spacing.xl, paddingTop: theme.spacing.xs, maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center", marginTop: 0, fontSize: theme.typography.size.lg }}>Equipment Builder</h1>
+      <h1 style={{ textAlign: "center", marginTop: 0, fontSize: theme.typography.size.lg }}>Equipment Analyzer</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xs, color: theme.colors.navy }}>
         {INTRO_LINES.map(({ label, quote, align }, i) => (
           <Fragment key={label}>

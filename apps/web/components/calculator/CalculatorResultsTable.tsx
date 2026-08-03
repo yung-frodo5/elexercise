@@ -98,24 +98,17 @@ function SectionHeading({
   onToggle: () => void;
 }) {
   return (
+    // The button itself stays a plain (non-sticky) full-row grid item so the whole row remains clickable --
+    // as a direct grid item its width is stretched to fill the entire grid area, which leaves position:
+    // sticky no room to shift (item width == containing block width). The inner span, sized to its content
+    // instead of the grid area, is what actually sticks -- same left:0 trick as GridCell's sticky label
+    // column, just applied one level down so it has slack to move within.
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={!collapsed}
       style={{
         gridColumn: `1 / span ${columnCount + 1}`,
-        display: "flex",
-        alignItems: "center",
-        gap: theme.spacing.xs,
-        // The parent "Results" h2 moved from lg(24) to md(16) in the site-
-        // wide heading-size pass, which would have tied it with this
-        // subheading. Dropped to sm(14) to stay one tier below its parent
-        // -- now ties with GridCell's body text instead, differentiated by
-        // font-weight (semibold here vs regular there).
-        fontSize: theme.typography.size.sm,
-        fontWeight: theme.typography.weight.semibold,
-        color: theme.colors.navyStatic,
-        fontFamily: newsreader.style.fontFamily,
         marginTop: theme.spacing.md,
         background: "none",
         border: "none",
@@ -124,10 +117,29 @@ function SectionHeading({
         textAlign: "left",
       }}
     >
-      <span aria-hidden style={{ fontSize: theme.typography.size.sm, lineHeight: 1 }}>
-        {collapsed ? theme.icons.expand : theme.icons.collapse}
+      <span
+        style={{
+          position: "sticky" as const,
+          left: 0,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: theme.spacing.xs,
+          // The parent "Results" h2 moved from lg(24) to md(16) in the site-
+          // wide heading-size pass, which would have tied it with this
+          // subheading. Dropped to sm(14) to stay one tier below its parent
+          // -- now ties with GridCell's body text instead, differentiated by
+          // font-weight (semibold here vs regular there).
+          fontSize: theme.typography.size.sm,
+          fontWeight: theme.typography.weight.semibold,
+          color: theme.colors.navyStatic,
+          fontFamily: newsreader.style.fontFamily,
+        }}
+      >
+        <span aria-hidden style={{ fontSize: theme.typography.size.sm, lineHeight: 1 }}>
+          {collapsed ? theme.icons.expand : theme.icons.collapse}
+        </span>
+        {title}
       </span>
-      {title}
     </button>
   );
 }

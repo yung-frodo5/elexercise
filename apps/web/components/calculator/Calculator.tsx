@@ -6,7 +6,7 @@ import { EquipmentEditor } from "./EquipmentEditor";
 import { EquipmentRoster } from "./EquipmentRoster";
 import { CalculatorResultsTable } from "./CalculatorResultsTable";
 import { CashFlowChart } from "./CashFlowChart";
-import { DEFAULT_CALCULATOR_INPUTS, computeCostPerWorkout, validateEquipmentDraft } from "../../lib/calculator";
+import { DEFAULT_CALCULATOR_INPUTS, buildResultsCsv, computeCostPerWorkout, validateEquipmentDraft } from "../../lib/calculator";
 import type { CalculatorColumn, EquipmentDraftFieldErrors } from "../../lib/calculator";
 
 // Starts empty (not pre-filled) — the Name field shows genuine placeholder text instead, and Save is
@@ -106,6 +106,18 @@ export function Calculator() {
     if (selectedId === id) loadDraft(makeBlankDraft(), "new");
   }
 
+  function downloadResultsCsv() {
+    const csv = buildResultsCsv(equipmentList, results);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `elexercise-equipment-analyzer-results-${date}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xl, width: "100%" }}>
       <div>
@@ -119,7 +131,7 @@ export function Calculator() {
             lineHeight: 1.4,
           }}
         >
-          <li>Create equipment for analysis using the Equipment Builder below.</li>
+          <li>Create equipment for analysis using the Equipment Analyzer below.</li>
           <li>When you&rsquo;re finished specifying a piece of equipment, hit Save.</li>
           <li>
             Continue to add as many as you&rsquo;d like — you can always edit previously-saved equipment.
@@ -169,7 +181,31 @@ export function Calculator() {
           color: theme.colors.navyStatic,
         }}
       >
-        <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>Results</h2>
+        <div style={{ position: "relative" }}>
+          <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>Results</h2>
+          {equipmentList.length > 0 && (
+            <button
+              type="button"
+              onClick={downloadResultsCsv}
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+                borderRadius: theme.radii.pill,
+                border: "none",
+                background: "#6B7280",
+                color: "#FFFFFF",
+                fontWeight: theme.typography.weight.semibold,
+                fontFamily: "'Clash Display', sans-serif",
+                fontSize: theme.typography.size.sm,
+                cursor: "pointer",
+              }}
+            >
+              Download CSV
+            </button>
+          )}
+        </div>
         <CalculatorResultsTable equipment={equipmentList} results={results} />
         {equipmentList.length > 0 && (
           <div style={{ marginTop: theme.spacing.xl }}>
