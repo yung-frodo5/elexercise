@@ -171,6 +171,16 @@ you're touching this area:
   `activityColorForSport`/`sportTagColors` here — those back real sport tags
   elsewhere in the app (`SportTag.tsx`, `WorkoutHistoryRow.tsx`) and
   intentionally stay a separate, unrelated palette.
+- **A `<label>` can only validly wrap one control.** `ColorField`
+  (`apps/web/components/calculator/formFields.tsx`) renders as a `<div>`,
+  not a `<label>` like every other field in this file, because it has six
+  labelable children (five preset swatches + the native color input). A
+  `<label>` wrapping several labelable elements implicitly associates with
+  the *first* one, so any stray click landing in the label's box — e.g. a
+  click just outside the native OS color picker, meant to dismiss it, that
+  lands back on the field itself — gets forwarded to that first element,
+  silently overwriting whatever was just picked. If a future field ever
+  needs more than one control, don't default back to `<label>`.
 
 ## Mobile-specific instructions
 
