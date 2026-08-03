@@ -181,30 +181,35 @@ export function Calculator() {
           color: theme.colors.navyStatic,
         }}
       >
-        <div style={{ position: "relative" }}>
-          <h2 style={{ textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>Results</h2>
-          {equipmentList.length > 0 && (
-            <button
-              type="button"
-              onClick={downloadResultsCsv}
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
-                borderRadius: theme.radii.pill,
-                border: "none",
-                background: "#6B7280",
-                color: "#FFFFFF",
-                fontWeight: theme.typography.weight.semibold,
-                fontFamily: "'Clash Display', sans-serif",
-                fontSize: theme.typography.size.sm,
-                cursor: "pointer",
-              }}
-            >
-              Download CSV
-            </button>
-          )}
+        <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.md }}>
+          {/* Two equal-flex spacers straddling the centered heading (rather than absolutely positioning
+              the button over it) so the button's width can't overlap "Results" text at narrow widths --
+              the heading stays centered on the row regardless of whether the button is present. */}
+          <div style={{ flex: 1 }} />
+          <h2 style={{ flex: 1, textAlign: "center", marginTop: 0, textDecoration: "underline", fontSize: theme.typography.size.md }}>
+            Results
+          </h2>
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            {equipmentList.length > 0 && (
+              <button
+                type="button"
+                onClick={downloadResultsCsv}
+                style={{
+                  padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+                  borderRadius: theme.radii.pill,
+                  border: "none",
+                  background: "#6B7280",
+                  color: "#FFFFFF",
+                  fontWeight: theme.typography.weight.semibold,
+                  fontFamily: "'Clash Display', sans-serif",
+                  fontSize: theme.typography.size.sm,
+                  cursor: "pointer",
+                }}
+              >
+                Download CSV
+              </button>
+            )}
+          </div>
         </div>
         <CalculatorResultsTable equipment={equipmentList} results={results} />
         {equipmentList.length > 0 && (

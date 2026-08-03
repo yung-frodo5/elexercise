@@ -62,10 +62,19 @@ const CSV_RESULT_ROWS: CsvResultRow[] = [
   { section: "Lifetime impact", label: "Carbon cost ($)", value: (r) => r.lifetimeCarbonValueUsd },
 ];
 
+// A field starting with =, +, -, @, tab, or CR is interpreted as a formula by Excel/Sheets when the CSV
+// is opened — equipment names are free text, so without this a name like `=HYPERLINK(...)` would let
+// someone execute a formula (or exfiltrate data) on whoever later opens the exported file. A leading
+// apostrophe forces text interpretation without changing the visible content. Only applied to strings —
+// never to numbers, since several numeric columns (e.g. Power generation, per-workout costs) can be
+// legitimately negative and a leading "-" there is just a minus sign, not a formula trigger.
+const CSV_FORMULA_TRIGGER = /^[=+\-@\t\r]/;
+
 // Wraps in quotes (doubling any embedded quotes) whenever the field contains a comma, quote, or newline —
 // equipment names are free text and can contain any of those.
 function csvField(value: string | number): string {
-  const text = String(value);
+  if (typeof value === "number") return String(value);
+  const text = CSV_FORMULA_TRIGGER.test(value) ? `'${value}` : value;
   if (/[",\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
   return text;
 }
