@@ -40,9 +40,9 @@ export const powerGenerationWorthItArticle: Article = {
           { text: " thanks to higher electricity prices and grid carbon intensity." },
         ],
         [
-          { text: "The comparison cuts both ways: a motorized treadmill that consumes power can cost " },
+          { text: "Elexercise equipment far outperforms power-consuming equipment: a motorized treadmill that consumes power can cost " },
           { text: "$8,000+ more", bold: true },
-          { text: " over its lifespan than an elexercise alternative under the same conditions." },
+          { text: " over its lifespan than its elexercise alternative." },
         ],
       ],
     },
