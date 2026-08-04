@@ -194,8 +194,8 @@ export default function LandingPage() {
               style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
             >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> a
-              movement; an ideal; an empowerment of people to meet their personal health goals and help contribute to
-              planetary health, together
+              movement; an ideal; an empowerment of people to simultaneously meet their personal health goals and
+              contribute to planetary health
             </p>
           </div>
         </div>
