@@ -28,7 +28,7 @@ const pressedBg = withAlpha(theme.colors.navyStatic, 0.08);
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
-  const { displayName, level, elexir, avatarUrl } = useProfile(session?.user.id);
+  const { displayName, level, elexir, avatarUrl, badgeEmoji } = useProfile(session?.user.id);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -276,7 +276,7 @@ export function SiteHeader() {
                     transition: "background-color 120ms ease",
                   }}
                 >
-                  <AvatarCircle src={avatarUrl ?? ""} size={28} />
+                  <AvatarCircle src={avatarUrl ?? ""} size={28} badgeEmoji={badgeEmoji} />
                   <span
                     className="site-header-display-name"
                     style={{

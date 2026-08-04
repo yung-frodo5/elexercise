@@ -5,20 +5,35 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../../lib/supabase";
 import { useSupabaseSession } from "../../../lib/useSession";
 import { useProfile } from "../../../lib/useProfile";
+import { useEarnedBadges, type EarnedBadge } from "../../../lib/useEarnedBadges";
 import { LevelProgress } from "../../../components/profile/LevelProgress";
 import { AvatarCircle } from "../../../components/profile/AvatarCircle";
+import { EarnedBadges } from "../../../components/profile/EarnedBadges";
 import { UN_COUNTRIES } from "../../../lib/unCountries";
 
 export default function ProfilePage() {
   const { session } = useSupabaseSession();
-  const { displayName, level, elexir, avatarUrl, homeRegion, setDisplayName, setAvatarUrl, setHomeRegion } =
-    useProfile(session?.user.id);
+  const {
+    displayName,
+    level,
+    elexir,
+    avatarUrl,
+    homeRegion,
+    selectedBadgeId,
+    badgeEmoji,
+    setDisplayName,
+    setAvatarUrl,
+    setHomeRegion,
+    setSelectedBadge,
+  } = useProfile(session?.user.id);
+  const { badges: earnedBadges, loading: badgesLoading } = useEarnedBadges(session?.user.id);
 
   const [displayNameInput, setDisplayNameInput] = useState("");
   const [avatarUrlInput, setAvatarUrlInput] = useState("");
   const [homeRegionInput, setHomeRegionInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [badgeError, setBadgeError] = useState<string | null>(null);
 
   useEffect(() => {
     if (displayName !== null) setDisplayNameInput(displayName);
@@ -66,13 +81,31 @@ export default function ProfilePage() {
     setSaving(false);
   }
 
+  async function handleSelectBadge(badge: EarnedBadge | null) {
+    if (!session) return;
+    setBadgeError(null);
+    // RLS's column-scoped grant lets a user update their own
+    // selected_badge_id; the enforce_selected_badge_earned trigger
+    // (0012_selected_badge_avatar.sql) rejects anything not in this same
+    // user's user_badges, so this can't be spoofed to an unearned badge.
+    const { error } = await supabase
+      .from("profiles")
+      .update({ selected_badge_id: badge?.id ?? null })
+      .eq("id", session.user.id);
+    if (error) {
+      setBadgeError(error.message);
+      return;
+    }
+    setSelectedBadge(badge?.id ?? null, badge?.emoji ?? null);
+  }
+
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 360, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
         <h1 style={{ margin: 0, color: "#228B22", fontSize: theme.typography.size.lg }}>
           {displayNameInput || "Profile Details"}
         </h1>
-        <AvatarCircle src={avatarUrlInput} size={40} />
+        <AvatarCircle src={avatarUrlInput} size={40} badgeEmoji={badgeEmoji} />
       </div>
 
       {level !== null && elexir !== null && (
@@ -80,6 +113,23 @@ export default function ProfilePage() {
           <LevelProgress level={level} elexir={elexir} />
         </div>
       )}
+
+      <div style={{ marginTop: theme.spacing.xl }}>
+        <h2 style={{ margin: 0, color: theme.colors.navy, fontSize: theme.typography.size.md }}>Badges</h2>
+        <div style={{ marginTop: theme.spacing.sm }}>
+          <EarnedBadges
+            badges={earnedBadges}
+            loading={badgesLoading}
+            selectedBadgeId={selectedBadgeId}
+            onSelect={(badge) => void handleSelectBadge(badge)}
+          />
+        </div>
+        {badgeError && (
+          <p style={{ marginTop: theme.spacing.xs, color: theme.colors.error, fontSize: theme.typography.size.sm }}>
+            {badgeError}
+          </p>
+        )}
+      </div>
 
       <form
         onSubmit={handleSubmit}
@@ -92,7 +142,7 @@ export default function ProfilePage() {
           Avatar
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
-          <AvatarCircle src={avatarUrlInput} size={40} />
+          <AvatarCircle src={avatarUrlInput} size={40} badgeEmoji={badgeEmoji} />
           {/* fontSize here also reaches the native "Choose File" button --
               its ::file-selector-button rule (layout.tsx) inherits from
               this input. */}

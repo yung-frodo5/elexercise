@@ -4,13 +4,18 @@ import { useCallback, useEffect, useState } from "react";
 import type { Profile } from "@exercise-tracker/shared-types";
 import { supabase } from "./supabase";
 
+// Resolved the same way useProfile.ts's fetchProfile does -- see its
+// comment on why this needs its own field rather than just exposing
+// selected_badge_id and making callers do a second lookup.
+export type FriendProfile = Profile & { badgeEmoji: string | null };
+
 export function useFriends(userId: string | undefined): {
-  friends: Profile[];
+  friends: FriendProfile[];
   loading: boolean;
   error: string | null;
   addFriend: (displayName: string) => Promise<{ ok: true } | { ok: false; error: string }>;
 } {
-  const [friends, setFriends] = useState<Profile[]>([]);
+  const [friends, setFriends] = useState<FriendProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,13 +45,24 @@ export function useFriends(userId: string | undefined): {
       return;
     }
 
-    const { data: profiles, error: profilesError } = await supabase.from("profiles").select("*").in("id", friendIds);
+    // badges(emoji) resolves each friend's selected-badge avatar in the
+    // same query -- see useProfile.ts's fetchProfile for the same pattern
+    // (and the note on why the embedded relation needs an unknown cast).
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("*, badges(emoji)")
+      .in("id", friendIds);
     if (profilesError) {
       setError(profilesError.message);
       setLoading(false);
       return;
     }
-    setFriends((profiles ?? []) as Profile[]);
+    setFriends(
+      ((profiles ?? []) as unknown as (Profile & { badges: { emoji: string } | null })[]).map((row) => ({
+        ...row,
+        badgeEmoji: row.badges?.emoji ?? null,
+      }))
+    );
     setLoading(false);
   }, [userId]);
 

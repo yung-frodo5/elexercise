@@ -81,13 +81,24 @@ export interface Profile {
   home_region: string;
   level: number;
   elexir: number;
+  // Null means "show avatar_url as normal" -- set means the user has
+  // chosen one of their earned badges (see UserBadge) to display as their
+  // avatar everywhere avatar_url normally would.
+  selected_badge_id: string | null;
   created_at: string;
 }
+
+export type BadgeCategory = "Milestones" | "Consistency/Streaks" | "Performance" | "Social/Community" | "Fun/Quirky";
 
 export interface Badge {
   id: string;
   name: string;
+  // Punny alternate title, distinct from `name` -- null for badges that
+  // don't have one (see supabase/migrations/0010_badge_categories.sql).
+  tagline: string | null;
+  category: BadgeCategory;
   criteria: string;
+  emoji: string;
   created_at: string;
 }
 

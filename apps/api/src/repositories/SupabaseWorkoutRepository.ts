@@ -14,6 +14,7 @@ import {
 } from "./WorkoutRepository.js";
 import { computeSessionStats } from "../services/sessionStats.js";
 import { levelForXp } from "@exercise-tracker/leveling";
+import { BADGE_CHECKS, HISTORY_DEPENDENT_BADGES, currentStreakDays, weekendStreak, type BadgeEvalContext } from "./badgeChecks.js";
 
 // Row shapes as they come back from Postgres (snake_case) — mapped to the
 // camelCase shared-types shapes below, same "row mapping" pattern the old
@@ -166,9 +167,12 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
   // exclusivity invariants (one open session per workout, one active
   // session per machine) mean two concurrent awards to the *same* user's
   // row structurally can't happen today.
-  private async awardElexir(userId: string, wh: number): Promise<void> {
+  // Returns the user's new level when elexir was actually awarded, so
+  // callers (badge evaluation) can check level-threshold badges without a
+  // second profiles read.
+  private async awardElexir(userId: string, wh: number): Promise<number | undefined> {
     const earned = Math.round(wh);
-    if (earned <= 0) return;
+    if (earned <= 0) return undefined;
 
     const { data, error: fetchError } = await this.client
       .from("profiles")
@@ -178,11 +182,121 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
     if (fetchError) throw fetchError;
 
     const newElexir = (data as { elexir: number }).elexir + earned;
+    const newLevel = levelForXp(newElexir);
     const { error: updateError } = await this.client
       .from("profiles")
-      .update({ elexir: newElexir, level: levelForXp(newElexir) })
+      .update({ elexir: newElexir, level: newLevel })
       .eq("id", userId);
     if (updateError) throw updateError;
+    return newLevel;
+  }
+
+  /** Distinct UTC calendar dates (YYYY-MM-DD, descending) this user has completed a session on. */
+  private async completedSessionDates(userId: string): Promise<string[]> {
+    const { data, error } = await this.client
+      .from("sessions")
+      .select("started_at, workouts!inner(user_id)")
+      .eq("workouts.user_id", userId)
+      .eq("status", "completed");
+    if (error) throw error;
+
+    const dates = new Set<string>();
+    for (const row of (data ?? []) as unknown as { started_at: string }[]) {
+      dates.add(row.started_at.slice(0, 10));
+    }
+    return [...dates].sort().reverse();
+  }
+
+  private async completedSessionCount(userId: string): Promise<number> {
+    const { count, error } = await this.client
+      .from("sessions")
+      .select("id, workouts!inner(user_id)", { count: "exact", head: true })
+      .eq("workouts.user_id", userId)
+      .eq("status", "completed");
+    if (error) throw error;
+    return count ?? 0;
+  }
+
+  // Checks every badge this repository knows how to evaluate (see
+  // badgeChecks.ts) against the badges this user hasn't already earned,
+  // and records any newly-earned ones. Called for every session close
+  // (not just machine sessions -- several badges, like the streak/date
+  // ones, apply to manual sessions too), after any elexir award for this
+  // same close, so newLevel reflects it.
+  private async evaluateAndAwardBadges(ctx: {
+    userId: string;
+    startedAt: string;
+    durationS: number;
+    totalEnergyJoules?: number;
+    peakPowerW?: number;
+    newLevel?: number;
+  }): Promise<void> {
+    const { data: earnedRows, error: earnedError } = await this.client
+      .from("user_badges")
+      .select("badge_id")
+      .eq("user_id", ctx.userId);
+    if (earnedError) throw earnedError;
+    const earnedIds = new Set(((earnedRows ?? []) as { badge_id: string }[]).map((r) => r.badge_id));
+
+    const checkedNames = Object.keys(BADGE_CHECKS);
+    const { data: badgeRows, error: badgeError } = await this.client
+      .from("badges")
+      .select("id, name")
+      .in("name", checkedNames);
+    if (badgeError) throw badgeError;
+
+    const unearned = ((badgeRows ?? []) as { id: string; name: string }[]).filter((b) => !earnedIds.has(b.id));
+    if (unearned.length === 0) return;
+
+    const startDate = new Date(ctx.startedAt);
+    const dateStr = ctx.startedAt.slice(0, 10);
+
+    let completedSessionCount = 0;
+    let streakDays = 0;
+    let consecutiveFullWeekends = 0;
+    if (unearned.some((b) => HISTORY_DEPENDENT_BADGES.has(b.name))) {
+      const dates = await this.completedSessionDates(ctx.userId);
+      completedSessionCount = await this.completedSessionCount(ctx.userId);
+      streakDays = currentStreakDays(dates, dateStr);
+      consecutiveFullWeekends = weekendStreak(dates, dateStr);
+    }
+
+    let isAnniversary = false;
+    if (unearned.some((b) => b.name === "Anniversary Amp")) {
+      const { data: profileRow, error: profileError } = await this.client
+        .from("profiles")
+        .select("created_at")
+        .eq("id", ctx.userId)
+        .single();
+      if (profileError) throw profileError;
+      const createdAt = new Date((profileRow as { created_at: string }).created_at);
+      isAnniversary =
+        startDate.getUTCFullYear() > createdAt.getUTCFullYear() &&
+        startDate.getUTCMonth() === createdAt.getUTCMonth() &&
+        startDate.getUTCDate() === createdAt.getUTCDate();
+    }
+
+    const evalContext: BadgeEvalContext = {
+      completedSessionCount,
+      streakDays,
+      consecutiveFullWeekends,
+      totalEnergyJoules: ctx.totalEnergyJoules,
+      peakPowerW: ctx.peakPowerW,
+      durationS: ctx.durationS,
+      newLevel: ctx.newLevel,
+      startHourUtc: startDate.getUTCHours(),
+      month: startDate.getUTCMonth() + 1,
+      day: startDate.getUTCDate(),
+      isAnniversary,
+    };
+
+    const toAward = unearned.filter((b) => BADGE_CHECKS[b.name]?.(evalContext));
+    if (toAward.length === 0) return;
+
+    const { error: insertError } = await this.client
+      .from("user_badges")
+      .insert(toAward.map((b) => ({ user_id: ctx.userId, badge_id: b.id })));
+    if (insertError) throw insertError;
   }
 
   // Computes and persists one session's completed-state stats: queries its
@@ -225,9 +339,22 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
       .eq("id", session.id);
     if (error) throw error;
 
+    let newLevel: number | undefined;
     if (session.source === "machine" && stats) {
-      await this.awardElexir(session.ownerUserId, stats.totalEnergyJoules / 3600);
+      newLevel = await this.awardElexir(session.ownerUserId, stats.totalEnergyJoules / 3600);
     }
+
+    // Every session close (not just machine sessions -- e.g. the streak
+    // and calendar-date badges apply to manual sessions too) gets checked
+    // against every badge this repository can currently evaluate.
+    await this.evaluateAndAwardBadges({
+      userId: session.ownerUserId,
+      startedAt: session.startedAt,
+      durationS,
+      totalEnergyJoules: stats?.totalEnergyJoules,
+      peakPowerW: stats?.peakPowerW,
+      newLevel,
+    });
   }
 
   // Only one session is ever open at a time. Called before inserting a new
