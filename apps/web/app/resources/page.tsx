@@ -23,6 +23,7 @@ const ARTICLE_DESCRIPTIONS: Record<string, string> = {
   "what-is-elexercise": "An introduction to elexercise and the idea behind it.",
   "is-the-power-generation-worth-it":
     "A look at the unit economics behind electricity-generating exercise equipment.",
+  "how-much-power": "Scaling workout electricity from one person to one gym to the whole planet.",
 };
 
 const cell = {

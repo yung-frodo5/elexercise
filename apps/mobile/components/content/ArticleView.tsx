@@ -58,6 +58,28 @@ export function ArticleView({ article }: { article: Article }) {
                 ))}
               </View>
             );
+          case "table":
+            return (
+              <View key={index} style={styles.tableWrapper}>
+                {block.heading && <Text style={styles.calloutHeading}>{block.heading}</Text>}
+                <View style={[styles.tableRow, styles.tableHeaderRow]}>
+                  {block.headers.map((header, headerIndex) => (
+                    <Text key={headerIndex} style={[styles.tableCell, styles.tableHeaderCell]}>
+                      {header}
+                    </Text>
+                  ))}
+                </View>
+                {block.rows.map((row, rowIndex) => (
+                  <View key={rowIndex} style={styles.tableRow}>
+                    {row.map((cell, cellIndex) => (
+                      <Text key={cellIndex} style={styles.tableCell}>
+                        <RichText nodes={cell} />
+                      </Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            );
           default: {
             const exhaustive: never = block;
             return exhaustive;
@@ -141,5 +163,30 @@ const styles = StyleSheet.create({
   referenceItem: {
     marginTop: theme.spacing.xs,
     color: theme.colors.textMuted,
+  },
+  tableWrapper: {
+    marginTop: theme.spacing.xl,
+    borderWidth: 1,
+    borderColor: "#D6E9FF",
+    borderRadius: theme.radii.lg,
+    overflow: "hidden",
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#D6E9FF",
+  },
+  tableHeaderRow: {
+    borderTopWidth: 0,
+  },
+  tableCell: {
+    flex: 1,
+    padding: theme.spacing.sm,
+    fontSize: theme.typography.size.sm,
+    color: theme.colors.textMuted,
+  },
+  tableHeaderCell: {
+    fontWeight: theme.typography.weight.bold,
+    color: theme.colors.textPrimary,
   },
 });

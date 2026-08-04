@@ -4,6 +4,7 @@ export type {
   Graphic,
   List,
   Callout,
+  Table,
   ArticleBodyBlock,
   Author,
   Reference,
@@ -12,4 +13,5 @@ export type {
 } from "./types";
 export { landingArticle } from "./landing";
 export { powerGenerationWorthItArticle } from "./powerGenerationWorthIt";
+export { howMuchPowerArticle } from "./howMuchPower";
 export { articles, getArticleBySlug } from "./articles";

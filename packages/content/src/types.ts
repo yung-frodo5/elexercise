@@ -80,8 +80,20 @@ export interface Callout {
   items: RichTextNode[][];
 }
 
-// An article body is an ordered, hierarchical mix of paragraphs, subtitles, graphics, lists, and callouts.
-export type ArticleBodyBlock = Paragraph | Subtitle | Graphic | List | Callout;
+// A simple data table, e.g. a reference/comparison table the rest of the
+// article's prose points back to instead of repeating figures inline. Each
+// cell is rich text (like a List/Callout item) rather than plain text, so a
+// cell — e.g. a "Source" column — can carry a link. Headers are plain text
+// since column labels don't need inline styling or links.
+export interface Table {
+  type: "table";
+  heading?: string;
+  headers: string[];
+  rows: RichTextNode[][][];
+}
+
+// An article body is an ordered, hierarchical mix of paragraphs, subtitles, graphics, lists, callouts, and tables.
+export type ArticleBodyBlock = Paragraph | Subtitle | Graphic | List | Callout | Table;
 
 export interface Author {
   name: string;

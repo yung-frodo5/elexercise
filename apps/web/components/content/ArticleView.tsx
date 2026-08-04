@@ -158,6 +158,70 @@ export function ArticleBody({ article }: { article: Article }) {
                 </ul>
               </div>
             );
+          case "table":
+            return (
+              <div key={index} style={{ marginTop: theme.spacing.xl }}>
+                {block.heading && (
+                  <p
+                    style={{
+                      margin: 0,
+                      marginBottom: theme.spacing.sm,
+                      fontWeight: theme.typography.weight.bold,
+                      fontSize: theme.typography.size.sm,
+                      color: theme.colors.navyStatic,
+                    }}
+                  >
+                    {block.heading}
+                  </p>
+                )}
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    border: `1px solid #D6E9FF`,
+                    fontSize: theme.typography.size.sm,
+                    color: theme.colors.navyStatic,
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      {block.headers.map((header, headerIndex) => (
+                        <th
+                          key={headerIndex}
+                          style={{
+                            padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+                            textAlign: "left",
+                            borderBottom: `1px solid #D6E9FF`,
+                            fontWeight: theme.typography.weight.bold,
+                          }}
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            style={{
+                              padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+                              textAlign: "left",
+                              borderBottom: `1px solid #D6E9FF`,
+                              verticalAlign: "top",
+                            }}
+                          >
+                            <RichText nodes={cell} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
           default: {
             const exhaustive: never = block;
             return exhaustive;

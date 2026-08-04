@@ -9,9 +9,10 @@ imports straight from `src/`, so there's nothing to compile or publish.
 
 ```
 src/
-├── types.ts                  # Article / Author / Paragraph / RichTextNode / Graphic / List / Callout / Reference / GraphicKey
+├── types.ts                  # Article / Author / Paragraph / RichTextNode / Graphic / List / Callout / Table / Reference / GraphicKey
 ├── landing.ts                 # authored `landingArticle` data (the landing screen's content)
 ├── powerGenerationWorthIt.ts   # authored data for the first published Articles-tab entry
+├── howMuchPower.ts             # authored data for the second published Articles-tab entry
 ├── articles.ts                 # the `articles` registry + `getArticleBySlug` lookup
 └── index.ts                   # combines the above into the package's public exports
 ```
@@ -31,7 +32,10 @@ same shape as a `List` (plus an optional `heading`) but renders on a
 rounded, tinted background instead of inline with the rest of the body —
 e.g. an executive summary — since that's a layout change (its own
 padding/background), not just a text style, hence its own block type rather
-than a flag on `List`.
+than a flag on `List`. A `Table` is a data table (plain-text `headers` plus
+`rows` of rich-text cells, so e.g. a "Source" column can carry a link, plus
+an optional `heading`) — for reference/comparison data an article's prose
+points back to rather than repeating inline.
 
 A `Paragraph`/`Subtitle`/`List`/`Callout` item's content is an ordered list
 of `RichTextNode` runs. Each run is a **flat object with style flags** —
