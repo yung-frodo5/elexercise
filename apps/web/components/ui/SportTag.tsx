@@ -2,7 +2,7 @@
 
 import { theme } from "@exercise-tracker/design-tokens";
 import { sportTagColors } from "../../lib/activityColors";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 /** Read-only sport pill for table cells (Datadog-style tags). */
 export function SportTag({ label }: { label: string }) {
@@ -18,7 +18,7 @@ export function SportTag({ label }: { label: string }) {
         color: fg,
         fontSize: theme.typography.size.sm,
         fontWeight: theme.typography.weight.semibold,
-        fontFamily: newsreader.style.fontFamily,
+        fontFamily: familjenGrotesk.style.fontFamily,
         lineHeight: 1.3,
         whiteSpace: "nowrap",
       }}

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
-import { newsreader } from "./fonts";
+import { familjenGrotesk } from "./fonts";
 
 // Used both on real <th> table headers (HistoryTable.tsx) and non-header
 // chart titles (MultiPowerChart.tsx's "Power Output" eyebrow). The <th>
@@ -16,5 +16,5 @@ export const overlineStyle: CSSProperties = {
   letterSpacing: "0.07em",
   textTransform: "uppercase",
   color: theme.colors.navy,
-  fontFamily: newsreader.style.fontFamily,
+  fontFamily: familjenGrotesk.style.fontFamily,
 };

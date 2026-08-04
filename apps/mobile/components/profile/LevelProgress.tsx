@@ -23,7 +23,7 @@ export function LevelProgress({ level, elexir }: { level: number; elexir: number
 
       <Text style={styles.remaining}>
         {progress.nextTier
-          ? `${progress.xpRemaining} elexir to level ${level + 1}: ${progress.nextTier.name}`
+          ? `${progress.xpRemaining} elexir to Level ${level + 1}: ${progress.nextTier.name}`
           : "Max level reached!"}
       </Text>
     </View>

@@ -2,7 +2,7 @@
 
 import { theme } from "@exercise-tracker/design-tokens";
 import { progressToNextLevel } from "@exercise-tracker/leveling";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 // compact drops the elexir-earned/elexir-remaining captions and shrinks
 // everything else -- for showing progress somewhere small (e.g. the header),
@@ -105,7 +105,7 @@ export function LevelProgress({
           style={{
             fontSize: theme.typography.size.md,
             fontWeight: theme.typography.weight.semibold,
-            fontFamily: newsreader.style.fontFamily,
+            fontFamily: familjenGrotesk.style.fontFamily,
           }}
         >
           Level {level}
@@ -168,7 +168,7 @@ export function LevelProgress({
 
       <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
         {progress.nextTier
-          ? `${progress.xpRemaining} elexir to level ${level + 1}: ${progress.nextTier.name}`
+          ? `${progress.xpRemaining} elexir to Level ${level + 1}: ${progress.nextTier.name}`
           : "Max level reached!"}
       </div>
     </div>

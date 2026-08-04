@@ -5,7 +5,7 @@ import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 import { ContentPanel } from "../components/layout/ContentPanel";
 import { HEADER_HEIGHT } from "../lib/layoutConstants";
 import { ThemeProvider } from "../lib/ThemeContext";
-import { newsreader } from "../lib/fonts";
+import { familjenGrotesk } from "../lib/fonts";
 
 export const metadata: Metadata = {
   title: "elexercise",
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // below), the green pill/oval buttons (also Clash Display, set
           // per-button at their own source), and the home page definition
           // (Georgia, set locally there).
-          fontFamily: newsreader.style.fontFamily,
+          fontFamily: familjenGrotesk.style.fontFamily,
           backgroundColor: "#FFFFFF",
           color: theme.colors.navy,
         }}

@@ -18,7 +18,7 @@ import { formatDurationHoursMinutes, formatEnergy, formatEnergyComparison } from
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
-import { newsreader } from "../../../lib/fonts";
+import { familjenGrotesk } from "../../../lib/fonts";
 
 const mainStyle: CSSProperties = {
   padding: `${theme.spacing.xxl}px ${theme.spacing.xl}px`,
@@ -26,7 +26,7 @@ const mainStyle: CSSProperties = {
   margin: "0 auto",
   width: "100%",
   boxSizing: "border-box",
-  fontFamily: newsreader.style.fontFamily,
+  fontFamily: familjenGrotesk.style.fontFamily,
   color: theme.colors.navy,
 };
 

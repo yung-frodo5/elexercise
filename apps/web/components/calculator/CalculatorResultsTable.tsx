@@ -6,7 +6,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { EQUIPMENT_SETTINGS, RESULT_METRIC_SECTIONS, RESULT_METRICS } from "../../lib/calculator";
 import type { CalculatorColumn, CalculatorResult } from "../../lib/calculator";
 import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 const dividerStyle = `1px solid ${withAlpha(theme.colors.border, 0.35)}`;
 const LABEL_COLUMN_MIN_WIDTH = 280;
@@ -132,7 +132,7 @@ function SectionHeading({
           fontSize: theme.typography.size.sm,
           fontWeight: theme.typography.weight.semibold,
           color: theme.colors.navyStatic,
-          fontFamily: newsreader.style.fontFamily,
+          fontFamily: familjenGrotesk.style.fontFamily,
         }}
       >
         <span aria-hidden style={{ fontSize: theme.typography.size.sm, lineHeight: 1 }}>

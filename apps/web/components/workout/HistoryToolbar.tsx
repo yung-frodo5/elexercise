@@ -1,7 +1,7 @@
 "use client";
 
 import { theme } from "@exercise-tracker/design-tokens";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 import { FilterChip } from "../ui/FilterChip";
 import { ExpandableSearch } from "../ui/ExpandableSearch";
 
@@ -41,12 +41,12 @@ export function HistoryToolbar({
           fontWeight: theme.typography.weight.semibold,
           color: theme.colors.navy,
           whiteSpace: "nowrap",
-          fontFamily: newsreader.style.fontFamily,
+          fontFamily: familjenGrotesk.style.fontFamily,
           letterSpacing: "-0.02em",
         }}
       >
         {activityCount}{" "}
-        <span style={{ fontFamily: newsreader.style.fontFamily, fontWeight: theme.typography.weight.medium }}>
+        <span style={{ fontFamily: familjenGrotesk.style.fontFamily, fontWeight: theme.typography.weight.medium }}>
           {activityCount === 1 ? "Workout" : "Workouts"}
         </span>
       </p>
