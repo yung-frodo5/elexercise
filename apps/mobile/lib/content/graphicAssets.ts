@@ -14,6 +14,7 @@ export const graphicAssets: Record<GraphicKey, ImageSourcePropType> = {
   // satisfy the shared GraphicKey contract.
   "what-is-elexercise-diagram": require("../../assets/landing/what-is-elexercise.png"),
   "power-generation-pixii-machine": require("../../assets/articles/power-generation-pixii-machine.png"),
+  "power-generation-bike-comp-home-usage": require("../../assets/articles/power-generation-bike-comp-home-usage.png"),
   "power-generation-bike-comp-no-carbon-price": require("../../assets/articles/power-generation-bike-comp-no-carbon-price.png"),
   "power-generation-bike-comp-ca": require("../../assets/articles/power-generation-bike-comp-ca.png"),
   "power-generation-bike-comp-hi": require("../../assets/articles/power-generation-bike-comp-hi.png"),

@@ -137,7 +137,21 @@ export const powerGenerationWorthItArticle: Article = {
         { text: "SportsArt claims that its ECO-POWR line is cost-competitive", footnote: 4 },
         {
           text:
-            "; let’s assume a 10% price hike over traditional equipment that costs $2000. Let’s also assume CA electricity prices, which average around $0.27/kWh. For somebody looking to purchase a bike for their at-home gym, expecting to use it 3x per week, the electricity generation would not be worth it. However, for a public facility expecting significant more usage (50x per week), the electricity generation potential is much higher and eventually does pay for itself. As shown in the graph below, a gym in CA can expect to recoup its investment on electricity generation before year 2!",
+            "; let’s assume a 10% price hike over traditional equipment that costs $2000. Let’s also assume CA electricity prices, which average around $0.27/kWh. For somebody looking to purchase a bike for their at-home gym, expecting to use it 3x per week, the electricity generation would not be worth it. As shown in the graph below, at this low usage rate the elexercise bike never recoups its higher upfront cost over its 7-year lifespan.",
+        },
+      ],
+    },
+    {
+      type: "graphic",
+      key: "power-generation-bike-comp-home-usage",
+      alt: "Line chart comparing cumulative cost over time for a traditional vs. electricity-generating stationary bike in California at 3x-per-week home usage, showing the electricity-generating bike never recouping its higher upfront cost",
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          text:
+            "However, for a public facility expecting significant more usage (50x per week), the electricity generation potential is much higher and eventually does pay for itself. As shown in the graph below, a gym in CA can expect to recoup its investment on electricity generation before year 2!",
         },
       ],
     },
