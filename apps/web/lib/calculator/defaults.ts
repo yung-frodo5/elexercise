@@ -23,3 +23,6 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
 // Placeholder text (not a real value) shown in the Name field for a fresh/unsaved draft — the field
 // itself starts empty, and Save is rejected with "Name is required." until the user types a real name.
 export const NAME_PLACEHOLDER = "Name this equipment";
+
+// Initial chart title, and the fallback it reverts to if a user clears the (editable) title entirely.
+export const DEFAULT_CHART_TITLE = "Cost over time";

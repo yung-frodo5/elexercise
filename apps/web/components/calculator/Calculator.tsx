@@ -6,8 +6,11 @@ import { EquipmentEditor } from "./EquipmentEditor";
 import { EquipmentRoster } from "./EquipmentRoster";
 import { CalculatorResultsTable } from "./CalculatorResultsTable";
 import { CashFlowChart } from "./CashFlowChart";
+import { pillButtonStyle } from "./pillButtonStyle";
 import {
   DEFAULT_CALCULATOR_INPUTS,
+  DEFAULT_CHART_TITLE,
+  buildExportableChartSvg,
   buildResultsCsv,
   computeCostPerWorkout,
   defaultEquipmentColor,
@@ -32,6 +35,8 @@ export function Calculator() {
   const [draftSnapshot, setDraftSnapshot] = useState<CalculatorColumn>(draft);
   const [errors, setErrors] = useState<EquipmentDraftFieldErrors>({});
   const [saveErrorMessages, setSaveErrorMessages] = useState<string[]>([]);
+  const [chartTitle, setChartTitle] = useState(DEFAULT_CHART_TITLE);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(draftSnapshot);
   const results = useMemo(() => equipmentList.map((e) => computeCostPerWorkout(e.inputs)), [equipmentList]);
@@ -133,6 +138,35 @@ export function Calculator() {
     URL.revokeObjectURL(url);
   }
 
+  // recharts renders its actual data/axes as a real <svg class="recharts-surface"> — grabbed here and
+  // handed to buildExportableChartSvg (which re-draws the title/legend as plain SVG shapes around it,
+  // since recharts' <Legend> is a separate HTML sibling, not part of that <svg>).
+  function downloadChartSvg() {
+    // Scoped to a direct child of .recharts-wrapper -- recharts also stamps the same "recharts-surface"
+    // class onto the tiny per-legend-item swatch icons, which a plain "svg.recharts-surface" selector
+    // would match first.
+    const chartSvg = chartContainerRef.current?.querySelector(".recharts-wrapper > svg.recharts-surface");
+    if (!chartSvg) return;
+    const width = Number(chartSvg.getAttribute("width")) || chartSvg.clientWidth;
+    const height = Number(chartSvg.getAttribute("height")) || chartSvg.clientHeight;
+    const markup = buildExportableChartSvg({
+      chartMarkup: chartSvg.outerHTML,
+      chartWidth: width,
+      chartHeight: height,
+      title: chartTitle,
+      legendItems: equipmentList.map((item) => ({ name: item.name, color: item.color })),
+      textColor: theme.colors.navyStatic,
+    });
+    const blob = new Blob([markup], { type: "image/svg+xml;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `elexercise-equipment-analyzer-chart-${date}.svg`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: theme.spacing.xl, width: "100%" }}>
       <div>
@@ -206,21 +240,7 @@ export function Calculator() {
           </h2>
           <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
             {equipmentList.length > 0 && (
-              <button
-                type="button"
-                onClick={downloadResultsCsv}
-                style={{
-                  padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
-                  borderRadius: theme.radii.pill,
-                  border: "none",
-                  background: "#6B7280",
-                  color: "#FFFFFF",
-                  fontWeight: theme.typography.weight.semibold,
-                  fontFamily: "'Clash Display', sans-serif",
-                  fontSize: theme.typography.size.sm,
-                  cursor: "pointer",
-                }}
-              >
+              <button type="button" onClick={downloadResultsCsv} style={pillButtonStyle}>
                 Download CSV
               </button>
             )}
@@ -228,8 +248,14 @@ export function Calculator() {
         </div>
         <CalculatorResultsTable equipment={equipmentList} results={results} />
         {equipmentList.length > 0 && (
-          <div style={{ marginTop: theme.spacing.xl }}>
-            <CashFlowChart equipment={equipmentList} results={results} />
+          <div ref={chartContainerRef} style={{ marginTop: theme.spacing.xl }}>
+            <CashFlowChart
+              equipment={equipmentList}
+              results={results}
+              title={chartTitle}
+              onTitleChange={setChartTitle}
+              onExportSvg={downloadChartSvg}
+            />
           </div>
         )}
       </div>

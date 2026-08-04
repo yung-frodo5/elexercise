@@ -209,6 +209,19 @@ you're touching this area:
   `activityColorForSport`/`sportTagColors` here — those back real sport tags
   elsewhere in the app (`SportTag.tsx`, `WorkoutHistoryRow.tsx`) and
   intentionally stay a separate, unrelated palette.
+- **recharts marks more than one `<svg>` as `.recharts-surface`.** The
+  chart's own axes/lines `<svg>` gets that class, but so does each tiny
+  per-legend-item swatch icon — a plain
+  `document.querySelector("svg.recharts-surface")` matches the first legend
+  swatch, not the chart. `Calculator.tsx`'s `downloadChartSvg` (behind
+  `CashFlowChart`'s "Export to SVG" button) scopes the selector to
+  `.recharts-wrapper > svg.recharts-surface` to get the real chart surface —
+  reuse that scoped selector for any future recharts export/inspection code
+  here. For the same reason, `lib/calculator/svgExport.ts`'s
+  `buildExportableChartSvg` re-draws the title and legend as plain SVG
+  shapes around the extracted chart markup rather than grabbing recharts'
+  own `<Legend>`, which renders as an HTML sibling of the chart's `<svg>`,
+  not inside it.
 - **A `<label>` can only validly wrap one control.** `ColorField`
   (`apps/web/components/calculator/formFields.tsx`) renders as a `<div>`,
   not a `<label>` like every other field in this file, because it has six

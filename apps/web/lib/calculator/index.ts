@@ -1,6 +1,6 @@
 export type { UsageRate, CalculatorInputs, CalculatorResult, CalculatorColumn, EquipmentType, LocationPreset } from "./types";
 export { YEARLY_WORKOUTS, USAGE_RATE_OPTIONS } from "./usageRates";
-export { DEFAULT_CALCULATOR_INPUTS, NAME_PLACEHOLDER } from "./defaults";
+export { DEFAULT_CALCULATOR_INPUTS, NAME_PLACEHOLDER, DEFAULT_CHART_TITLE } from "./defaults";
 export { annuityFactor, computeCostPerWorkout } from "./computeCostPerWorkout";
 export { formatUsdPerWorkout, formatKwh, formatKg, formatGrams, formatPercent, formatPowerGenWh } from "./format";
 export type { EquipmentPresetValues } from "./equipmentPresets";
@@ -30,4 +30,6 @@ export { RESULT_METRICS, RESULT_METRIC_SECTIONS } from "./resultMetrics";
 export type { EquipmentSetting } from "./equipmentSettings";
 export { EQUIPMENT_SETTINGS } from "./equipmentSettings";
 export { buildResultsCsv } from "./csv";
+export type { SvgLegendItem } from "./svgExport";
+export { buildExportableChartSvg } from "./svgExport";
 export { EQUIPMENT_COLOR_PALETTE, defaultEquipmentColor } from "./colors";
