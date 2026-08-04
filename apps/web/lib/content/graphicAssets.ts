@@ -6,10 +6,10 @@ import type { Crop } from "../../components/content/FramedImage";
 // plain URL string — hence the `.src` access at each call site.
 import whatIsElexerciseDiagram from "../../assets/images/what-is-elexercise.svg";
 import powerGenerationPixiiMachine from "../../assets/images/power-generation-pixii-machine.png";
-import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-generation-bike-comp-no-carbon-price.png";
-import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike-comp-ca.png";
-import powerGenerationBikeCompHi from "../../assets/images/power-generation-bike-comp-hi.png";
-import powerGenerationTreadmillComp from "../../assets/images/power-generation-treadmill-comp.png";
+import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-generation-bike-comp-no-carbon-price.svg";
+import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike-comp-ca.svg";
+import powerGenerationBikeCompHi from "../../assets/images/power-generation-bike-comp-hi.svg";
+import powerGenerationTreadmillComp from "../../assets/images/power-generation-treadmill-comp.svg";
 
 // Each app owns its own image files and maps the shared package's logical
 // GraphicKey to them here — packages/content never sees the binary. Typing

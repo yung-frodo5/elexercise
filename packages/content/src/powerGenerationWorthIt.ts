@@ -43,7 +43,7 @@ export const powerGenerationWorthItArticle: Article = {
         ],
         [
           { text: "The comparison cuts both ways: a motorized treadmill that consumes power can cost " },
-          { text: "$1,800+ more", bold: true },
+          { text: "$8,000+ more", bold: true },
           { text: " over its lifespan than an elexercise alternative under the same conditions." },
         ],
       ],
@@ -224,7 +224,7 @@ export const powerGenerationWorthItArticle: Article = {
             " Let’s compare its lifetime costs to a passive treadmill that doesn’t consume power and to an elexercise treadmill that actively generates power. For a gym expecting 50 hours of use per week, we see that the results are substantial, despite accounting for the 10% price-hike as before. Over the 7 year lifespan, ",
         },
         {
-          text: "the motorized treadmill costs an extra $1,809 total – $1,307 more in electricity and $672 in carbon",
+          text: "the motorized treadmill costs an extra $8,203 total – $5,533 more in electricity and $2,970 in carbon",
           bold: true,
         },
         { text: "!" },
