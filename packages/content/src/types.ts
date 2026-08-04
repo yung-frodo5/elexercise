@@ -47,6 +47,7 @@ export interface Subtitle {
 export type GraphicKey =
   | "what-is-elexercise-diagram"
   | "power-generation-pixii-machine"
+  | "power-generation-bike-comp-home-usage"
   | "power-generation-bike-comp-no-carbon-price"
   | "power-generation-bike-comp-ca"
   | "power-generation-bike-comp-hi"

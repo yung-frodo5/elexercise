@@ -20,16 +20,14 @@ export const powerGenerationWorthItArticle: Article = {
       heading: "Executive Summary",
       items: [
         [
-          {
-            text:
-              "The unit economics of electricity-generating exercise equipment work out far more often than commonly assumed.",
-          },
+          { text: "The " },
+          { text: "unit economics favor electricity-generating exercise equipment", bold: true },
+          { text: " far more often than commonly assumed." },
         ],
         [
-          {
-            text:
-              "The two biggest drivers are usage rate and electricity price: high-usage public facilities and high-cost regions see the strongest returns.",
-          },
+          { text: "The two most important variables are " },
+          { text: "usage rate and electricity price", bold: true },
+          { text: "; high-usage public facilities and high-cost regions see the strongest returns." },
         ],
         [
           { text: "A stationary bike in California recoups its investment in generated electricity " },
@@ -42,9 +40,9 @@ export const powerGenerationWorthItArticle: Article = {
           { text: " thanks to higher electricity prices and grid carbon intensity." },
         ],
         [
-          { text: "The comparison cuts both ways: a motorized treadmill that consumes power can cost " },
-          { text: "$1,800+ more", bold: true },
-          { text: " over its lifespan than an elexercise alternative under the same conditions." },
+          { text: "Elexercise equipment far outperforms power-consuming equipment: a motorized treadmill that consumes power can cost " },
+          { text: "$8,000+ more", bold: true },
+          { text: " over its lifespan than its elexercise alternative." },
         ],
       ],
     },
@@ -139,7 +137,21 @@ export const powerGenerationWorthItArticle: Article = {
         { text: "SportsArt claims that its ECO-POWR line is cost-competitive", footnote: 4 },
         {
           text:
-            "; let’s assume a 10% price hike over traditional equipment that costs $2000. Let’s also assume CA electricity prices, which average around $0.27/kWh. For somebody looking to purchase a bike for their at-home gym, expecting to use it 3x per week, the electricity generation would not be worth it. However, for a public facility expecting significant more usage (50x per week), the electricity generation potential is much higher and eventually does pay for itself. As shown in the graph below, a gym in CA can expect to recoup its investment on electricity generation before year 2!",
+            "; let’s assume a 10% price hike over traditional equipment that costs $2000. Let’s also assume CA electricity prices, which average around $0.27/kWh. For somebody looking to purchase a bike for their at-home gym, expecting to use it 3x per week, the electricity generation would not be worth it. As shown in the graph below, at this low usage rate the elexercise bike never recoups its higher upfront cost over its 7-year lifespan.",
+        },
+      ],
+    },
+    {
+      type: "graphic",
+      key: "power-generation-bike-comp-home-usage",
+      alt: "Line chart comparing cumulative cost over time for a traditional vs. electricity-generating stationary bike in California at 3x-per-week home usage, showing the electricity-generating bike never recouping its higher upfront cost",
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          text:
+            "However, for a public facility expecting significant more usage (50x per week), the electricity generation potential is much higher and eventually does pay for itself. As shown in the graph below, a gym in CA can expect to recoup its investment on electricity generation before year 2!",
         },
       ],
     },
@@ -224,7 +236,7 @@ export const powerGenerationWorthItArticle: Article = {
             " Let’s compare its lifetime costs to a passive treadmill that doesn’t consume power and to an elexercise treadmill that actively generates power. For a gym expecting 50 hours of use per week, we see that the results are substantial, despite accounting for the 10% price-hike as before. Over the 7 year lifespan, ",
         },
         {
-          text: "the motorized treadmill costs an extra $1,809 total – $1,307 more in electricity and $672 in carbon",
+          text: "the motorized treadmill costs an extra $8,203 total – $5,533 more in electricity and $2,970 in carbon",
           bold: true,
         },
         { text: "!" },
@@ -275,7 +287,10 @@ export const powerGenerationWorthItArticle: Article = {
     },
     {
       type: "paragraph",
-      content: [{ text: "Instead, I will conclude by referring back to my favorite answer… Wanna find out?" }],
+      content: [
+        { text: "Instead, I will conclude by referring back to my favorite answer… " },
+        { text: "Wanna find out?", bold: true },
+      ],
     },
   ],
   references: [

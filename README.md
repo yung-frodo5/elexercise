@@ -42,8 +42,11 @@ duplication, not an intentional split.
 - **Equipment Analyzer** (`apps/web/app/resources/equipment-analyzer/page.tsx`)
   — a cost-per-workout calculator, with a CSV export of the current
   comparison (including a year-by-year cost-over-time table matching the
-  cash-flow chart) and a per-equipment color (preset swatches or a custom
-  pick) that carries through to its roster pill and chart line. Web-only.
+  cash-flow chart), a per-equipment color (preset swatches or a custom
+  pick) that carries through to its roster pill and chart line, and a
+  cash-flow chart with a user-editable title and its own vector SVG export
+  (title + legend + chart, reconstructed as plain SVG shapes since
+  recharts' legend renders outside the chart's own `<svg>`). Web-only.
 - **Articles** (`apps/web/app/resources/page.tsx`,
   `apps/web/app/resources/articles/[slug]/page.tsx`) — the `/resources` index
   page lists Tools and Articles as two separate sections; article content
