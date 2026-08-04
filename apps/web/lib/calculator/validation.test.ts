@@ -43,6 +43,21 @@ describe("validateEquipmentDraft", () => {
     expect(errors.lifespanYears).toBe("Lifespan must be at least 1 year.");
   });
 
+  it("rejects annual workouts below 1, keyed under 'annualWorkouts'", () => {
+    const errors = validateEquipmentDraft(draft({ inputs: { ...DEFAULT_CALCULATOR_INPUTS, annualWorkouts: 0 } }));
+    expect(errors.annualWorkouts).toBe("Annual workouts must be at least 1.");
+  });
+
+  it("treats NaN annual workouts the same as an out-of-range value", () => {
+    const errors = validateEquipmentDraft(draft({ inputs: { ...DEFAULT_CALCULATOR_INPUTS, annualWorkouts: NaN } }));
+    expect(errors.annualWorkouts).toBe("Annual workouts must be at least 1.");
+  });
+
+  it("accepts an annual workouts value of exactly 1", () => {
+    const errors = validateEquipmentDraft(draft({ inputs: { ...DEFAULT_CALCULATOR_INPUTS, annualWorkouts: 1 } }));
+    expect(errors.annualWorkouts).toBeUndefined();
+  });
+
   it("rejects negative subscription fee, electricity price, discount factor, carbon price, and grid carbon intensity, each keyed under its own field", () => {
     const errors = validateEquipmentDraft(
       draft({

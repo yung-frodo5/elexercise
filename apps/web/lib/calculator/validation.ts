@@ -6,6 +6,7 @@ export type EquipmentDraftField =
   | "capitalCost"
   | "subscriptionFeeMonthly"
   | "lifespanYears"
+  | "annualWorkouts"
   | "powerGenWh"
   | "electricityPricePerKwh"
   | "discountFactor"
@@ -28,6 +29,7 @@ export function validateEquipmentDraft(draft: CalculatorColumn): EquipmentDraftF
   if (!(inputs.capitalCost >= 0)) errors.capitalCost = "Capital cost must be zero or greater.";
   if (!(inputs.subscriptionFeeMonthly >= 0)) errors.subscriptionFeeMonthly = "Subscription fee must be zero or greater.";
   if (!(inputs.lifespanYears >= 1)) errors.lifespanYears = "Lifespan must be at least 1 year.";
+  if (!(inputs.annualWorkouts >= 1)) errors.annualWorkouts = "Annual workouts must be at least 1.";
   // No lower bound -- negative values are valid here, modeling equipment that consumes power (e.g. a
   // motorized treadmill) rather than only equipment that generates it. Still required, though: NaN (an
   // emptied field) is rejected the same way the other numeric fields reject it.

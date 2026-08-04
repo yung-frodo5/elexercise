@@ -21,17 +21,23 @@ export type LocationPreset = "california" | "hawaii";
 export interface CalculatorInputs {
   equipmentType: EquipmentType; // drives capitalCost/subscriptionFeeMonthly/lifespanYears — see equipmentPresets.ts
   location: LocationPreset; // drives electricityPricePerKwh/gridCarbonIntensityGPerKwh — see locationPresets.ts
-  customizeEconomics: boolean; // reveals Lifespan (Exercise) + Capital cost/Subscription fee/Discount factor (Cost)
-  customizeEnergy: boolean; // reveals Power generation/Electricity price/Carbon price/Grid carbon intensity (Energy)
+  customizeEconomics: boolean; // reveals Lifespan (Exercise) + Capital cost/Subscription fee/Discount factor (Cost); swaps the Usage rate select for an Annual workouts number input
+  customizeEnergy: boolean; // reveals Power generation/Electricity price/Carbon price/Grid carbon intensity + the Discount future electricity/carbon value checkbox (Energy)
   capitalCost: number;
   subscriptionFeeMonthly: number;
   lifespanYears: number;
   usageRate: UsageRate;
+  // Only used when customizeEconomics is true (overrides the usageRate → YEARLY_WORKOUTS lookup). Kept in
+  // sync with usageRate while in preset mode, so it starts pre-filled correctly on switching to custom.
+  annualWorkouts: number;
   powerGenWh: number;
   electricityPricePerKwh: number;
   discountFactor: number;
   carbonPricePerTon: number;
   gridCarbonIntensityGPerKwh: number;
+  // Editable only via "Specify custom energy inputs", but (like the other custom-energy fields) always in
+  // effect regardless of customizeEnergy's current value — see computeCostPerWorkout.ts.
+  discountEnergyValue: boolean;
 }
 
 export interface CalculatorResult {

@@ -28,7 +28,13 @@ export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
     format: (inputs) =>
       inputs.customizeEconomics ? "Custom" : optionLabel(EQUIPMENT_TYPE_OPTIONS, inputs.equipmentType),
   },
-  { label: "Usage rate", format: (inputs) => optionLabel(USAGE_RATE_OPTIONS, inputs.usageRate) },
+  {
+    label: "Usage rate",
+    format: (inputs) =>
+      inputs.customizeEconomics
+        ? `${inputs.annualWorkouts} workouts/yr`
+        : optionLabel(USAGE_RATE_OPTIONS, inputs.usageRate),
+  },
   { label: "Lifespan", format: (inputs) => `${inputs.lifespanYears} yr` },
   { label: "Capital cost", format: (inputs) => `$${inputs.capitalCost}` },
   { label: "Subscription fee", format: (inputs) => `$${inputs.subscriptionFeeMonthly}/mo` },
@@ -43,4 +49,8 @@ export const EQUIPMENT_SETTINGS: EquipmentSetting[] = [
   { label: "Electricity price", format: (inputs) => `$${inputs.electricityPricePerKwh}/kWh` },
   { label: "Carbon price", format: (inputs) => `$${inputs.carbonPricePerTon}/ton CO2e` },
   { label: "Grid carbon intensity", format: (inputs) => `${inputs.gridCarbonIntensityGPerKwh} gCO2e/kWh` },
+  {
+    label: "Discount future electricity/carbon value",
+    format: (inputs) => (inputs.discountEnergyValue ? "Yes" : "No"),
+  },
 ];

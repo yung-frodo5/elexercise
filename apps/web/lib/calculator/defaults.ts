@@ -10,6 +10,7 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
   customizeEconomics: false,
   customizeEnergy: false,
   usageRate: "regular",
+  annualWorkouts: 156, // = YEARLY_WORKOUTS.regular — must stay in sync with usageRate default above
   capitalCost: 1200, // = EQUIPMENT_PRESETS.stationaryBikeBasic.capitalCost
   subscriptionFeeMonthly: 0, // = EQUIPMENT_PRESETS.stationaryBikeBasic.subscriptionFeeMonthly
   lifespanYears: 7, // = EQUIPMENT_PRESETS.stationaryBikeBasic.lifespanYears
@@ -18,6 +19,7 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
   discountFactor: 0.07,
   carbonPricePerTon: 300,
   gridCarbonIntensityGPerKwh: 195, // = LOCATION_PRESETS.california.gridCarbonIntensityGPerKwh
+  discountEnergyValue: false,
 };
 
 // Placeholder text (not a real value) shown in the Name field for a fresh/unsaved draft — the field

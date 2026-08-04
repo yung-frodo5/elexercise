@@ -105,6 +105,57 @@ describe("computeCostPerWorkout", () => {
     expect(publicRate.carbonOffsetPerWorkoutGrams).toBe(sporadic.carbonOffsetPerWorkoutGrams);
   });
 
+  it("discounts lifetime electricity/carbon value via the annuity factor when discountEnergyValue is true", () => {
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, discountEnergyValue: true });
+    const undiscountedElectricity =
+      result.costPerWorkoutElectricity * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears;
+    const undiscountedCarbon =
+      result.costPerWorkoutCarbon * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears;
+    expect(Math.abs(result.lifetimeElectricityValueUsd)).toBeLessThan(Math.abs(undiscountedElectricity));
+    expect(Math.abs(result.lifetimeCarbonValueUsd)).toBeLessThan(Math.abs(undiscountedCarbon));
+    expect(result.lifetimeElectricityValueUsd).toBeCloseTo(
+      result.costPerWorkoutElectricity * result.yearlyWorkouts * result.annuityFactor,
+      6,
+    );
+    expect(result.lifetimeCarbonValueUsd).toBeCloseTo(
+      result.costPerWorkoutCarbon * result.yearlyWorkouts * result.annuityFactor,
+      6,
+    );
+  });
+
+  it("defaults to the plain undiscounted sum when discountEnergyValue isn't overridden (false by default)", () => {
+    expect(DEFAULT_CALCULATOR_INPUTS.discountEnergyValue).toBe(false);
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150 });
+    expect(result.lifetimeElectricityValueUsd).toBeCloseTo(
+      result.costPerWorkoutElectricity * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears,
+      6,
+    );
+    expect(result.lifetimeCarbonValueUsd).toBeCloseTo(
+      result.costPerWorkoutCarbon * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears,
+      6,
+    );
+  });
+
+  it("uses annualWorkouts directly, ignoring usageRate, when customizeEconomics is true", () => {
+    const result = computeCostPerWorkout({
+      ...DEFAULT_CALCULATOR_INPUTS,
+      customizeEconomics: true,
+      usageRate: "sporadic",
+      annualWorkouts: 500,
+    });
+    expect(result.yearlyWorkouts).toBe(500);
+  });
+
+  it("falls back to the usageRate lookup when customizeEconomics is false, regardless of annualWorkouts", () => {
+    const result = computeCostPerWorkout({
+      ...DEFAULT_CALCULATOR_INPUTS,
+      customizeEconomics: false,
+      usageRate: "committed",
+      annualWorkouts: 999,
+    });
+    expect(result.yearlyWorkouts).toBe(260);
+  });
+
   it("returns zero value ratios instead of Infinity/NaN when there's no equipment/subscription cost", () => {
     const freeAndSilent = computeCostPerWorkout({
       ...DEFAULT_CALCULATOR_INPUTS,
