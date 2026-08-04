@@ -19,4 +19,5 @@ export const graphicAssets: Record<GraphicKey, ImageSourcePropType> = {
   "power-generation-bike-comp-ca": require("../../assets/articles/power-generation-bike-comp-ca.png"),
   "power-generation-bike-comp-hi": require("../../assets/articles/power-generation-bike-comp-hi.png"),
   "power-generation-treadmill-comp": require("../../assets/articles/power-generation-treadmill-comp.png"),
+  "how-much-power-preview": require("../../assets/articles/how-much-power-preview.png"),
 };

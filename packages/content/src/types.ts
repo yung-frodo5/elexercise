@@ -51,7 +51,8 @@ export type GraphicKey =
   | "power-generation-bike-comp-no-carbon-price"
   | "power-generation-bike-comp-ca"
   | "power-generation-bike-comp-hi"
-  | "power-generation-treadmill-comp";
+  | "power-generation-treadmill-comp"
+  | "how-much-power-preview";
 
 export interface Graphic {
   type: "graphic";

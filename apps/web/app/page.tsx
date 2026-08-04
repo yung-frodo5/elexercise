@@ -16,8 +16,6 @@ interface LandingLink {
   // resources that don't have one yet.
   graphicKey?: GraphicKey;
   imageAlt?: string;
-  // Which side the image renders on -- defaults to "right".
-  imagePosition?: "left" | "right";
 }
 
 const LANDING_LINKS: LandingLink[] = [
@@ -43,6 +41,24 @@ const LANDING_LINKS: LandingLink[] = [
       "Diagram of a gym designed as a community resilience hub, with rooftop solar panels, exercise equipment, bicycle parking, EV charging, and backup power.",
   },
   {
+    href: "/resources/articles/how-much-power",
+    title: "How Much Power?",
+    description: (
+      <>
+        A single hard workout can generate 0.375 kWh -- nearly 30 iPhone charges. Scale that up and{" "}
+        <strong>human power alone could offset up to 83% of a gym&rsquo;s annual electricity bill</strong>, with U.S.
+        gym
+        members collectively capable of generating an estimated 2.4 TWh a year, enough to power 220,000 households.
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+    graphicKey: "how-much-power-preview",
+    imageAlt:
+      "Workout history table and power output chart for a combined run and bike session, showing energy generated and average/peak power for each segment.",
+  },
+  {
     href: "/resources/articles/is-the-power-generation-worth-it",
     title: "Is the Power Generation Worth It?",
     description: (
@@ -59,7 +75,6 @@ const LANDING_LINKS: LandingLink[] = [
     graphicKey: "power-generation-treadmill-comp",
     imageAlt:
       "Line chart comparing lifetime cost across a passive, motorized, and electricity-generating treadmill in Hawaii, showing the motorized treadmill costing over $1,800 more than the electricity-generating option over 7 years",
-    imagePosition: "left",
   },
 ];
 
@@ -95,8 +110,9 @@ export default function LandingPage() {
           .definition-body-line { padding-left: 16px !important; }
         }
         /* Below the row/column breakpoint, every card stacks in DOM order
-           (image, then text) regardless of imagePosition -- the image-left
-           vs. image-right choice only applies once there's room for a row.
+           (image, then text) regardless of its alternating side -- the
+           image-left vs. image-right choice only applies once there's room
+           for a row.
            Keyed off the cards container's own rendered width via a
            container query, not the viewport -- the page's fixed sidebar
            ribbon eats a chunk of horizontal space that a viewport-width
@@ -194,12 +210,15 @@ export default function LandingPage() {
             gap: theme.spacing.lg,
           }}
         >
-          {LANDING_LINKS.map((link) => {
+          {LANDING_LINKS.map((link, index) => {
             const image = link.graphicKey ? graphicAssets[link.graphicKey] : undefined;
+            // Alternate the image side by position so the page feels dynamic
+            // rather than reading a manual per-card flag.
+            const imagePosition = index % 2 === 0 ? "right" : "left";
             return (
               <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
                 <SoftPanel style={{ padding: theme.spacing.lg }}>
-                  <div className={`landing-card-row landing-card-row--${link.imagePosition ?? "right"}`}>
+                  <div className={`landing-card-row landing-card-row--${imagePosition}`}>
                     {image && (
                       <div className="landing-card-image">
                         <FramedImage image={image} alt={link.imageAlt ?? ""} />
