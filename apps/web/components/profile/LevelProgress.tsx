@@ -50,8 +50,16 @@ export function LevelProgress({
     <div>
       {/* Real <style> for :hover/:focus-within -- inline styles can't
           express pseudo-classes. Matches the same hover-popup pattern used
-          for the home page's "elexercise" definition. */}
-      <style>{`
+          for the home page's "elexercise" definition.
+          dangerouslySetInnerHTML, not JSX text children -- a <style> tag's
+          content is raw text per the HTML spec, so any quote/apostrophe
+          added here later would get HTML-escaped by React's SSR but left
+          un-decoded by the browser, desyncing server/client text and
+          throwing a hydration error (see app/layout.tsx's fuller
+          explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .elexir-tooltip-wrap { position: relative; display: inline-block; }
         .elexir-tooltip-popup {
           position: absolute;
@@ -70,7 +78,9 @@ export function LevelProgress({
           visibility: visible;
           pointer-events: auto;
         }
-      `}</style>
+      `,
+        }}
+      />
 
       <div
         style={{

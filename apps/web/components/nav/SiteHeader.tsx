@@ -65,8 +65,15 @@ export function SiteHeader() {
       {/* Real <style> for the media query -- inline styles can't express
           one. Below ~360px there isn't room for the logo, "elexercise!",
           and the profile button all on one row without something giving;
-          the wordmark text is the least essential of the three. */}
-      <style>{`
+          the wordmark text is the least essential of the three.
+          dangerouslySetInnerHTML, not JSX text children -- the quotes in
+          the data-theme selector below get HTML-escaped by React's SSR but
+          left un-decoded by the browser inside <style> (a raw-text
+          element), desyncing server/client text and throwing a hydration
+          error (see app/layout.tsx's fuller explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (max-width: 360px) {
           .site-header-wordmark-text { display: none; }
         }
@@ -80,7 +87,9 @@ export function SiteHeader() {
         html[data-theme="dark"] .site-header {
           background: linear-gradient(to right, #002FA7 ${FOOTER_HEIGHT}px, #001F3F ${FOOTER_HEIGHT}px) !important;
         }
-      `}</style>
+      `,
+        }}
+      />
       <header
         className="site-header"
         style={{

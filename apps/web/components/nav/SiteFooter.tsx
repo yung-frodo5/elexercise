@@ -8,11 +8,21 @@ export const FOOTER_HEIGHT = 56;
 export function SiteFooter() {
   return (
     <>
-      <style>{`
+      {/* dangerouslySetInnerHTML, not JSX text children -- a <style> tag's
+          content is raw text per the HTML spec, so any quote/apostrophe
+          added here later would get HTML-escaped by React's SSR but left
+          un-decoded by the browser, desyncing server/client text and
+          throwing a hydration error (see app/layout.tsx's fuller
+          explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (max-width: 480px) {
           .site-footer-icon-credit { display: none; }
         }
-      `}</style>
+      `,
+        }}
+      />
       {/* Stays light blue in dark mode -- per design feedback, unlike the
           header/body/content panel, this doesn't invert. */}
       <footer

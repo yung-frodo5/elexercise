@@ -51,7 +51,15 @@ export function HistoryTable({
 
   return (
     <>
-      <style>{`
+      {/* dangerouslySetInnerHTML, not JSX text children -- a <style> tag's
+          content is raw text per the HTML spec, so any quote/apostrophe
+          added here later would get HTML-escaped by React's SSR but left
+          un-decoded by the browser, desyncing server/client text and
+          throwing a hydration error (see app/layout.tsx's fuller
+          explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (max-width: 640px) {
           .history-table-scroll {
             max-height: min(52vh, 420px) !important;
@@ -62,7 +70,9 @@ export function HistoryTable({
             padding-right: 10px !important;
           }
         }
-      `}</style>
+      `,
+        }}
+      />
       <div
         className="history-table-scroll"
         style={{

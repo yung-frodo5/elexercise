@@ -54,7 +54,14 @@ export function ContentPanel({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <style>{`
+      {/* dangerouslySetInnerHTML, not JSX text children -- the quotes in
+          the data-theme selector below get HTML-escaped by React's SSR but
+          left un-decoded by the browser inside <style> (a raw-text
+          element), desyncing server/client text and throwing a hydration
+          error (see app/layout.tsx's fuller explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (max-width: 640px) {
           .content-panel {
             width: 100% !important;
@@ -70,7 +77,9 @@ export function ContentPanel({ children }: { children: ReactNode }) {
         html[data-theme="dark"] .content-panel {
           background-color: #001F3F !important;
         }
-      `}</style>
+      `,
+        }}
+      />
       <div
         className={isHome ? "content-panel content-panel-home" : "content-panel"}
         style={

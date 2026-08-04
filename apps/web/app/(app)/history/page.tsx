@@ -95,7 +95,15 @@ export default function HistoryPage() {
 
   return (
     <>
-      <style>{`
+      {/* dangerouslySetInnerHTML, not JSX text children -- a <style> tag's
+          content is raw text per the HTML spec, so any quote/apostrophe
+          added here later would get HTML-escaped by React's SSR but left
+          un-decoded by the browser, desyncing server/client text and
+          throwing a hydration error (see app/layout.tsx's fuller
+          explanation of this). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media (max-width: 640px) {
           .history-main {
             padding: 0 0 16px 0 !important;
@@ -112,7 +120,9 @@ export default function HistoryPage() {
             align-self: flex-start;
           }
         }
-      `}</style>
+      `,
+        }}
+      />
       <main className="history-main" style={mainStyle}>
         <header style={{ marginBottom: theme.spacing.xl }}>
           <h1
