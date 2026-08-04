@@ -21,8 +21,19 @@ export function LevelProgress({
 
   if (compact) {
     return (
-      <div style={{ minWidth: 60, maxWidth: 120, width: "100%" }}>
-        <div style={{ fontSize: theme.typography.size.xxs, marginBottom: 2 }}>Level {level}</div>
+      <div style={{ minWidth: 60, maxWidth: 160, width: "100%" }}>
+        <div
+          style={{
+            fontSize: theme.typography.size.xxs,
+            marginBottom: 2,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          Level {level}
+          {progress.tier ? `: ${progress.tier.name}` : ""}
+        </div>
         <div
           style={{
             width: "100%",
@@ -98,6 +109,7 @@ export function LevelProgress({
           }}
         >
           Level {level}
+          {progress.tier ? `: ${progress.tier.name}` : ""}
         </span>
         <span style={{ fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
           {elexir}{" "}
@@ -148,8 +160,16 @@ export function LevelProgress({
         />
       </div>
 
+      {progress.tier && (
+        <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
+          {progress.tier.equivalent}
+        </div>
+      )}
+
       <div style={{ marginTop: theme.spacing.xs, fontSize: theme.typography.size.sm, color: theme.colors.navy }}>
-        {progress.xpRemaining} elexir to level {level + 1}
+        {progress.nextTier
+          ? `${progress.xpRemaining} elexir to level ${level + 1}: ${progress.nextTier.name}`
+          : "Max level reached!"}
       </div>
     </div>
   );

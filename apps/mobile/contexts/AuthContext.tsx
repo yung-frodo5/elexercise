@@ -16,6 +16,10 @@ export interface Profile {
   home_region: string;
   level: number;
   elexir: number;
+  // Null means "no badge selected" -- ProfileScreen resolves this against
+  // its own earned-badges list to render the chosen badge's emoji as the
+  // avatar (see useEarnedBadges.ts).
+  selected_badge_id: string | null;
   created_at: string;
 }
 

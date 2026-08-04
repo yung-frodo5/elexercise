@@ -23,6 +23,12 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
   let scanToken: string;
   let machineId: string;
 
+  async function earnedBadgeNames(forUserId: string): Promise<string[]> {
+    const { data, error } = await admin.from("user_badges").select("badges(name)").eq("user_id", forUserId);
+    if (error) throw error;
+    return ((data ?? []) as unknown as { badges: { name: string } }[]).map((row) => row.badges.name);
+  }
+
   beforeEach(async () => {
     admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
     repo = new SupabaseWorkoutRepository(SUPABASE_URL, SERVICE_ROLE_KEY!);
@@ -266,7 +272,7 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
 
     const { data: profile } = await admin.from("profiles").select("elexir, level").eq("id", userId).single();
     expect(profile!.elexir).toBe(0);
-    expect(profile!.level).toBe(1);
+    expect(profile!.level).toBe(0);
   });
 
   it("awards elexir to the original owner when their machine session is closed by another user scanning in", async () => {
@@ -394,5 +400,98 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
       { t_ms: 500, power_w: 100 },
       { t_ms: 1000, power_w: 120 },
     ]);
+  });
+
+  describe("badge awarding", () => {
+    it("awards First Watt on a user's very first completed session, manual or machine", async () => {
+      const { session } = await repo.startManualSession(userId, "run");
+      await repo.endSession(userId, session.id);
+
+      expect(await earnedBadgeNames(userId)).toContain("First Watt");
+    });
+
+    it("does not re-award First Watt on a second session", async () => {
+      const first = await repo.startManualSession(userId, "run");
+      await repo.endSession(userId, first.session.id);
+      const second = await repo.startManualSession(userId, "bike");
+      await repo.endSession(userId, second.session.id);
+
+      const names = await earnedBadgeNames(userId);
+      expect(names.filter((n) => n === "First Watt")).toHaveLength(1);
+    });
+
+    it("awards a level-threshold badge once a machine session's elexir crosses it", async () => {
+      const { session } = await repo.startMachineSession(userId, scanToken);
+      // 1 hour @ 2000W = 2,000 Wh -- exactly tier 5's threshold ("Static").
+      await repo.insertPowerSample(session.id, 0, 2000);
+      await repo.insertPowerSample(session.id, 3_600_000, 2000);
+      await repo.endSession(userId, session.id);
+
+      const { data: profile } = await admin.from("profiles").select("level").eq("id", userId).single();
+      expect(profile!.level).toBeGreaterThanOrEqual(5);
+      expect(await earnedBadgeNames(userId)).toContain("Plugged In");
+    });
+
+    it("does not award a level-threshold badge before the level is reached", async () => {
+      const { session } = await repo.startMachineSession(userId, scanToken);
+      await repo.insertPowerSample(session.id, 0, 10);
+      await repo.insertPowerSample(session.id, 3_600_000, 10); // 10 Wh -- level 0, well under tier 1
+      await repo.endSession(userId, session.id);
+
+      expect(await earnedBadgeNames(userId)).not.toContain("Plugged In");
+    });
+
+    it("awards Century Session and Killawatt from a single high-output machine session", async () => {
+      const { session } = await repo.startMachineSession(userId, scanToken);
+      // 1 hour @ 1200W averaged (via two endpoints) = 1,200 Wh = 4.32 MJ (>1 kWh), peak 1200W (>1kW).
+      await repo.insertPowerSample(session.id, 0, 1200);
+      await repo.insertPowerSample(session.id, 3_600_000, 1200);
+      await repo.endSession(userId, session.id);
+
+      const names = await earnedBadgeNames(userId);
+      expect(names).toContain("Century Session");
+      expect(names).toContain("Killawatt? Why? What Did It Do To Me?");
+    });
+
+    it("awards You Put The Our In Hour for a 60+ minute session", async () => {
+      const { session } = await repo.startManualSession(userId, "run");
+      // Backdate started_at directly -- the repository always stamps "now"
+      // on insert, so a real 60+ minute session has to be simulated this way.
+      await admin
+        .from("sessions")
+        .update({ started_at: new Date(Date.now() - 3_600_000).toISOString() })
+        .eq("id", session.id);
+
+      await repo.endSession(userId, session.id);
+
+      expect(await earnedBadgeNames(userId)).toContain("You Put The Our In Hour");
+    });
+
+    it("awards a streak badge once completed sessions span enough consecutive days", async () => {
+      const workoutId = (await repo.startManualSession(userId, "run")).workout.id;
+      const today = new Date();
+
+      // Two backdated, already-completed sessions on the two days before
+      // today, plus one closed for real today -- a 3-day streak.
+      for (const daysAgo of [2, 1]) {
+        const day = new Date(today);
+        day.setUTCDate(day.getUTCDate() - daysAgo);
+        const { error } = await admin.from("sessions").insert({
+          workout_id: workoutId,
+          source: "manual",
+          activity_type: "run",
+          status: "completed",
+          started_at: day.toISOString(),
+          ended_at: day.toISOString(),
+          duration_s: 60,
+        });
+        if (error) throw error;
+      }
+
+      const { session } = await repo.startManualSession(userId, "run");
+      await repo.endSession(userId, session.id);
+
+      expect(await earnedBadgeNames(userId)).toContain("Spark Streak");
+    });
   });
 });

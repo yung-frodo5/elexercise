@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties, type FormEvent } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
+import { tierForLevel } from "@exercise-tracker/leveling";
 import { useSupabaseSession } from "../../../lib/useSession";
 import { useProfile } from "../../../lib/useProfile";
 import { useFriends } from "../../../lib/useFriends";
@@ -31,9 +32,9 @@ const cell: CSSProperties = {
 // account. Not backed by the friends table, so adding a real friend doesn't
 // remove or interact with these in any way.
 const PLACEHOLDER_FRIENDS = [
-  { id: "placeholder-1", displayName: "Jordan (placeholder)", level: 12, elexir: 1840, avatarUrl: null },
-  { id: "placeholder-2", displayName: "Sam (placeholder)", level: 7, elexir: 612, avatarUrl: null },
-  { id: "placeholder-3", displayName: "Riley (placeholder)", level: 3, elexir: 205, avatarUrl: null },
+  { id: "placeholder-1", displayName: "Jordan (placeholder)", level: 12, elexir: 1840, avatarUrl: null, badgeEmoji: null },
+  { id: "placeholder-2", displayName: "Sam (placeholder)", level: 7, elexir: 612, avatarUrl: null, badgeEmoji: null },
+  { id: "placeholder-3", displayName: "Riley (placeholder)", level: 3, elexir: 205, avatarUrl: null, badgeEmoji: null },
 ];
 
 // Total energy generated is just elexir: by design, elexir is 1:1 with Wh
@@ -41,7 +42,7 @@ const PLACEHOLDER_FRIENDS = [
 // so there's no separate aggregation to keep in sync with the leaderboard.
 export default function LeaderboardPage() {
   const { session } = useSupabaseSession();
-  const { displayName, level, elexir, avatarUrl } = useProfile(session?.user.id);
+  const { displayName, level, elexir, avatarUrl, badgeEmoji } = useProfile(session?.user.id);
   const { friends, loading, error, addFriend } = useFriends(session?.user.id);
 
   const [nameInput, setNameInput] = useState("");
@@ -67,9 +68,10 @@ export default function LeaderboardPage() {
           {
             id: session.user.id,
             displayName: displayName ?? session.user.email ?? "You",
-            level: level ?? 1,
+            level: level ?? 0,
             elexir: elexir ?? 0,
             avatarUrl,
+            badgeEmoji,
             isMe: true,
           },
         ]
@@ -80,6 +82,7 @@ export default function LeaderboardPage() {
       level: friend.level,
       elexir: friend.elexir,
       avatarUrl: friend.avatar_url,
+      badgeEmoji: friend.badgeEmoji,
       isMe: false,
     })),
     ...PLACEHOLDER_FRIENDS.map((friend) => ({ ...friend, isMe: false })),
@@ -117,7 +120,7 @@ export default function LeaderboardPage() {
                   {index === 0 ? " 👑" : ""}
                 </td>
                 <td style={{ ...cell, ...rowColor }}>
-                  <AvatarCircle src={row.avatarUrl ?? ""} size={28} />
+                  <AvatarCircle src={row.avatarUrl ?? ""} size={28} badgeEmoji={row.badgeEmoji} />
                 </td>
                 <td
                   style={{
@@ -129,7 +132,14 @@ export default function LeaderboardPage() {
                   {row.displayName}
                   {row.isMe ? " (you)" : ""}
                 </td>
-                <td style={{ ...cell, ...rowColor, textAlign: "right" }}>{row.level}</td>
+                <td style={{ ...cell, ...rowColor, textAlign: "right" }}>
+                  {row.level}
+                  {tierForLevel(row.level) && (
+                    <div style={{ fontSize: theme.typography.size.xxs, opacity: 0.75 }}>
+                      {tierForLevel(row.level)?.name}
+                    </div>
+                  )}
+                </td>
                 <td style={{ ...cell, ...rowColor, textAlign: "right" }}>{row.elexir} Wh</td>
               </tr>
               );

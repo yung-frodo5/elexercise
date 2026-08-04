@@ -8,7 +8,10 @@ export function LevelProgress({ level, elexir }: { level: number; elexir: number
   return (
     <View>
       <View style={styles.header}>
-        <Text style={styles.level}>Level {level}</Text>
+        <Text style={styles.level}>
+          Level {level}
+          {progress.tier ? `: ${progress.tier.name}` : ""}
+        </Text>
         <Text style={styles.elexir}>{elexir} elexir earned</Text>
       </View>
 
@@ -16,8 +19,12 @@ export function LevelProgress({ level, elexir }: { level: number; elexir: number
         <View style={[styles.fill, { width: `${progress.progressFraction * 100}%` }]} />
       </View>
 
+      {progress.tier && <Text style={styles.remaining}>{progress.tier.equivalent}</Text>}
+
       <Text style={styles.remaining}>
-        {progress.xpRemaining} elexir to level {level + 1}
+        {progress.nextTier
+          ? `${progress.xpRemaining} elexir to level ${level + 1}: ${progress.nextTier.name}`
+          : "Max level reached!"}
       </Text>
     </View>
   );
