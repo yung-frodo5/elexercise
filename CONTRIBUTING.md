@@ -91,9 +91,12 @@ Add the optional flag to `RichTextNode` in `src/types.ts`, then handle it in
 **Block types.** An article `body` is an ordered list of `Paragraph`,
 `Subtitle` (identical to a `Paragraph` but rendered larger — e.g. a tagline
 directly under the title), `Graphic`, `List` (a bulleted list of items, each
-an ordered list of rich-text runs), and `Callout` (same shape as `List` plus
+an ordered list of rich-text runs), `Callout` (same shape as `List` plus
 an optional `heading`, but rendered on a rounded, tinted background — e.g.
-an executive summary) blocks. Adding a new block type? Add the interface in
+an executive summary), and `Table` (plain-text `headers` plus `rows` of
+rich-text cells, plus an optional `heading` — for reference/comparison data
+the prose points back to instead of repeating inline) blocks. Adding a new
+block type? Add the interface in
 `src/types.ts`, add it to the `ArticleBodyBlock` union, then add a matching
 case to **both** platforms' `ArticleView.tsx` — they switch exhaustively (a
 `never` check), so a block type missed on one platform is a compile error,
