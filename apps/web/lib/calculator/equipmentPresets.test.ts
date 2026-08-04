@@ -10,10 +10,10 @@ describe("EQUIPMENT_PRESETS", () => {
       powerRack: { capitalCost: 2500, subscriptionFeeMonthly: 0, lifespanYears: 15, powerGenWh: 0 },
       dumbbellFreeWeights: { capitalCost: 400, subscriptionFeeMonthly: 0, lifespanYears: 10, powerGenWh: 0 },
       stationaryBikeBasic: { capitalCost: 1200, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 0 },
-      stationaryBikeSmart: { capitalCost: 1445, subscriptionFeeMonthly: 50, lifespanYears: 7, powerGenWh: 0 },
+      stationaryBikeSmart: { capitalCost: 1400, subscriptionFeeMonthly: 50, lifespanYears: 7, powerGenWh: 0 },
       homeGymBasic: { capitalCost: 2000, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 0 },
       homeGymSmart: { capitalCost: 4295, subscriptionFeeMonthly: 59.95, lifespanYears: 7, powerGenWh: 0 },
-      stationaryBikeElexercise: { capitalCost: 1600, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
+      stationaryBikeElexercise: { capitalCost: 1400, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
       strengthTrainingElexercise: { capitalCost: 2000, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
     });
   });
@@ -47,7 +47,7 @@ describe("applyEquipmentType", () => {
 
   it("sets a nonzero powerGenWh for the elexercise-branded presets", () => {
     const bike = applyEquipmentType(DEFAULT_CALCULATOR_INPUTS, "stationaryBikeElexercise");
-    expect(bike.capitalCost).toBe(1600);
+    expect(bike.capitalCost).toBe(1400);
     expect(bike.subscriptionFeeMonthly).toBe(0);
     expect(bike.lifespanYears).toBe(7);
     expect(bike.powerGenWh).toBe(150);

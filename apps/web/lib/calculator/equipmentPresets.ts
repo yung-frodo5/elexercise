@@ -17,10 +17,10 @@ export const EQUIPMENT_PRESETS: Record<EquipmentType, EquipmentPresetValues> = {
   powerRack: { capitalCost: 2500, subscriptionFeeMonthly: 0, lifespanYears: 15, powerGenWh: 0 },
   dumbbellFreeWeights: { capitalCost: 400, subscriptionFeeMonthly: 0, lifespanYears: 10, powerGenWh: 0 },
   stationaryBikeBasic: { capitalCost: 1200, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 0 },
-  stationaryBikeSmart: { capitalCost: 1445, subscriptionFeeMonthly: 50, lifespanYears: 7, powerGenWh: 0 },
+  stationaryBikeSmart: { capitalCost: 1400, subscriptionFeeMonthly: 50, lifespanYears: 7, powerGenWh: 0 },
   homeGymBasic: { capitalCost: 2000, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 0 },
   homeGymSmart: { capitalCost: 4295, subscriptionFeeMonthly: 59.95, lifespanYears: 7, powerGenWh: 0 },
-  stationaryBikeElexercise: { capitalCost: 1600, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
+  stationaryBikeElexercise: { capitalCost: 1400, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
   strengthTrainingElexercise: { capitalCost: 2000, subscriptionFeeMonthly: 0, lifespanYears: 7, powerGenWh: 150 },
 };
 

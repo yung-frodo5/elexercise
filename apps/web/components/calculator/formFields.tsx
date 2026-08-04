@@ -170,6 +170,30 @@ export function ColorField({
   );
 }
 
+// No `error` prop, unlike NumberField/SelectField/TextField -- a checkbox's boolean value can never be
+// invalid (see validation.ts), so there's nothing for Save-time validation to reject.
+export function CheckboxField({
+  label,
+  checked,
+  onChange,
+  tooltip,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  tooltip?: string;
+}) {
+  return (
+    <label style={{ ...labelStyle, flexDirection: "row", alignItems: "center", cursor: "pointer" }}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>
+        {label}
+        {tooltip && <InfoTooltip text={tooltip} />}
+      </span>
+    </label>
+  );
+}
+
 export function TextField({
   label,
   value,

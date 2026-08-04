@@ -11,7 +11,7 @@ export function annuityFactor(discountFactor: number, lifespanYears: number): nu
 }
 
 export function computeCostPerWorkout(inputs: CalculatorInputs): CalculatorResult {
-  const yearlyWorkouts = YEARLY_WORKOUTS[inputs.usageRate];
+  const yearlyWorkouts = inputs.customizeEconomics ? inputs.annualWorkouts : YEARLY_WORKOUTS[inputs.usageRate];
   const factor = annuityFactor(inputs.discountFactor, inputs.lifespanYears);
 
   // Equipment Per-Workout Value tab, A1: Capital / (freq * A(r,L)) + Sub / freq
@@ -38,13 +38,14 @@ export function computeCostPerWorkout(inputs: CalculatorInputs): CalculatorResul
   const carbonOffsetPerWorkoutGrams = (inputs.powerGenWh / 1000) * inputs.gridCarbonIntensityGPerKwh;
   const carbonOffsetLifetimeKg = (carbonOffsetPerWorkoutGrams * yearlyWorkouts * inputs.lifespanYears) / 1000;
 
-  // Lifetime energy value is a plain undiscounted sum of nominal per-workout credits across the
-  // equipment's life — NOT run through annuityFactor()/the discount rate the way the exercise-cost side
-  // is. Deliberate simplification: electricity prices are generally projected to rise over an equipment's
-  // lifespan, which would roughly offset the time-value discounting we'd otherwise apply, so future energy
-  // value is taken at face value rather than modeling both a rising price curve and a discount rate.
-  const lifetimeElectricityValueUsd = costPerWorkoutElectricity * yearlyWorkouts * inputs.lifespanYears;
-  const lifetimeCarbonValueUsd = costPerWorkoutCarbon * yearlyWorkouts * inputs.lifespanYears;
+  // By default, lifetime energy value is the present value of a level per-workout credit stream across the
+  // equipment's life — the same annuityFactor() treatment used to amortize capital cost above. Setting
+  // discountEnergyValue to false (via "Specify custom energy inputs") reverts to a plain undiscounted sum
+  // of nominal per-workout credits instead, for modeling the assumption that rising electricity prices
+  // roughly offset time-value discounting rather than applying both.
+  const lifetimeDiscount = inputs.discountEnergyValue ? factor : inputs.lifespanYears;
+  const lifetimeElectricityValueUsd = costPerWorkoutElectricity * yearlyWorkouts * lifetimeDiscount;
+  const lifetimeCarbonValueUsd = costPerWorkoutCarbon * yearlyWorkouts * lifetimeDiscount;
 
   return {
     annuityFactor: factor,

@@ -12,6 +12,7 @@ import {
   LOCATION_OPTIONS,
   NAME_PLACEHOLDER,
   USAGE_RATE_OPTIONS,
+  YEARLY_WORKOUTS,
 } from "../../lib/calculator";
 import type {
   CalculatorColumn,
@@ -22,7 +23,16 @@ import type {
   UsageRate,
 } from "../../lib/calculator";
 import { ExternalLink } from "../ui/ExternalLink";
-import { ColorField, FieldWithNote, HoverTooltip, NumberField, RadioOption, SelectField, TextField } from "./formFields";
+import {
+  CheckboxField,
+  ColorField,
+  FieldWithNote,
+  HoverTooltip,
+  NumberField,
+  RadioOption,
+  SelectField,
+  TextField,
+} from "./formFields";
 
 function CategoryHeading({ children }: { children: string }) {
   return (
@@ -91,6 +101,7 @@ export function EquipmentEditor({
   // it), force the custom side open so the error has somewhere to render, rather than leaving it invisible.
   const hasHiddenEconomicsError = Boolean(
     errors.lifespanYears ||
+      errors.annualWorkouts ||
       errors.powerGenWh ||
       errors.capitalCost ||
       errors.subscriptionFeeMonthly ||
@@ -142,12 +153,22 @@ export function EquipmentEditor({
         tooltip="Changing this resets Capital cost, Subscription fee, Lifespan, and Power generation below."
         disabled={showCustomEconomics}
       />
-      <SelectField<UsageRate>
-        label="Usage rate"
-        value={inputs.usageRate}
-        options={USAGE_RATE_OPTIONS}
-        onChange={(usageRate) => patchInputs({ usageRate })}
-      />
+      {showCustomEconomics ? (
+        <NumberField
+          label="Annual workouts"
+          value={inputs.annualWorkouts}
+          min={1}
+          onChange={(annualWorkouts) => patchInputs({ annualWorkouts })}
+          error={errors.annualWorkouts}
+        />
+      ) : (
+        <SelectField<UsageRate>
+          label="Usage rate"
+          value={inputs.usageRate}
+          options={USAGE_RATE_OPTIONS}
+          onChange={(usageRate) => patchInputs({ usageRate, annualWorkouts: YEARLY_WORKOUTS[usageRate] })}
+        />
+      )}
       {showCustomEconomics && (
         <>
           <NumberField
@@ -280,6 +301,12 @@ export function EquipmentEditor({
                 ): CAMX (California) is 195 gCO2e/kWh; HIOA (Hawaii) is 680 gCO2e/kWh.
               </>
             }
+          />
+          <CheckboxField
+            label="Discount future electricity and carbon value"
+            checked={inputs.discountEnergyValue}
+            onChange={(discountEnergyValue) => patchInputs({ discountEnergyValue })}
+            tooltip="When on, future electricity/carbon savings are discounted to present value at the Annualized discount factor above, the same way capital cost is amortized. When off, they're summed at face value."
           />
         </>
       ) : (

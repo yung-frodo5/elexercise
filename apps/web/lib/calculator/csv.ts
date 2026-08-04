@@ -24,7 +24,13 @@ const CSV_SETTINGS_ROWS: CsvSettingsRow[] = [
     label: "Equipment preset",
     value: (inputs) => (inputs.customizeEconomics ? "Custom" : optionLabel(EQUIPMENT_TYPE_OPTIONS, inputs.equipmentType)),
   },
-  { label: "Usage rate", value: (inputs) => optionLabel(USAGE_RATE_OPTIONS, inputs.usageRate) },
+  {
+    label: "Usage rate",
+    value: (inputs) =>
+      inputs.customizeEconomics
+        ? `${inputs.annualWorkouts} workouts/yr`
+        : optionLabel(USAGE_RATE_OPTIONS, inputs.usageRate),
+  },
   { label: "Lifespan (years)", value: (inputs) => inputs.lifespanYears },
   { label: "Capital cost ($)", value: (inputs) => inputs.capitalCost },
   { label: "Subscription fee ($/month)", value: (inputs) => inputs.subscriptionFeeMonthly },
@@ -37,6 +43,10 @@ const CSV_SETTINGS_ROWS: CsvSettingsRow[] = [
   { label: "Electricity price ($/kWh)", value: (inputs) => inputs.electricityPricePerKwh },
   { label: "Carbon price ($/ton CO2e)", value: (inputs) => inputs.carbonPricePerTon },
   { label: "Grid carbon intensity (gCO2e/kWh)", value: (inputs) => inputs.gridCarbonIntensityGPerKwh },
+  {
+    label: "Discount future electricity/carbon value",
+    value: (inputs) => (inputs.discountEnergyValue ? "Yes" : "No"),
+  },
 ];
 
 interface CsvResultRow {
