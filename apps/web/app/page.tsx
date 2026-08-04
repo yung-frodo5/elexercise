@@ -7,6 +7,17 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { SoftPanel } from "../components/ui/SoftPanel";
 import { FramedImage } from "../components/content/FramedImage";
 import { graphicAssets } from "../lib/content/graphicAssets";
+import { HEADER_HEIGHT } from "../lib/layoutConstants";
+import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
+
+// The fixed header/footer (reserved via padding in layout.tsx) and
+// ContentPanel's own home-branch top margin (0.5in = 48px) + top padding
+// (xxl) all eat into the viewport before this section's own box even
+// starts -- a plain "80vh" doesn't know about any of that, so on a typical
+// screen the scroll indicator at this section's bottom ends up below the
+// fold. This computes the actual height available in the first-load
+// viewport instead.
+const DEFINITION_SECTION_HEIGHT = `calc(100vh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px - 48px - ${theme.spacing.xxl}px)`;
 
 interface LandingLink {
   href: string;
@@ -134,20 +145,37 @@ export default function LandingPage() {
           .landing-card-row--right > .landing-card-image { order: 2; }
           .landing-card-row--right > .landing-card-text { order: 1; }
         }
+        @keyframes elexScrollIndicatorBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(8px); }
+        }
+        .scroll-indicator {
+          animation: elexScrollIndicatorBounce 1.6s ease-in-out infinite;
+        }
       `,
         }}
       />
 
+      {/* Its own full-viewport-height section, not just top padding on the
+          shared one below -- on load, this is the only thing on screen
+          (a "clean display of the definition only"); the article cards
+          start exactly at the bottom of the viewport, so they're only
+          reachable by actually scrolling, not just visible tucked under a
+          large top margin. */}
       <section
         style={{
-          paddingTop: theme.spacing.xxl,
-          paddingBottom: theme.spacing.xxl,
+          minHeight: DEFINITION_SECTION_HEIGHT,
+          paddingTop: theme.spacing.xl,
           paddingLeft: theme.spacing.xxl,
           paddingRight: theme.spacing.xxl,
+          // flex-start (not center) -- the definition sits close to the
+          // top, and the leftover space (now larger, since it's no longer
+          // split evenly above/below) collects below it, where the scroll
+          // indicator lives.
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: theme.spacing.xxl,
+          justifyContent: "flex-start",
         }}
       >
         <div className="definition-wrap">
@@ -200,6 +228,55 @@ export default function LandingPage() {
           </div>
         </div>
 
+      </section>
+
+      {/* position: fixed, not a flex child relying on the section's
+          remaining space -- the definition's own rendered height varies
+          with viewport size/font metrics, and on a short-enough screen it
+          can exceed the section's calculated height and push a
+          flow-positioned indicator below the fold regardless of that
+          calculation. Fixed to the viewport instead guarantees it's always
+          visible on load. Pinned just above the fixed footer, not
+          overlapping it. */}
+      <div
+        className="scroll-indicator"
+        aria-hidden
+        style={{
+          position: "fixed",
+          left: "50%",
+          bottom: FOOTER_HEIGHT + theme.spacing.md,
+          transform: "translateX(-50%)",
+          fontSize: theme.typography.size.xl,
+          color: "#D6E9FF",
+          zIndex: 40,
+        }}
+      >
+        ⌄
+      </div>
+
+      <section
+        style={{
+          backgroundColor: "#D6E9FF",
+          // Breaks out of ContentPanel's own fixed 0.5in side margins AND
+          // its own xxl side padding (see ContentPanel.tsx's home branch --
+          // both apply, margin outside padding inside, and this section
+          // sits inside both) so the background reaches the actual window
+          // edge on the right, and the vertical ribbon's edge on the left.
+          // Not the generic calc(-50vw + 50%) full-bleed trick used
+          // elsewhere, because that only cancels out correctly when the
+          // ancestor chain is symmetric, and the ribbon's own left-only
+          // reserved space (see layout.tsx) makes this one asymmetric.
+          marginLeft: `calc(-0.5in - ${theme.spacing.xxl}px)`,
+          marginRight: `calc(-0.5in - ${theme.spacing.xxl}px)`,
+          paddingTop: theme.spacing.xxl,
+          paddingBottom: theme.spacing.xxl,
+          paddingLeft: theme.spacing.xxl,
+          paddingRight: theme.spacing.xxl,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <div
           className="landing-cards"
           style={{

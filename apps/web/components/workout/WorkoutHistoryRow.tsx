@@ -17,7 +17,7 @@ import {
 import { SportTag } from "../ui/SportTag";
 import { MultiPowerChart } from "./MultiPowerChart";
 import { useWorkoutPowerSeries } from "../../lib/useWorkoutPowerSeries";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 const HISTORY_ROW_STYLES_ID = "elex-history-row-styles";
 const EXPAND_ACCENT = `inset 3px 0 0 ${theme.colors.border}`;
@@ -160,13 +160,13 @@ export function WorkoutHistoryRow({
     fontSize: theme.typography.size.sm,
     color: theme.colors.navyStatic,
     verticalAlign: "middle",
-    fontFamily: newsreader.style.fontFamily,
+    fontFamily: familjenGrotesk.style.fontFamily,
     borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
   };
 
   const numericCell: CSSProperties = {
     ...cell,
-    fontFamily: newsreader.style.fontFamily,
+    fontFamily: familjenGrotesk.style.fontFamily,
     fontSize: theme.typography.size.sm,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
@@ -184,7 +184,7 @@ export function WorkoutHistoryRow({
 
   const subNumeric: CSSProperties = {
     ...subCell,
-    fontFamily: newsreader.style.fontFamily,
+    fontFamily: familjenGrotesk.style.fontFamily,
     fontSize: theme.typography.size.sm,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",

@@ -22,7 +22,7 @@ import {
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 import { ThemeToggle } from "./ThemeToggle";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 const pressedBg = withAlpha(theme.colors.navyStatic, 0.08);
 
@@ -298,7 +298,7 @@ export function SiteHeader() {
                     style={{
                       padding: `0 ${theme.spacing.sm}px`,
                       color: theme.colors.navy,
-                      fontFamily: newsreader.style.fontFamily,
+                      fontFamily: familjenGrotesk.style.fontFamily,
                     }}
                   >
                     <LevelProgress level={level} elexir={elexir} compact />

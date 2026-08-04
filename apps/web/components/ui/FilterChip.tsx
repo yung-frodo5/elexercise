@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { theme, withAlpha } from "@exercise-tracker/design-tokens";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 
 /** Additive filter pill — reusable across list screens. */
 export function FilterChip({
@@ -24,7 +24,7 @@ export function FilterChip({
     color: active ? theme.colors.secondaryGreen : theme.colors.navy,
     fontSize: theme.typography.size.sm,
     fontWeight: active ? theme.typography.weight.semibold : theme.typography.weight.medium,
-    fontFamily: newsreader.style.fontFamily,
+    fontFamily: familjenGrotesk.style.fontFamily,
     cursor: "pointer",
     transition: "background-color 140ms ease, color 140ms ease, border-color 140ms ease",
   };

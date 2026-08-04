@@ -15,7 +15,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { downsamplePowerSamples, powerAxisMaxW } from "../../lib/downsamplePowerSamples";
 import { formatDuration } from "../../lib/format";
 import { overlineStyle } from "../../lib/uiStyles";
-import { newsreader } from "../../lib/fonts";
+import { familjenGrotesk } from "../../lib/fonts";
 import type { PowerSamplePoint } from "../../lib/usePowerSamples";
 
 type SeriesInput = {
@@ -131,7 +131,7 @@ export function MultiPowerChart({
                 style: {
                   fill: theme.colors.navyStatic,
                   fontSize: theme.typography.size.xxs,
-                  fontFamily: newsreader.style.fontFamily,
+                  fontFamily: familjenGrotesk.style.fontFamily,
                 },
               }}
             />
@@ -150,7 +150,7 @@ export function MultiPowerChart({
                 style: {
                   fill: theme.colors.navyStatic,
                   fontSize: theme.typography.size.xxs,
-                  fontFamily: newsreader.style.fontFamily,
+                  fontFamily: familjenGrotesk.style.fontFamily,
                   textAnchor: "middle",
                 },
               }}
@@ -166,7 +166,7 @@ export function MultiPowerChart({
                       border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
                       borderRadius: theme.radii.md,
                       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-                      fontFamily: newsreader.style.fontFamily,
+                      fontFamily: familjenGrotesk.style.fontFamily,
                       whiteSpace: "nowrap",
                     }}
                   >
@@ -187,7 +187,7 @@ export function MultiPowerChart({
                           key={String(entry.dataKey)}
                           style={{
                             color: String(entry.color),
-                            fontFamily: newsreader.style.fontFamily,
+                            fontFamily: familjenGrotesk.style.fontFamily,
                             fontWeight: theme.typography.weight.semibold,
                             fontSize: theme.typography.size.sm,
                           }}

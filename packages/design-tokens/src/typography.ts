@@ -19,13 +19,18 @@ export const typography = {
     xxs: 11,
     // Was two steps (xs: 13, sm: 14) -- merged since the 1px gap wasn't
     // tracking any real semantic distinction across call sites, just
-    // whichever token a given file happened to reach for.
-    sm: 14,
-    md: 16,
-    lg: 24,
+    // whichever token a given file happened to reach for. Scaled up from
+    // 14 per design feedback.
+    sm: 16,
+    // Scaled up from 16.
+    md: 20,
+    // Scaled up from 24 -- kept a full 6px above md (not just +2, which a
+    // flat "+4 to everything" pass would've given it) so section headings
+    // stay clearly distinct from the primary-UI-text tier below them.
+    lg: 26,
     // Was two steps (xl: 28, xxl: 32) -- dropped xxl, its one consumer
-    // (mobile's LoginScreen title) now uses xl instead.
-    xl: 28,
+    // (mobile's LoginScreen title) now uses xl instead. Scaled up from 28.
+    xl: 30,
   },
   weight: {
     regular: "400",
