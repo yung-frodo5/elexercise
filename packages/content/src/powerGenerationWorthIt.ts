@@ -20,16 +20,14 @@ export const powerGenerationWorthItArticle: Article = {
       heading: "Executive Summary",
       items: [
         [
-          {
-            text:
-              "The unit economics of electricity-generating exercise equipment work out far more often than commonly assumed.",
-          },
+          { text: "The " },
+          { text: "unit economics favor electricity-generating exercise equipment", bold: true },
+          { text: " far more often than commonly assumed." },
         ],
         [
-          {
-            text:
-              "The two biggest drivers are usage rate and electricity price: high-usage public facilities and high-cost regions see the strongest returns.",
-          },
+          { text: "The two most important variables are " },
+          { text: "usage rate and electricity price", bold: true },
+          { text: "; high-usage public facilities and high-cost regions see the strongest returns." },
         ],
         [
           { text: "A stationary bike in California recoups its investment in generated electricity " },
@@ -275,7 +273,10 @@ export const powerGenerationWorthItArticle: Article = {
     },
     {
       type: "paragraph",
-      content: [{ text: "Instead, I will conclude by referring back to my favorite answer… Wanna find out?" }],
+      content: [
+        { text: "Instead, I will conclude by referring back to my favorite answer… " },
+        { text: "Wanna find out?", bold: true },
+      ],
     },
   ],
   references: [
