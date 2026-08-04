@@ -105,9 +105,8 @@ describe("computeCostPerWorkout", () => {
     expect(publicRate.carbonOffsetPerWorkoutGrams).toBe(sporadic.carbonOffsetPerWorkoutGrams);
   });
 
-  it("discounts lifetime electricity/carbon value via the annuity factor when discountEnergyValue is true (default)", () => {
-    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150 });
-    expect(DEFAULT_CALCULATOR_INPUTS.discountEnergyValue).toBe(true);
+  it("discounts lifetime electricity/carbon value via the annuity factor when discountEnergyValue is true", () => {
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150, discountEnergyValue: true });
     const undiscountedElectricity =
       result.costPerWorkoutElectricity * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears;
     const undiscountedCarbon =
@@ -124,12 +123,9 @@ describe("computeCostPerWorkout", () => {
     );
   });
 
-  it("reverts to the plain undiscounted sum when discountEnergyValue is false", () => {
-    const result = computeCostPerWorkout({
-      ...DEFAULT_CALCULATOR_INPUTS,
-      powerGenWh: 150,
-      discountEnergyValue: false,
-    });
+  it("defaults to the plain undiscounted sum when discountEnergyValue isn't overridden (false by default)", () => {
+    expect(DEFAULT_CALCULATOR_INPUTS.discountEnergyValue).toBe(false);
+    const result = computeCostPerWorkout({ ...DEFAULT_CALCULATOR_INPUTS, powerGenWh: 150 });
     expect(result.lifetimeElectricityValueUsd).toBeCloseTo(
       result.costPerWorkoutElectricity * result.yearlyWorkouts * DEFAULT_CALCULATOR_INPUTS.lifespanYears,
       6,

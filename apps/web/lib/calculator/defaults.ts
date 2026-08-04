@@ -19,7 +19,7 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
   discountFactor: 0.07,
   carbonPricePerTon: 300,
   gridCarbonIntensityGPerKwh: 195, // = LOCATION_PRESETS.california.gridCarbonIntensityGPerKwh
-  discountEnergyValue: true,
+  discountEnergyValue: false,
 };
 
 // Placeholder text (not a real value) shown in the Name field for a fresh/unsaved draft — the field
