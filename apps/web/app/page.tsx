@@ -54,11 +54,9 @@ const LANDING_LINKS: LandingLink[] = [
         <strong>Read more &gt;&gt;</strong>
       </>
     ),
-    // Placeholder image reused from "What is elexercise?" until this article
-    // gets a graphic of its own.
-    graphicKey: "what-is-elexercise-diagram",
+    graphicKey: "how-much-power-preview",
     imageAlt:
-      "Diagram of a gym designed as a community resilience hub, with rooftop solar panels, exercise equipment, bicycle parking, EV charging, and backup power.",
+      "Workout history table and power output chart for a combined run and bike session, showing energy generated and average/peak power for each segment.",
   },
   {
     href: "/resources/articles/is-the-power-generation-worth-it",

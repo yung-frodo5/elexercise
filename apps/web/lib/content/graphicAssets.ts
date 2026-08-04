@@ -11,6 +11,7 @@ import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-gene
 import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike-comp-ca.svg";
 import powerGenerationBikeCompHi from "../../assets/images/power-generation-bike-comp-hi.svg";
 import powerGenerationTreadmillComp from "../../assets/images/power-generation-treadmill-comp.svg";
+import howMuchPowerPreview from "../../assets/images/how-much-power-preview.png";
 
 // Each app owns its own image files and maps the shared package's logical
 // GraphicKey to them here — packages/content never sees the binary. Typing
@@ -24,6 +25,7 @@ export const graphicAssets: Record<GraphicKey, StaticImageData> = {
   "power-generation-bike-comp-ca": powerGenerationBikeCompCa,
   "power-generation-bike-comp-hi": powerGenerationBikeCompHi,
   "power-generation-treadmill-comp": powerGenerationTreadmillComp,
+  "how-much-power-preview": howMuchPowerPreview,
 };
 
 // Optional per-asset crop (in the source image's native pixel space) for
