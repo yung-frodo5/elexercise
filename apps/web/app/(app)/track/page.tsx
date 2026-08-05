@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
+import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
+import { useWorkoutSummaries } from "../../../lib/WorkoutSummaryContext";
 import {
   endSession,
   endWorkout,
-  getCurrentWorkout,
   getWorkout,
   startMachineSession,
   startManualSession,
@@ -43,36 +43,41 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
 
 export default function TrackPage() {
   const { session } = useSupabaseSession();
+  const { currentWorkout: currentWorkoutSummary, loading: summariesLoading, refresh: refreshSummaries } =
+    useWorkoutSummaries();
 
   const [currentWorkout, setCurrentWorkout] = useState<WorkoutWithSessions | null>(null);
-  const [dataLoading, setDataLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
-    if (!session) return;
-    try {
-      const current = await getCurrentWorkout(session.access_token);
-      setCurrentWorkout(current ? await getWorkout(session.access_token, current.id) : null);
-    } catch {
-      // Falls back to the empty "start a workout" state (e.g. a stale/expired
-      // session token failing the call with 401) rather than surfacing an
-      // error, so the page still shows something reviewable.
-      setCurrentWorkout(null);
-    } finally {
-      // Only matters for the first load — the empty/start-a-workout state
-      // is only accurate once we've actually heard back from the API. The
-      // API can take 20-30s to respond on a cold start (Render free tier),
-      // and without this, that whole window renders as "no workouts" /
-      // "start a workout" — indistinguishable from a genuinely empty
-      // account, which reads as broken/missing features rather than slow.
-      setDataLoading(false);
-    }
-  }, [session]);
+  // Hydrates full session detail (exercises/sets) for whichever current-workout
+  // summary the shared context currently holds -- the summary itself is
+  // already hotloaded at login by WorkoutSummaryProvider, so this only ever
+  // does the one remaining fetch (getWorkout) instead of also re-fetching
+  // getCurrentWorkout on every visit to this page.
+  const loadDetail = useCallback(
+    async (summary: Workout | null) => {
+      if (!session) return;
+      setDetailLoading(true);
+      try {
+        setCurrentWorkout(summary ? await getWorkout(session.access_token, summary.id) : null);
+      } catch {
+        // Falls back to the empty "start a workout" state (e.g. a stale/expired
+        // session token failing the call with 401) rather than surfacing an
+        // error, so the page still shows something reviewable.
+        setCurrentWorkout(null);
+      } finally {
+        setDetailLoading(false);
+      }
+    },
+    [session]
+  );
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (summariesLoading) return;
+    void loadDetail(currentWorkoutSummary);
+  }, [summariesLoading, currentWorkoutSummary, loadDetail]);
 
   async function handleStart(activityType: string) {
     if (!session) return;
@@ -80,7 +85,7 @@ export default function TrackPage() {
     setError(null);
     try {
       await startManualSession(session.access_token, activityType);
-      await refresh();
+      await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start activity");
     } finally {
@@ -94,7 +99,7 @@ export default function TrackPage() {
     setError(null);
     try {
       await startMachineSession(session.access_token, scanToken);
-      await refresh();
+      await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to connect to machine");
     } finally {
@@ -108,7 +113,7 @@ export default function TrackPage() {
     setError(null);
     try {
       await endSession(session.access_token, sessionId);
-      await refresh();
+      await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to stop activity");
     } finally {
@@ -122,7 +127,7 @@ export default function TrackPage() {
     setError(null);
     try {
       await endWorkout(session.access_token, currentWorkout.id);
-      await refresh();
+      await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to end workout");
     } finally {
@@ -130,7 +135,11 @@ export default function TrackPage() {
     }
   }
 
-  if (dataLoading) {
+  // The API can take 20-30s to respond on a cold start (Render free tier);
+  // without a loading gate that whole window would render as "no workouts" /
+  // "start a workout" -- indistinguishable from a genuinely empty account,
+  // which reads as broken/missing features rather than slow.
+  if (summariesLoading || detailLoading) {
     return (
       <main style={{ padding: theme.spacing.xl }}>
         <p style={{ fontSize: theme.typography.size.sm }}>Loading your workouts…</p>

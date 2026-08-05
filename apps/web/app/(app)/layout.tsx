@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../lib/useSession";
+import { WorkoutSummaryProvider } from "../../lib/WorkoutSummaryContext";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { session, loading } = useSupabaseSession();
@@ -21,5 +22,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return <WorkoutSummaryProvider session={session}>{children}</WorkoutSummaryProvider>;
 }
