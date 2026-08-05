@@ -217,12 +217,38 @@ export function NavMenuExpandableItem({
             transition: "background-color 120ms ease",
           }}
         >
-          <span aria-hidden>{expanded ? theme.icons.collapse : theme.icons.expand}</span>
+          {/* One glyph rotated (rather than swapping expand/collapse
+              glyphs) so the chevron itself smoothly animates instead of
+              snapping between two different shapes. */}
+          <span
+            aria-hidden
+            style={{
+              display: "inline-block",
+              transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
+              transition: "transform 200ms ease",
+            }}
+          >
+            {theme.icons.expand}
+          </span>
         </button>
       </div>
-      {expanded && (
-        <div style={{ paddingLeft: theme.spacing.md }}>{children}</div>
-      )}
+      {/* Always mounted (not conditionally rendered) so the height change
+          can transition -- an unmounted subtree can't animate its own
+          removal. grid-template-rows 0fr/1fr is the standard way to
+          transition to/from "auto" height without measuring the content in
+          JS; the inner overflow:hidden clips it mid-transition. */}
+      <div
+        aria-hidden={!expanded}
+        style={{
+          display: "grid",
+          gridTemplateRows: expanded ? "1fr" : "0fr",
+          transition: "grid-template-rows 220ms ease",
+        }}
+      >
+        <div style={{ overflow: "hidden" }}>
+          <div style={{ paddingLeft: theme.spacing.md }}>{children}</div>
+        </div>
+      </div>
     </div>
   );
 }
