@@ -2,7 +2,7 @@ import type { Article } from "./types";
 
 export const powerGenerationWorthItArticle: Article = {
   slug: "is-the-power-generation-worth-it",
-  title: "Is the Power Generation Worth It?",
+  title: "Is It Cheaper?",
   authors: [{ name: "Noah Korotzer" }],
   lastUpdated: "August 3rd, 2026",
   body: [

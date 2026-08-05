@@ -54,9 +54,10 @@ duplication, not an intentional split.
   `[slug]` route renders whichever article `getArticleBySlug` finds, so a new
   article never needs a new page file. Current entries: "What is
   elexercise?" (`landingArticle` — also excerpted on the home page's hover
-  popup), "Is the Power Generation Worth It?", and "How Much Power?", the
-  latter two by Noah Korotzer. The Articles route itself is web-only, though
-  the underlying article data is shared with mobile.
+  popup), "Is It Cheaper?" (slug `is-the-power-generation-worth-it`, unchanged
+  from the article's original title), and "How Much Power?", the latter two
+  by Noah Korotzer. The Articles route itself is web-only, though the
+  underlying article data is shared with mobile.
 - **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
   `packages/workout-history`; web's `history/page.tsx` has its own parallel
   implementation (see the `packages/workout-history` note above).
