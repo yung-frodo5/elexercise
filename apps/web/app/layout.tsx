@@ -59,15 +59,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             font-family: inherit;
             font-size: inherit;
           }
+          /* Static, not the flipping canvas/text tokens -- an unstyled
+             button needs to stay visually distinct from the page behind it
+             in BOTH themes. Using the flipping canvas color here made an
+             unstyled button exactly match a dark-mode page's background
+             (invisible fill, not just invisible text -- the same class of
+             bug this fixed the first time, just inverted). */
           button {
-            background-color: var(--elex-canvas-bg, #FFFFFF);
-            color: var(--elex-text, #0033A0);
+            background-color: ${theme.colors.static.panelBg};
+            color: ${theme.colors.static.ink};
           }
           input[type="file"]::file-selector-button,
           input[type="file"]::-webkit-file-upload-button {
             font-family: inherit;
             font-size: inherit;
-            background-color: var(--elex-canvas-bg, #FFFFFF);
+            background-color: ${theme.colors.static.panelBg};
           }
           /* Every --elex-* custom property below backs a theme.colors.themed.*
              token (see design-tokens/colors.ts + webTheme.ts) -- declared once

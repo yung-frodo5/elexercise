@@ -74,6 +74,14 @@ The legacy flat keys directly on `theme.colors` (`navy`, `navyStatic`,
 dark mode and doesn't use `themed`/`static`. Don't add new web code against
 those flat keys — use `themed`/`static` instead.
 
+Need a translucent themed color (e.g. a border at partial opacity)? Don't
+pass a `theme.colors.themed.*` value into `withAlpha()` — on web it's a CSS
+`var()` string, which `withAlpha()` can't parse (it throws rather than
+silently no-op'ing). Instead, bake the alpha directly into both sides of the
+`themedColors` entry as `rgba(...)` strings (see `controlBorder` in
+`colors.ts` for an example) — a CSS variable's value can be any valid CSS
+color, so this works the same way as a plain hex pair.
+
 ## Contrast testing
 
 `contrast.test.ts` asserts WCAG AA contrast ratios (4.5:1 for normal text,

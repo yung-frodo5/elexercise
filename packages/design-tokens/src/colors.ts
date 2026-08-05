@@ -90,6 +90,17 @@ export const themedColors = {
   controlOnChrome: { light: "#002FA7", dark: "#5C7FE0" },
   // The home page's definition-panel text.
   definitionText: { light: "#000000", dark: "#FFFFFF" },
+  // Subtle outline for a "ghost" control (transparent fill, border-only)
+  // sitting directly on the ambient canvas/chrome -- e.g. an inactive
+  // filter chip. The light value is pre-composited to match the exact
+  // rgba() that withAlpha(colors.border, 0.28) produced before this token
+  // existed; the dark value is a light tint instead of a dark one, since a
+  // translucent dark-brown line is nearly invisible against the dark-navy
+  // canvas (measured contrast ~1.1:1 -- this token exists specifically to
+  // fix that). Stored pre-composited (not a plain hex) because withAlpha()
+  // can't accept a var() string, so alpha has to be baked in here instead
+  // of applied per call site.
+  controlBorder: { light: "rgba(91, 70, 43, 0.28)", dark: "rgba(255, 255, 255, 0.4)" },
 } as const satisfies Record<string, ThemedColor>;
 
 // Colors for surfaces that are deliberately light in *both* themes (the

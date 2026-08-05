@@ -15,6 +15,13 @@ interface ThemedPair {
   fg: keyof typeof themedColors;
   bg: keyof typeof themedColors;
   minRatio: 4.5 | 3;
+  // Defaults to both. Use this to scope a check to the mode a token was
+  // actually introduced to fix -- e.g. controlBorder's light-mode weight is
+  // a pre-existing, intentionally-subtle design choice (not a dark-mode
+  // regression), so asserting 3:1 there would demand a light-mode visual
+  // change nobody asked for. Only add a restriction like this with a
+  // comment explaining why the excluded mode is out of scope.
+  modes?: Mode[];
 }
 
 const THEMED_PAIRS: ThemedPair[] = [
@@ -28,6 +35,12 @@ const THEMED_PAIRS: ThemedPair[] = [
   // Non-text UI component (a button fill against its container), 3:1 threshold.
   { name: "navbar control fill vs header chrome", fg: "controlOnChrome", bg: "chromeBg", minRatio: 3 },
   { name: "home page definition text on canvas", fg: "definitionText", bg: "canvasBg", minRatio: 4.5 },
+  // Non-text UI component (a ghost chip's outline against the page it sits
+  // on), 3:1 threshold. Dark-mode only: the light-mode weight is an
+  // intentionally subtle pre-existing design choice this PR isn't
+  // redesigning -- this token exists specifically to fix the dark-mode
+  // value, which was ~1.1:1 (functionally invisible) before.
+  { name: "ghost control border vs canvas", fg: "controlBorder", bg: "canvasBg", minRatio: 3, modes: ["dark"] },
 ];
 
 const STATIC_PAIRS = [
@@ -62,6 +75,7 @@ describe("themed color contrast (WCAG AA)", () => {
   for (const mode of modes) {
     describe(mode, () => {
       for (const pair of THEMED_PAIRS) {
+        if (pair.modes && !pair.modes.includes(mode)) continue;
         it(`${pair.name} meets ${pair.minRatio}:1`, () => {
           const ratio = contrastRatio(themedValue(pair.fg, mode), themedValue(pair.bg, mode));
           expect(ratio).toBeGreaterThanOrEqual(pair.minRatio);
