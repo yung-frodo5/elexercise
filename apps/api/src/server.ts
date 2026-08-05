@@ -1,3 +1,8 @@
+// Must load before any sibling import evaluates process.env at module scope
+// (middleware/auth.js and SupabaseWorkoutRepository.js both do). No-op if no
+// .env file exists (e.g. Render production, where real env vars are already
+// set on the process) or if a var is already set — never overrides.
+import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { requireAuth } from "./middleware/auth.js";

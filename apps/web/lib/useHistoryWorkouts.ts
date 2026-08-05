@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Session as AuthSession } from "@supabase/supabase-js";
 import type { WorkoutWithSessions } from "@exercise-tracker/shared-types";
-import { getWorkout, listWorkouts } from "./api";
+import { getWorkout } from "./api";
+import { useWorkoutSummaries } from "./WorkoutSummaryContext";
 
 // Falls back to these when the API call fails (e.g. a stale/expired session
 // token) so the page still shows something reviewable instead of a bare
@@ -78,8 +79,9 @@ const PLACEHOLDER_WORKOUTS: WorkoutWithSessions[] = [
 ];
 
 export function useHistoryWorkouts(authSession: AuthSession | null) {
+  const { workouts: summaries, loading: summariesLoading, workoutsError: summariesError } = useWorkoutSummaries();
   const [workouts, setWorkouts] = useState<WorkoutWithSessions[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hydrating, setHydrating] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingWorkoutId, setLoadingWorkoutId] = useState<string | null>(null);
   const workoutsRef = useRef(workouts);
@@ -88,17 +90,35 @@ export function useHistoryWorkouts(authSession: AuthSession | null) {
   useEffect(() => {
     let cancelled = false;
 
-    void (async () => {
-      if (!authSession) {
-        if (!cancelled) setLoading(false);
-        return;
-      }
+    // Summaries (id/dates/status, no sessions) are prefetched at login via
+    // WorkoutSummaryProvider; this effect only handles hydrating each one to
+    // full session detail (sport/energy/power) for the table.
+    if (summariesLoading) return;
 
+    if (summariesError) {
+      // Falls back to placeholder rows (e.g. a stale/expired session token
+      // failing the prefetch with 401) rather than surfacing an error, so
+      // the page still shows something reviewable.
+      setWorkouts(PLACEHOLDER_WORKOUTS);
+      setHydrating(false);
+      return;
+    }
+
+    if (!authSession) {
+      // This page's own session hook hasn't resolved yet even though the
+      // summary prefetch above (sourced from the session already confirmed
+      // higher up the tree) has -- stay in loading rather than flashing an
+      // empty state.
+      setHydrating(true);
+      return;
+    }
+
+    setHydrating(true);
+    void (async () => {
       try {
-        const listed = await listWorkouts(authSession.access_token);
         // Table needs session fields (sports/metrics); hydrate details up front.
         const details = await Promise.all(
-          listed.map(async (workout) => {
+          summaries.map(async (workout) => {
             try {
               return await getWorkout(authSession.access_token, workout.id);
             } catch {
@@ -107,21 +127,15 @@ export function useHistoryWorkouts(authSession: AuthSession | null) {
           })
         );
         if (!cancelled) setWorkouts(details);
-      } catch {
-        // Falls back to placeholder rows (e.g. a stale/expired session
-        // token failing every API call with 401) rather than surfacing an
-        // error, so the page still shows something reviewable.
-        if (!cancelled) setWorkouts(PLACEHOLDER_WORKOUTS);
       } finally {
-        // Same cold-start-aware loading state as /track — see that page for why.
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setHydrating(false);
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [authSession]);
+  }, [authSession, summaries, summariesError, summariesLoading]);
 
   /** Fill in a workout that somehow landed without sessions (partial list failure). */
   const ensureWorkoutLoaded = useCallback(
@@ -145,8 +159,8 @@ export function useHistoryWorkouts(authSession: AuthSession | null) {
 
   return {
     workouts,
-    loading,
-    error,
+    loading: summariesLoading || hydrating,
+    error: error ?? summariesError,
     loadingWorkoutId,
     ensureWorkoutLoaded,
   };
