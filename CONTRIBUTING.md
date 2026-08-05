@@ -24,7 +24,7 @@ The web app talks to the API via `NEXT_PUBLIC_API_URL` (defaults to
 
 ## Branching
 
-- Branch off `main`: `feature/<short-description>` or `fix/<short-description>`.
+- Branch off `main`: `features/<short-description>` or `fix/<short-description>`.
 - Keep branches short-lived — rebase/merge `main` in frequently to avoid big
   conflicts, especially in `packages/shared-types` and `packages/design-tokens`.
 - Open a PR early (draft is fine) so others can see what's in flight.

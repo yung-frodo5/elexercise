@@ -118,28 +118,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <ThemeProvider>
           <SiteHeader />
-          {/* Vertical accent ribbon along the left edge, as wide as the
-              footer is tall -- fixed, spanning between the header and
-              footer so it doesn't overlap either. Already navy -- unchanged
-              by dark mode, it already reads as part of the inverted canvas. */}
-          <div
-            aria-hidden
-            style={{
-              position: "fixed",
-              top: HEADER_HEIGHT,
-              bottom: FOOTER_HEIGHT,
-              left: 0,
-              width: FOOTER_HEIGHT,
-              backgroundColor: "#002FA7",
-              zIndex: 50,
-            }}
-          />
-          {/* Header/footer/ribbon are position:fixed (out of flow) — reserve matching space. */}
+          {/* Header/footer are position:fixed (out of flow) — reserve matching space. */}
           <div
             style={{
               paddingTop: HEADER_HEIGHT,
               paddingBottom: `calc(${FOOTER_HEIGHT}px + env(safe-area-inset-bottom, 0px))`,
-              paddingLeft: FOOTER_HEIGHT,
               boxSizing: "border-box",
             }}
           >

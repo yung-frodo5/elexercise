@@ -39,9 +39,9 @@ const ARTICLE_DETAIL_ROUTE_PREFIX = "/resources/articles/";
 // centers whichever of the two constraints (90% vs 1040px cap) actually
 // applies, rather than leaving lopsided leftover space.
 //
-// On narrow viewports, inch gutters + 90% width leave almost no room once
-// the left navy ribbon is reserved — collapse to edge-to-edge with tight
-// padding (see .content-panel media query below).
+// On narrow viewports, inch gutters + 90% width leave almost no room --
+// collapse to edge-to-edge with tight padding (see .content-panel media
+// query below).
 export function ContentPanel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";

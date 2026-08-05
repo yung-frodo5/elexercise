@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,12 +13,12 @@ import { LevelProgress } from "../profile/LevelProgress";
 import { AvatarCircle } from "../profile/AvatarCircle";
 import logo from "../../assets/images/logo.png";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
-import { FOOTER_HEIGHT } from "./SiteFooter";
 import {
   NavDropdownPanel,
+  NavMenuExpandableItem,
   NavMenuItemButton,
   NavMenuItemLink,
-  navSectionLabelStyle,
+  subsectionLinkStyle,
 } from "./NavDropdown";
 import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 import { ThemeToggle } from "./ThemeToggle";
@@ -33,6 +33,8 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  // Accordion -- at most one of the three expandable sections open at once.
+  const [expandedSection, setExpandedSection] = useState<"social" | "exercise" | "resources" | null>(null);
 
   const navMenuRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,19 @@ export function SiteHeader() {
 
   useDismissOnOutsideOrEscape(menuOpen, () => setMenuOpen(false), navMenuRef);
   useDismissOnOutsideOrEscape(profileMenuOpen, () => setProfileMenuOpen(false), profileMenuRef);
+
+  // The menu itself unmounts on close (NavDropdownPanel renders nothing
+  // when closed), so reopening it always starts collapsed -- reset here
+  // too, so expandedSection (lifted out to enforce the accordion) matches
+  // that same expectation instead of silently remembering the last section
+  // across a close/reopen.
+  useEffect(() => {
+    if (!menuOpen) setExpandedSection(null);
+  }, [menuOpen]);
+
+  function toggleSection(section: "social" | "exercise" | "resources") {
+    setExpandedSection((current) => (current === section ? null : section));
+  }
 
   async function handleSignOut() {
     setProfileMenuOpen(false);
@@ -81,11 +96,8 @@ export function SiteHeader() {
           .site-header-display-name { display: none; }
           .site-header-level { display: none; }
         }
-        /* Dark mode: only the white portion of the header's gradient
-           inverts -- the #002FA7 strip stays #002FA7, matching the
-           vertical ribbon below it, which also doesn't change in dark mode. */
         html[data-theme="dark"] .site-header {
-          background: linear-gradient(to right, #002FA7 ${FOOTER_HEIGHT}px, #001F3F ${FOOTER_HEIGHT}px) !important;
+          background-color: #001F3F !important;
         }
       `,
         }}
@@ -104,33 +116,15 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        // Solid #002FA7 for the leftmost FOOTER_HEIGHT px (same width as
-        // the vertical ribbon below the header, so the two read as one
-        // continuous band up to the top of the page), white everywhere
-        // else -- a hard-edged gradient rather than touching the ribbon's
-        // own z-index/stacking, which would risk covering (and making
-        // unclickable) the hamburger button living in that header column.
-        background: `linear-gradient(to right, #002FA7 ${FOOTER_HEIGHT}px, #FFFFFF ${FOOTER_HEIGHT}px)`,
+        backgroundColor: "#FFFFFF",
       }}
     >
-      {/* Absolutely positioned (relative to the fixed <header>) and sized
-          to exactly the blue strip's width, rather than left in the grid's
-          first column with the header's own paddingLeft -- that combo put
-          the button off-center in the strip (flush with its right edge,
-          not centered). */}
-      <div
-        ref={navMenuRef}
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: FOOTER_HEIGHT,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      {/* position: relative, not the header's own fixed positioning --
+          the header is already position:fixed, so this button and its
+          dropdown float "for free" without needing their own fixed
+          overlay, and the wordmark stays centered via the header's own
+          1fr/auto/1fr grid without extra compensation. */}
+      <div ref={navMenuRef} style={{ position: "relative", gridColumn: 1, justifySelf: "start" }}>
         <button
           id={navMenuButtonId}
           type="button"
@@ -142,72 +136,94 @@ export function SiteHeader() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 40,
-            height: 40,
-            borderRadius: 8,
-            background: menuOpen ? pressedBg : "transparent",
+            width: 44,
+            height: 44,
+            borderRadius: theme.radii.pill,
+            backgroundColor: "#002FA7",
+            boxShadow: `0 4px 14px ${withAlpha(theme.colors.navyStatic, 0.3)}`,
             border: "none",
             cursor: "pointer",
-            color: "#228B22",
+            color: theme.colors.textPrimary,
             fontSize: theme.typography.size.lg,
             transition: "background-color 120ms ease",
           }}
         >
-          <span aria-hidden>{menuOpen ? theme.icons.close : theme.icons.menu}</span>
+          {/* These glyphs' visible ink sits well above the alphabetic
+              baseline with almost no descender -- centering the span's own
+              (line-height-based) box leaves the ink looking low. Nudged up
+              to compensate, measured against the actual rendered glyph. */}
+          <span aria-hidden style={{ lineHeight: 1, transform: "translateY(-2px)" }}>
+            {menuOpen ? theme.icons.close : theme.icons.menu}
+          </span>
         </button>
 
         <NavDropdownPanel open={menuOpen} align="left" id={navPanelId}>
-          <NavMenuItemLink
-            href="/"
-            onClick={() => setMenuOpen(false)}
-            style={{
-              fontWeight: navSectionLabelStyle.fontWeight,
-              fontSize: navSectionLabelStyle.fontSize,
-              fontFamily: navSectionLabelStyle.fontFamily,
-              letterSpacing: navSectionLabelStyle.letterSpacing,
-              textTransform: navSectionLabelStyle.textTransform,
-              color: theme.colors.error,
-            }}
-          >
+          <NavMenuItemLink href="/" onClick={() => setMenuOpen(false)}>
             Home
           </NavMenuItemLink>
 
           {session && (
-            <>
-              <div style={{ height: theme.spacing.xs }} />
-              <p style={navSectionLabelStyle}>Exercise Dashboard</p>
-              <NavMenuItemLink href="/track" onClick={() => setMenuOpen(false)}>
-                Current Workout
+            <NavMenuExpandableItem
+              label="Social"
+              expanded={expandedSection === "social"}
+              onToggle={() => toggleSection("social")}
+            >
+              <NavMenuItemLink href="/profile" onClick={() => setMenuOpen(false)} style={subsectionLinkStyle}>
+                Profile
               </NavMenuItemLink>
-              <NavMenuItemLink href="/history" onClick={() => setMenuOpen(false)}>
-                Workout Log
-              </NavMenuItemLink>
-              <NavMenuItemLink href="/leaderboard" onClick={() => setMenuOpen(false)}>
+              <NavMenuItemLink href="/leaderboard" onClick={() => setMenuOpen(false)} style={subsectionLinkStyle}>
                 Leaderboard
               </NavMenuItemLink>
-            </>
+            </NavMenuExpandableItem>
           )}
 
-          <div style={{ height: theme.spacing.xs }} />
-          <p style={navSectionLabelStyle}>Resources</p>
-          <NavMenuItemLink href="/resources/equipment-analyzer" onClick={() => setMenuOpen(false)}>
-            Equipment Analyzer
-          </NavMenuItemLink>
-          <NavMenuItemLink href="/resources" onClick={() => setMenuOpen(false)}>
-            All Resources
-          </NavMenuItemLink>
-          <NavMenuItemLink
-            href="/resources/articles/what-is-elexercise"
-            onClick={() => setMenuOpen(false)}
-            style={{
-              fontWeight: navSectionLabelStyle.fontWeight,
-              fontSize: navSectionLabelStyle.fontSize,
-              fontFamily: navSectionLabelStyle.fontFamily,
-              color: navSectionLabelStyle.color,
-              letterSpacing: navSectionLabelStyle.letterSpacing,
-              textTransform: navSectionLabelStyle.textTransform,
-            }}
+          {session && (
+            <NavMenuExpandableItem
+              label="Exercise"
+              expanded={expandedSection === "exercise"}
+              onToggle={() => toggleSection("exercise")}
+            >
+              <NavMenuItemLink href="/track" onClick={() => setMenuOpen(false)} style={subsectionLinkStyle}>
+                Current Workout
+              </NavMenuItemLink>
+              <NavMenuItemLink href="/history" onClick={() => setMenuOpen(false)} style={subsectionLinkStyle}>
+                Workout Log
+              </NavMenuItemLink>
+            </NavMenuExpandableItem>
+          )}
+
+          <NavMenuExpandableItem
+            label="Resources"
+            expanded={expandedSection === "resources"}
+            onToggle={() => toggleSection("resources")}
           >
+            <NavMenuItemLink
+              href="/resources/articles/how-much-power"
+              onClick={() => setMenuOpen(false)}
+              style={subsectionLinkStyle}
+            >
+              How Much Power?
+            </NavMenuItemLink>
+            <NavMenuItemLink
+              href="/resources/articles/is-the-power-generation-worth-it"
+              onClick={() => setMenuOpen(false)}
+              style={subsectionLinkStyle}
+            >
+              Is It Cheaper?
+            </NavMenuItemLink>
+            <NavMenuItemLink
+              href="/resources/equipment-analyzer"
+              onClick={() => setMenuOpen(false)}
+              style={subsectionLinkStyle}
+            >
+              Equipment Analyzer
+            </NavMenuItemLink>
+            <NavMenuItemLink href="/resources" onClick={() => setMenuOpen(false)} style={subsectionLinkStyle}>
+              All Resources
+            </NavMenuItemLink>
+          </NavMenuExpandableItem>
+
+          <NavMenuItemLink href="/resources/articles/what-is-elexercise" onClick={() => setMenuOpen(false)}>
             About
           </NavMenuItemLink>
         </NavDropdownPanel>
@@ -225,10 +241,6 @@ export function SiteHeader() {
           fontWeight: theme.typography.weight.bold,
           fontFamily: "'Clash Display', sans-serif",
           textDecoration: "none",
-          // The hamburger's wrapper is position:absolute now (see above),
-          // which takes it out of grid auto-placement entirely -- without
-          // an explicit column, this and the profile section below would
-          // both shift left into columns 1/2 instead of 2/3.
           gridColumn: 2,
           justifySelf: "center",
         }}

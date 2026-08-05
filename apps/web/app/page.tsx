@@ -71,7 +71,7 @@ const LANDING_LINKS: LandingLink[] = [
   },
   {
     href: "/resources/articles/is-the-power-generation-worth-it",
-    title: "Is the Power Generation Worth It?",
+    title: "Is It Cheaper?",
     description: (
       <>
         We assert that <strong>elexercise equipment is cheaper than its traditional counterparts</strong> in many
@@ -125,11 +125,11 @@ export default function LandingPage() {
            image-left vs. image-right choice only applies once there's room
            for a row.
            Keyed off the cards container's own rendered width via a
-           container query, not the viewport -- the page's fixed sidebar
-           ribbon eats a chunk of horizontal space that a viewport-width
-           media query can't see, which previously caused the row layout to
-           kick in before there was actually enough room and squeeze the
-           text column down to a sliver. */
+           container query, not the viewport -- the content panel's own
+           margins/padding eat horizontal space that a viewport-width media
+           query can't see, which previously caused the row layout to kick
+           in before there was actually enough room and squeeze the text
+           column down to a sliver. */
         .landing-cards { container-type: inline-size; }
         .landing-card-row {
           display: flex;
@@ -261,11 +261,7 @@ export default function LandingPage() {
           // its own xxl side padding (see ContentPanel.tsx's home branch --
           // both apply, margin outside padding inside, and this section
           // sits inside both) so the background reaches the actual window
-          // edge on the right, and the vertical ribbon's edge on the left.
-          // Not the generic calc(-50vw + 50%) full-bleed trick used
-          // elsewhere, because that only cancels out correctly when the
-          // ancestor chain is symmetric, and the ribbon's own left-only
-          // reserved space (see layout.tsx) makes this one asymmetric.
+          // edge on both sides.
           marginLeft: `calc(-0.5in - ${theme.spacing.xxl}px)`,
           marginRight: `calc(-0.5in - ${theme.spacing.xxl}px)`,
           paddingTop: theme.spacing.xxl,

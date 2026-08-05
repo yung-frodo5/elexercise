@@ -37,7 +37,7 @@ export function SiteFooter() {
           alignItems: "center",
           justifyContent: "space-between",
           gap: theme.spacing.sm,
-          paddingLeft: FOOTER_HEIGHT,
+          paddingLeft: theme.spacing.lg,
           paddingRight: theme.spacing.lg,
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
           backgroundColor: "#D6E9FF",

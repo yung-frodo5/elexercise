@@ -16,10 +16,6 @@ function ensureKeyframes() {
       from { opacity: 0; transform: translateY(-6px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    @keyframes elexNavDrawerIn {
-      from { transform: translateX(-100%); }
-      to { transform: translateX(0); }
-    }
   `;
   document.head.appendChild(style);
 }
@@ -30,6 +26,10 @@ const itemStyle: CSSProperties = {
   boxSizing: "border-box",
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
   borderRadius: 6,
+  // Explicit, not inherited -- <a>/<button> don't reliably inherit color
+  // from ancestors (the UA stylesheet's a:link/a:visited rules and a
+  // button's own default text color both win over inheritance), so every
+  // item needs its own color rather than relying on a parent's.
   color: theme.colors.textPrimary,
   fontSize: theme.typography.size.md,
   textDecoration: "none",
@@ -45,18 +45,13 @@ const itemStyle: CSSProperties = {
 
 const hoverBg = withAlpha(theme.colors.primaryGreen, 0.16);
 
-export const navSectionLabelStyle: CSSProperties = {
-  margin: 0,
-  padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-  fontSize: theme.typography.size.md,
-  // Clash Display is capped at Semibold everywhere except the header
-  // wordmark ("elexercise!").
-  fontWeight: theme.typography.weight.semibold,
-  fontFamily: "'Clash Display', sans-serif",
-  color: "#228B22",
-  letterSpacing: "0.04em",
-  textTransform: "uppercase",
-};
+// sageAccent (not primaryGreen) -- see colors.ts, it's the token meant for
+// emphasized nav dropdown text and is the one of the three green tokens
+// with enough contrast against this panel's navy background to pass WCAG
+// AA at this text size. Applied to subsection links (e.g. "Profile" under
+// "Social") to mark them, not their toggle-only parent label, as the
+// items that actually navigate somewhere.
+export const subsectionLinkStyle: CSSProperties = { color: theme.colors.sageAccent };
 
 export function NavMenuItemLink({
   href,
@@ -129,26 +124,27 @@ export function NavDropdownPanel({
   if (!open) return null;
   ensureKeyframes();
 
-  // The left (main nav) menu is a full-height drawer fixed to the left edge
-  // of the window, not a small anchored dropdown like the right (profile)
-  // menu -- per design feedback, distinct enough from the right menu's
-  // layout that it needs its own branch rather than a shared style object.
+  // Both menus are small anchored dropdown cards under their trigger
+  // button -- only the anchor edge (and how far they can grow) differs.
   const style: CSSProperties =
     align === "left"
       ? {
-          position: "fixed",
-          top: 0,
+          position: "absolute",
+          top: "100%",
           left: 0,
-          bottom: 0,
-          width: 400,
+          marginTop: theme.spacing.sm,
+          minWidth: 260,
           maxWidth: "85vw",
+          maxHeight: "80vh",
           padding: theme.spacing.sm,
           overflowY: "auto",
           backgroundColor: "#002FA7",
-          borderRight: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
+          border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
+          borderRadius: theme.radii.xl,
           boxShadow: `0 10px 28px ${withAlpha(theme.colors.navyStatic, 0.1)}`,
           zIndex: 150,
-          animation: "elexNavDrawerIn 180ms ease-out",
+          animation: "elexNavMenuIn 160ms ease-out",
+          transformOrigin: "top left",
         }
       : {
           position: "absolute",
@@ -160,7 +156,7 @@ export function NavDropdownPanel({
           overflow: "hidden",
           backgroundColor: "#002FA7",
           border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
-          borderRadius: theme.radii.pill,
+          borderRadius: theme.radii.xl,
           boxShadow: `0 10px 28px ${withAlpha(theme.colors.navyStatic, 0.1)}`,
           zIndex: 2,
           animation: "elexNavMenuIn 160ms ease-out",
@@ -170,6 +166,63 @@ export function NavDropdownPanel({
   return (
     <div id={id} style={style}>
       {children}
+    </div>
+  );
+}
+
+/**
+ * Top-level nav row that only expands to reveal indented subsection
+ * links -- neither the label nor the chevron navigate anywhere, both just
+ * toggle the subsection list. Controlled (not internal state) so a parent
+ * rendering several of these as an accordion can keep only one open at a
+ * time.
+ */
+export function NavMenuExpandableItem({
+  label,
+  expanded,
+  onToggle,
+  children,
+}: {
+  label: string;
+  expanded: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  const [chevronHovered, setChevronHovered] = useState(false);
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "stretch" }}>
+        <NavMenuItemButton onClick={onToggle} style={{ flex: 1 }}>
+          {label}
+        </NavMenuItemButton>
+        <button
+          type="button"
+          aria-label={expanded ? `Collapse ${label}` : `Expand ${label}`}
+          aria-expanded={expanded}
+          onClick={onToggle}
+          onMouseEnter={() => setChevronHovered(true)}
+          onMouseLeave={() => setChevronHovered(false)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 36,
+            borderRadius: 6,
+            border: "none",
+            backgroundColor: chevronHovered ? hoverBg : "transparent",
+            color: theme.colors.textPrimary,
+            fontSize: theme.typography.size.sm,
+            cursor: "pointer",
+            transition: "background-color 120ms ease",
+          }}
+        >
+          <span aria-hidden>{expanded ? theme.icons.collapse : theme.icons.expand}</span>
+        </button>
+      </div>
+      {expanded && (
+        <div style={{ paddingLeft: theme.spacing.md }}>{children}</div>
+      )}
     </div>
   );
 }
