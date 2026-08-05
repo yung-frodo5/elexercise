@@ -151,7 +151,7 @@ export default function HistoryPage() {
           </p>
         </header>
 
-        {error && <p style={{ marginBottom: theme.spacing.md, color: theme.colors.error }}>{error}</p>}
+        {error && <p style={{ marginBottom: theme.spacing.md, color: theme.colors.themed.error }}>{error}</p>}
 
         <section>
           <HistoryToolbar
@@ -167,7 +167,12 @@ export default function HistoryPage() {
 
           {filtered.length === 0 ? (
             <SoftPanel style={{ padding: theme.spacing.xl }}>
-              <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold }}>
+              {/* Static -- SoftPanel's own background is always white,
+                  never inverting in dark mode. Explicit color needed here
+                  (not just inherited) -- without it this text would
+                  otherwise inherit the ambient flipping text color and
+                  turn white-on-white in dark mode. */}
+              <p style={{ margin: 0, fontWeight: theme.typography.weight.semibold, color: theme.colors.static.ink }}>
                 {workouts.length === 0 ? "No past workouts yet." : "No workouts match these filters."}
               </p>
               {/* Static -- SoftPanel's own background is always white,
@@ -176,7 +181,7 @@ export default function HistoryPage() {
                 style={{
                   margin: 0,
                   marginTop: theme.spacing.xs,
-                  color: theme.colors.navyStatic,
+                  color: theme.colors.static.ink,
                   fontSize: theme.typography.size.sm,
                   lineHeight: 1.4,
                 }}
@@ -263,8 +268,8 @@ export default function HistoryPage() {
                   style={{
                     display: "inline-block",
                     marginLeft: theme.spacing.xs,
-                    backgroundColor: "#D6E9FF",
-                    color: theme.colors.navyStatic,
+                    backgroundColor: theme.colors.static.accentPanelBg,
+                    color: theme.colors.static.ink,
                     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                     borderRadius: theme.radii.md,
                   }}

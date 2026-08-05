@@ -74,9 +74,6 @@ export function ContentPanel({ children }: { children: ReactNode }) {
             padding: 12px 12px 20px 12px !important;
           }
         }
-        html[data-theme="dark"] .content-panel {
-          background-color: #001F3F !important;
-        }
       `,
         }}
       />
@@ -86,8 +83,8 @@ export function ContentPanel({ children }: { children: ReactNode }) {
           isHome
             ? {
                 margin: "0.5in 0.5in 1in 0.5in",
-                backgroundColor: "#FFFFFF",
-                color: theme.colors.navy,
+                backgroundColor: theme.colors.themed.chromeBg,
+                color: theme.colors.themed.navy,
                 paddingTop: theme.spacing.xxl,
                 paddingLeft: theme.spacing.xxl,
                 paddingRight: theme.spacing.xxl,
@@ -99,8 +96,8 @@ export function ContentPanel({ children }: { children: ReactNode }) {
                 maxWidth: 1040,
                 boxSizing: "border-box",
                 margin: hasReducedTopSpacing ? `${theme.spacing.sm}px auto 1in auto` : "0.75in auto 1in auto",
-                backgroundColor: "#FFFFFF",
-                color: theme.colors.navy,
+                backgroundColor: theme.colors.themed.chromeBg,
+                color: theme.colors.themed.navy,
                 paddingTop: hasReducedTopSpacing ? theme.spacing.sm : theme.spacing.xxl,
                 paddingLeft: theme.spacing.xxl,
                 paddingRight: theme.spacing.xxl,

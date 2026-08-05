@@ -74,7 +74,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
         onClick={(e) => e.stopPropagation()}
         style={{
           position: "relative",
-          backgroundColor: "#002FA7",
+          backgroundColor: theme.colors.static.darkPanelBg,
           padding: theme.spacing.xl,
           maxWidth: 360,
           width: "90%",
@@ -108,7 +108,13 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             onChange={(e) => setPassword(e.target.value)}
           />
           {error && (
-            <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>{error}</p>
+            // static.errorInkOnDarkPanel, not the plain error hex -- this modal's
+            // card is always the static navy darkPanelBg, and the plain error
+            // red is too dark to read there (a pre-existing failure, not caused
+            // by dark mode).
+            <p style={{ color: theme.colors.static.errorInkOnDarkPanel, fontSize: theme.typography.size.sm }}>
+              {error}
+            </p>
           )}
           {info && <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>{info}</p>}
           <button type="submit" style={pillButtonStyle}>

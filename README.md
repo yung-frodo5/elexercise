@@ -106,6 +106,17 @@ value, or icon glyph in a component — add or reuse a token in
 `packages/design-tokens/src/` instead, so a visual change only has to happen
 in one place.
 
+`apps/web` also supports light/dark mode (toggled via `ThemeToggle`,
+persisted to `localStorage`, applied as `data-theme` on `<html>`). Every
+color that touches the UI there must go through either
+`theme.colors.themed.*` (flips with the theme) or `theme.colors.static.*`
+(same value in both themes, for surfaces like the history table and
+calculator panels that stay light by design) — never pair a `themed`
+foreground with a `static` background or vice versa. See
+`packages/design-tokens/README.md` for the full explanation and
+`packages/design-tokens/src/contrast.test.ts` for the WCAG contrast checks
+that guard these pairings.
+
 ## Shared content model
 
 Article content (title, author(s), and an ordered body of paragraphs,

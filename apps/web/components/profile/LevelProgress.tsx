@@ -121,10 +121,10 @@ export function LevelProgress({
                 display: "block",
                 width: 220,
                 marginBottom: theme.spacing.xs,
-                backgroundColor: "#D6E9FF",
+                backgroundColor: theme.colors.static.accentPanelBg,
                 // Static -- this popup's own light-blue background doesn't
                 // invert in dark mode.
-                color: theme.colors.navyStatic,
+                color: theme.colors.static.ink,
                 fontSize: theme.typography.size.sm,
                 lineHeight: 1.4,
                 padding: theme.spacing.sm,

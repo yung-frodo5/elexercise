@@ -41,7 +41,7 @@ function CategoryHeading({ children }: { children: string }) {
         fontWeight: theme.typography.weight.bold,
         margin: 0,
         marginTop: theme.spacing.sm,
-        color: theme.colors.navyStatic,
+        color: theme.colors.static.ink,
         fontSize: theme.typography.size.sm,
       }}
     >
@@ -52,7 +52,7 @@ function CategoryHeading({ children }: { children: string }) {
 
 function PresetCaption({ children }: { children: ReactNode }) {
   return (
-    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic, margin: 0, opacity: 0.75 }}>
+    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.static.ink, margin: 0, opacity: 0.75 }}>
       {children}
     </p>
   );
@@ -295,7 +295,7 @@ export function EquipmentEditor({
             note={
               <>
                 Grid carbon intensity varies by time of day, season, regional grid makeup, and more. For reference (
-                <ExternalLink href="https://www.epa.gov/egrid/summary-data" style={{ color: theme.colors.navyStatic }}>
+                <ExternalLink href="https://www.epa.gov/egrid/summary-data" style={{ color: theme.colors.static.ink }}>
                   eGRID
                 </ExternalLink>
                 ): CAMX (California) is 195 gCO2e/kWh; HIOA (Hawaii) is 680 gCO2e/kWh.
@@ -357,8 +357,8 @@ export function EquipmentEditor({
               style={{
                 padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                 borderRadius: theme.radii.pill,
-                background: withAlpha(theme.colors.error, 0.15),
-                color: theme.colors.error,
+                background: withAlpha(theme.colors.static.errorInk, 0.15),
+                color: theme.colors.static.errorInk,
                 fontSize: theme.typography.size.sm,
                 fontWeight: theme.typography.weight.semibold,
                 cursor: "help",

@@ -82,8 +82,8 @@ export function HistoryTable({
           WebkitOverflowScrolling: "touch",
           borderRadius: theme.radii.xl,
           border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-          backgroundColor: "#FFFFFF",
-          boxShadow: `0 8px 28px ${withAlpha(theme.colors.navyStatic, 0.05)}`,
+          backgroundColor: theme.colors.static.panelBg,
+          boxShadow: `0 8px 28px ${withAlpha(theme.colors.static.ink, 0.05)}`,
         }}
       >
       <table style={{ width: "100%", minWidth: 640, borderCollapse: "separate", borderSpacing: 0 }}>

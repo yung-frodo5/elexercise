@@ -24,7 +24,7 @@ import { useDismissOnOutsideOrEscape } from "./useDismissOnOutsideOrEscape";
 import { ThemeToggle } from "./ThemeToggle";
 import { familjenGrotesk } from "../../lib/fonts";
 
-const pressedBg = withAlpha(theme.colors.navyStatic, 0.08);
+const pressedBg = withAlpha(theme.colors.static.ink, 0.08);
 
 export function SiteHeader() {
   const { session, loading } = useSupabaseSession();
@@ -96,9 +96,6 @@ export function SiteHeader() {
           .site-header-display-name { display: none; }
           .site-header-level { display: none; }
         }
-        html[data-theme="dark"] .site-header {
-          background-color: #001F3F !important;
-        }
       `,
         }}
       />
@@ -116,7 +113,7 @@ export function SiteHeader() {
         alignItems: "center",
         paddingLeft: theme.spacing.lg,
         paddingRight: theme.spacing.lg,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: theme.colors.themed.chromeBg,
       }}
     >
       {/* position: relative, not the header's own fixed positioning --
@@ -139,8 +136,8 @@ export function SiteHeader() {
             width: 44,
             height: 44,
             borderRadius: theme.radii.pill,
-            backgroundColor: "#002FA7",
-            boxShadow: `0 4px 14px ${withAlpha(theme.colors.navyStatic, 0.3)}`,
+            backgroundColor: theme.colors.themed.controlOnChrome,
+            boxShadow: `0 4px 14px ${withAlpha(theme.colors.static.ink, 0.3)}`,
             border: "none",
             cursor: "pointer",
             color: theme.colors.textPrimary,
@@ -236,7 +233,7 @@ export function SiteHeader() {
           display: "flex",
           alignItems: "center",
           gap: theme.spacing.xs,
-          color: "#228B22",
+          color: theme.colors.themed.brandAccent,
           fontSize: theme.typography.size.lg,
           fontWeight: theme.typography.weight.bold,
           fontFamily: "'Clash Display', sans-serif",
@@ -283,7 +280,7 @@ export function SiteHeader() {
                     background: profileMenuOpen ? pressedBg : "transparent",
                     border: "none",
                     cursor: "pointer",
-                    color: "#228B22",
+                    color: theme.colors.themed.brandAccent,
                     fontSize: theme.typography.size.md,
                     transition: "background-color 120ms ease",
                   }}

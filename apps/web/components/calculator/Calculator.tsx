@@ -155,7 +155,7 @@ export function Calculator() {
       chartHeight: height,
       title: chartTitle,
       legendItems: equipmentList.map((item) => ({ name: item.name, color: item.color })),
-      textColor: theme.colors.navyStatic,
+      textColor: theme.colors.static.ink,
     });
     const blob = new Blob([markup], { type: "image/svg+xml;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -191,12 +191,12 @@ export function Calculator() {
 
       <div
         style={{
-          backgroundColor: "#D6E9FF",
+          backgroundColor: theme.colors.static.accentPanelBg,
           borderRadius: theme.radii.lg,
           padding: theme.spacing.xl,
           // Static -- this panel's own light-blue background doesn't
           // invert in dark mode.
-          color: theme.colors.navyStatic,
+          color: theme.colors.static.ink,
         }}
       >
         <div style={{ marginBottom: theme.spacing.lg }}>
@@ -222,12 +222,12 @@ export function Calculator() {
 
       <div
         style={{
-          backgroundColor: "#D6E9FF",
+          backgroundColor: theme.colors.static.accentPanelBg,
           borderRadius: theme.radii.lg,
           padding: theme.spacing.xl,
           // Static -- this panel's own light-blue background doesn't
           // invert in dark mode.
-          color: theme.colors.navyStatic,
+          color: theme.colors.static.ink,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.md }}>

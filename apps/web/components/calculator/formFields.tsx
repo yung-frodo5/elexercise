@@ -9,7 +9,7 @@ export const labelStyle: CSSProperties = {
   flexDirection: "column",
   gap: theme.spacing.xs,
   fontSize: theme.typography.size.sm,
-  color: theme.colors.navyStatic,
+  color: theme.colors.static.ink,
 };
 
 export const inputStyle: CSSProperties = {
@@ -22,14 +22,18 @@ export const inputStyle: CSSProperties = {
 
 // Inline validation message, rendered directly under the offending field (see validation.ts) rather than
 // in one generic list — the field itself also gets an error-colored border via `errorInputStyle`.
+// Every consumer of these fields (EquipmentEditor) renders inside Calculator's static light-blue panel,
+// so this needs the static (light-surface) error tone, not the themed one -- the plain `error` hex is too
+// dark to read reliably and was one of the two pre-existing (non-dark-mode) contrast failures found while
+// auditing this token.
 export function FieldError({ children }: { children: ReactNode }) {
   return (
-    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.error, margin: 0 }}>{children}</p>
+    <p style={{ fontSize: theme.typography.size.sm, color: theme.colors.static.errorInk, margin: 0 }}>{children}</p>
   );
 }
 
 function fieldInputStyle(error?: string): CSSProperties {
-  return error ? { ...inputStyle, border: `1px solid ${theme.colors.error}` } : inputStyle;
+  return error ? { ...inputStyle, border: `1px solid ${theme.colors.static.errorInk}` } : inputStyle;
 }
 
 export function FieldNote({ children }: { children: ReactNode }) {
@@ -37,7 +41,7 @@ export function FieldNote({ children }: { children: ReactNode }) {
     <p
       style={{
         fontSize: theme.typography.size.sm,
-        color: theme.colors.navyStatic,
+        color: theme.colors.static.ink,
         margin: 0,
         // Grows faster than the field next to it, so extra horizontal space
         // goes to the descriptive text rather than the (fixed-content) input.
@@ -150,7 +154,7 @@ export function ColorField({
                 width: 24,
                 height: 24,
                 borderRadius: theme.radii.pill,
-                border: selected ? `2px solid ${theme.colors.navyStatic}` : `1px solid ${theme.colors.border}`,
+                border: selected ? `2px solid ${theme.colors.static.ink}` : `1px solid ${theme.colors.border}`,
                 background: preset,
                 padding: 0,
                 cursor: "pointer",
@@ -246,7 +250,7 @@ export function HoverTooltip({ children, content }: { children: ReactNode; conte
             marginTop: theme.spacing.xs,
             minWidth: 220,
             padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-            background: theme.colors.navyStatic,
+            background: theme.colors.static.ink,
             color: "#FFFFFF",
             fontSize: theme.typography.size.sm,
             fontWeight: theme.typography.weight.regular,
@@ -294,7 +298,7 @@ function InfoTooltip({ text }: { text: string }) {
             marginTop: theme.spacing.xs,
             width: 220,
             padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-            background: theme.colors.navyStatic,
+            background: theme.colors.static.ink,
             color: "#FFFFFF",
             fontSize: theme.typography.size.sm,
             fontWeight: theme.typography.weight.regular,
@@ -380,7 +384,7 @@ export function RadioOption({
         alignItems: "center",
         gap: theme.spacing.xs,
         fontSize: theme.typography.size.sm,
-        color: theme.colors.navyStatic,
+        color: theme.colors.static.ink,
         cursor: "pointer",
       }}
     >

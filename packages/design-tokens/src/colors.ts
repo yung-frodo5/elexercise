@@ -48,3 +48,87 @@ export const colors = {
   accentBlueMuted: "#2a6f97",
   accentBrick: "#8a3a3c",
 } as const;
+
+export interface ThemedColor {
+  light: string;
+  dark: string;
+}
+
+// Web's systematic light/dark token set -- every value here is a plain hex
+// pair (not a var() string), generalizing the navy/navyStatic mechanism
+// above to every color that needs to react to dark mode. apps/web derives
+// both its CSS custom properties (see webTheme.ts's generateThemeCss) and
+// its inline style values from this one object, so a light/dark pair is
+// only ever declared once. Not consumed by apps/mobile (mobile keeps using
+// the flat `colors` above -- see navy's comment).
+export const themedColors = {
+  // Body/article text and anything else that sits on the ambient canvas or
+  // chrome (header, content panel). Named `navy` (not e.g. `text`) on
+  // purpose: it drives the SAME --elex-navy CSS variable the legacy `navy`
+  // key above already used, via webTheme.ts's generateThemeCss -- keeping
+  // the variable name unchanged means the ~190 existing (already-correct)
+  // `theme.colors.navy` call sites across apps/web keep flipping with zero
+  // edits, instead of silently freezing at their light value the moment
+  // this object took over generating the CSS.
+  navy: { light: "#0033A0", dark: "#FFFFFF" },
+  // Inline links and footnote markers inside article content.
+  link: { light: "#386641", dark: "#8FD18F" },
+  // The wordmark, "Log in" link, and profile-name text/heading green.
+  brandAccent: { light: "#228B22", dark: "#4ED164" },
+  // Error text on the ambient canvas or chrome (as opposed to error text on
+  // a static light surface -- see staticColors.errorInk below).
+  error: { light: "#bc4749", dark: "#FF9B9D" },
+  // The page's own background.
+  canvasBg: { light: "#FFFFFF", dark: "#001F3F" },
+  // Header / content-panel background -- same value as canvasBg today, but
+  // named separately since "chrome" and "canvas" are conceptually distinct
+  // surfaces that happen to currently share a color.
+  chromeBg: { light: "#FFFFFF", dark: "#001F3F" },
+  // A UI-component (non-text) tier for elements that need to visually
+  // separate from chromeBg -- e.g. the navbar's hamburger button, which
+  // otherwise blends into a dark header.
+  controlOnChrome: { light: "#002FA7", dark: "#5C7FE0" },
+  // The home page's definition-panel text.
+  definitionText: { light: "#000000", dark: "#FFFFFF" },
+  // Subtle outline for a "ghost" control (transparent fill, border-only)
+  // sitting directly on the ambient canvas/chrome -- e.g. an inactive
+  // filter chip. The light value is pre-composited to match the exact
+  // rgba() that withAlpha(colors.border, 0.28) produced before this token
+  // existed; the dark value is a light tint instead of a dark one, since a
+  // translucent dark-brown line is nearly invisible against the dark-navy
+  // canvas (measured contrast ~1.1:1 -- this token exists specifically to
+  // fix that). Stored pre-composited (not a plain hex) because withAlpha()
+  // can't accept a var() string, so alpha has to be baked in here instead
+  // of applied per call site.
+  controlBorder: { light: "rgba(91, 70, 43, 0.28)", dark: "rgba(255, 255, 255, 0.4)" },
+} as const satisfies Record<string, ThemedColor>;
+
+// Colors for surfaces that are deliberately light in *both* themes (the
+// history table, calculator panels, tooltips, the light-blue accent
+// panels) -- a separate namespace, not a name suffix, so picking the wrong
+// tier means typing `.static.` vs `.themed.` explicitly rather than
+// pattern-matching a "Static" suffix from memory (the mistake that caused
+// article text to render as navyStatic on a background that actually
+// flips to dark).
+export const staticColors = {
+  // SoftPanel, white history rows, expanded workout-history cells.
+  panelBg: "#FFFFFF",
+  // Text on a static panel, and the base color for withAlpha() tints that
+  // must not shift with theme (was `navyStatic` above).
+  ink: "#0033A0",
+  // The light-blue accent tone used for header rows / callouts / tooltips
+  // across the app -- previously duplicated as a raw "#D6E9FF" literal in
+  // ~15 places.
+  accentPanelBg: "#D6E9FF",
+  // The static navy card/panel background used by LoginModal and the nav
+  // dropdown -- always this color in both themes.
+  darkPanelBg: "#002FA7",
+  // A darker red for error text/chips on static LIGHT surfaces
+  // (EquipmentEditor's light-blue panel) where the plain `error` hex
+  // doesn't clear WCAG AA. Don't use this on darkPanelBg -- it's far too
+  // dark to read there; see errorInkOnDarkPanel below.
+  errorInk: "#A63D3F",
+  // A lighter red for error text on the static NAVY darkPanelBg (e.g.
+  // LoginModal's error message) -- errorInk above is unreadable there.
+  errorInkOnDarkPanel: "#FF9B9D",
+} as const;

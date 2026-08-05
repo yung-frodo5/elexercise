@@ -29,7 +29,7 @@ const ARTICLE_DESCRIPTIONS: Record<string, string> = {
 const cell = {
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
   textAlign: "left" as const,
-  borderBottom: `1px solid #D6E9FF`,
+  borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
   verticalAlign: "top" as const,
   fontSize: theme.typography.size.sm,
 };
@@ -52,9 +52,9 @@ function ResourceSection({
       {/* Explicit static navy, not inherited -- this row's light-blue
           background doesn't invert in dark mode, so its text can't
           rely on inheriting the canvas's flipping default color. */}
-      <tr style={{ backgroundColor: "#D6E9FF" }}>
-        <th style={{ ...cell, color: theme.colors.navyStatic }}>{leftLabel}</th>
-        <th style={{ ...cell, color: theme.colors.navyStatic }}>{rightLabel}</th>
+      <tr style={{ backgroundColor: theme.colors.static.accentPanelBg }}>
+        <th style={{ ...cell, color: theme.colors.static.ink }}>{leftLabel}</th>
+        <th style={{ ...cell, color: theme.colors.static.ink }}>{rightLabel}</th>
       </tr>
       {rows.map((resource) => (
         <tr key={resource.href}>
@@ -89,7 +89,7 @@ export default function ResourcesPage() {
           width: "100%",
           borderCollapse: "collapse",
           marginTop: theme.spacing.lg,
-          border: `1px solid #D6E9FF`,
+          border: `1px solid ${theme.colors.static.accentPanelBg}`,
         }}
       >
         <ResourceSection leftLabel="Tool" rightLabel="What it’s for" rows={TOOLS} />

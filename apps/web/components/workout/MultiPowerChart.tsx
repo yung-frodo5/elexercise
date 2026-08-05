@@ -91,7 +91,7 @@ export function MultiPowerChart({
 
   if (active.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.static.ink, fontSize: theme.typography.size.sm }}>
         Select an activity to show power output.
       </p>
     );
@@ -99,7 +99,7 @@ export function MultiPowerChart({
 
   if (data.length === 0) {
     return (
-      <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
+      <p style={{ margin: 0, color: theme.colors.static.ink, fontSize: theme.typography.size.sm }}>
         No power data recorded for these activities.
       </p>
     );
@@ -107,7 +107,12 @@ export function MultiPowerChart({
 
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-      <p style={{ ...overlineStyle, marginBottom: theme.spacing.xs, textAlign: "center" }}>
+      {/* overlineStyle's color normally flips with theme (correct for the
+          <th>-style contexts it's usually used in), but this label renders
+          inside WorkoutHistoryRow's expanded-row cell, which is a static
+          white surface in both themes -- override to the static ink color
+          here instead of letting it flip to unreadable white-on-white. */}
+      <p style={{ ...overlineStyle, marginBottom: theme.spacing.xs, textAlign: "center", color: theme.colors.static.ink }}>
         Power Output
       </p>
       <div style={{ flex: 1, minHeight: 0 }}>
@@ -119,7 +124,7 @@ export function MultiPowerChart({
               dataKey="tMs"
               domain={[xMin, xMax || "auto"]}
               tickFormatter={(tMs: number) => formatDuration(tMs / 1000)}
-              stroke={theme.colors.navyStatic}
+              stroke={theme.colors.static.ink}
               tickLine={false}
               axisLine={false}
               fontSize={theme.typography.size.sm}
@@ -129,7 +134,7 @@ export function MultiPowerChart({
                 position: "insideBottom",
                 offset: -8,
                 style: {
-                  fill: theme.colors.navyStatic,
+                  fill: theme.colors.static.ink,
                   fontSize: theme.typography.size.xxs,
                   fontFamily: familjenGrotesk.style.fontFamily,
                 },
@@ -137,7 +142,7 @@ export function MultiPowerChart({
             />
             <YAxis
               domain={[0, yMax]}
-              stroke={theme.colors.navyStatic}
+              stroke={theme.colors.static.ink}
               tickLine={false}
               axisLine={false}
               fontSize={theme.typography.size.sm}
@@ -148,7 +153,7 @@ export function MultiPowerChart({
                 position: "insideLeft",
                 offset: -6,
                 style: {
-                  fill: theme.colors.navyStatic,
+                  fill: theme.colors.static.ink,
                   fontSize: theme.typography.size.xxs,
                   fontFamily: familjenGrotesk.style.fontFamily,
                   textAnchor: "middle",
@@ -162,7 +167,7 @@ export function MultiPowerChart({
                 return (
                   <div
                     style={{
-                      background: "#FFFFFF",
+                      background: theme.colors.static.panelBg,
                       border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
                       borderRadius: theme.radii.md,
                       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
@@ -173,7 +178,7 @@ export function MultiPowerChart({
                     <div
                       style={{
                         fontSize: theme.typography.size.sm,
-                        color: theme.colors.navyStatic,
+                        color: theme.colors.static.ink,
                         marginBottom: 4,
                       }}
                     >
