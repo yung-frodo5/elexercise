@@ -60,3 +60,15 @@ export function contrastRatio(fg: string, bg: string): number {
   const darker = Math.min(l1, l2);
   return (lighter + 0.05) / (darker + 0.05);
 }
+
+/**
+ * Flattens a translucent `fg` over an opaque `bg` into a single opaque
+ * `rgb()` string -- for surfaces with no background token of their own
+ * (e.g. FilterChip's active state, a translucent tint over the ambient
+ * canvas), so the resulting effective color can itself be used as the `bg`
+ * in a further `contrastRatio()` check.
+ */
+export function compositeColor(fg: string, bg: string): string {
+  const { r, g, b } = compositeOver(parseColor(fg), parseColor(bg));
+  return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}

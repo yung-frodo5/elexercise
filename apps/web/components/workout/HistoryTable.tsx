@@ -82,7 +82,7 @@ export function HistoryTable({
           WebkitOverflowScrolling: "touch",
           borderRadius: theme.radii.xl,
           border: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: theme.colors.static.panelBg,
           boxShadow: `0 8px 28px ${withAlpha(theme.colors.static.ink, 0.05)}`,
         }}
       >

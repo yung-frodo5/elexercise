@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { contrastRatio } from "./contrast";
-import { themedColors, staticColors } from "./colors";
+import { contrastRatio, compositeColor } from "./contrast";
+import { colors, themedColors, staticColors } from "./colors";
+import { withAlpha } from "./withAlpha";
 
 // Hand-curated foreground/background combinations that are actually
 // composited together somewhere in apps/web -- not a Cartesian product of
@@ -89,6 +90,23 @@ describe("static color contrast (WCAG AA)", () => {
   for (const pair of STATIC_PAIRS) {
     it(`${pair.name} meets ${pair.minRatio}:1`, () => {
       expect(contrastRatio(pair.fg, pair.bg)).toBeGreaterThanOrEqual(pair.minRatio);
+    });
+  }
+});
+
+describe("composited surface contrast (WCAG AA)", () => {
+  // FilterChip's active state (see FilterChip.tsx) has no background token
+  // of its own -- it's primaryGreen tinted at 20% opacity directly over the
+  // ambient/flipping canvas, with themed.link text on top. Flatten the tint
+  // over canvasBg per mode first, then check the text against that
+  // effective color, so a future edit to primaryGreen, link, or canvasBg
+  // that breaks this specific pairing fails a test instead of shipping.
+  const modes: Mode[] = ["light", "dark"];
+  for (const mode of modes) {
+    it(`active filter chip text on green-tinted canvas meets 4.5:1 (${mode})`, () => {
+      const effectiveBg = compositeColor(withAlpha(colors.primaryGreen, 0.2), themedValue("canvasBg", mode));
+      const ratio = contrastRatio(themedValue("link", mode), effectiveBg);
+      expect(ratio).toBeGreaterThanOrEqual(4.5);
     });
   }
 });
