@@ -21,7 +21,7 @@ export function ArticleHeader({
       <h2
         style={{
           margin: 0,
-          color: theme.colors.navyStatic,
+          color: theme.colors.themed.navy,
           fontSize: theme.typography.size[titleSize],
           textAlign: align,
           lineHeight: 1.5,
@@ -33,7 +33,7 @@ export function ArticleHeader({
         style={{
           marginTop: theme.spacing.xs,
           marginBottom: 0,
-          color: theme.colors.navyStatic,
+          color: theme.colors.themed.navy,
           fontSize: theme.typography.size.sm,
           textAlign: align,
           lineHeight: 1.5,
@@ -46,7 +46,7 @@ export function ArticleHeader({
           style={{
             marginTop: theme.spacing.xs,
             marginBottom: 0,
-            color: theme.colors.navyStatic,
+            color: theme.colors.themed.navy,
             fontSize: theme.typography.size.sm,
             textAlign: align,
             lineHeight: 1.5,
@@ -74,7 +74,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.navyStatic,
+                  color: theme.colors.themed.navy,
                   fontSize: theme.typography.size.sm,
                 }}
               >
@@ -87,7 +87,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.navyStatic,
+                  color: theme.colors.themed.navy,
                   fontSize: theme.typography.size.lg,
                 }}
               >
@@ -108,7 +108,7 @@ export function ArticleBody({ article }: { article: Article }) {
                   marginTop: theme.spacing.xl,
                   marginBottom: 0,
                   paddingLeft: theme.spacing.lg,
-                  color: theme.colors.navyStatic,
+                  color: theme.colors.themed.navy,
                   fontSize: theme.typography.size.sm,
                 }}
               >
@@ -125,8 +125,8 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  backgroundColor: "#D6E9FF",
-                  color: theme.colors.navyStatic,
+                  backgroundColor: theme.colors.static.accentPanelBg,
+                  color: theme.colors.static.ink,
                   borderRadius: theme.radii.lg,
                   padding: theme.spacing.lg,
                 }}
@@ -152,7 +152,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 >
                   {block.items.map((item, itemIndex) => (
                     <li key={itemIndex}>
-                      <RichText nodes={item} />
+                      <RichText nodes={item} linkColor={theme.colors.static.ink} />
                     </li>
                   ))}
                 </ul>
@@ -168,7 +168,7 @@ export function ArticleBody({ article }: { article: Article }) {
                       marginBottom: theme.spacing.sm,
                       fontWeight: theme.typography.weight.bold,
                       fontSize: theme.typography.size.sm,
-                      color: theme.colors.navyStatic,
+                      color: theme.colors.themed.navy,
                     }}
                   >
                     {block.heading}
@@ -178,9 +178,9 @@ export function ArticleBody({ article }: { article: Article }) {
                   style={{
                     width: "100%",
                     borderCollapse: "collapse",
-                    border: `1px solid #D6E9FF`,
+                    border: `1px solid ${theme.colors.static.accentPanelBg}`,
                     fontSize: theme.typography.size.sm,
-                    color: theme.colors.navyStatic,
+                    color: theme.colors.themed.navy,
                   }}
                 >
                   <thead>
@@ -191,7 +191,7 @@ export function ArticleBody({ article }: { article: Article }) {
                           style={{
                             padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
                             textAlign: "left",
-                            borderBottom: `1px solid #D6E9FF`,
+                            borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
                             fontWeight: theme.typography.weight.bold,
                           }}
                         >
@@ -209,7 +209,7 @@ export function ArticleBody({ article }: { article: Article }) {
                             style={{
                               padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
                               textAlign: "left",
-                              borderBottom: `1px solid #D6E9FF`,
+                              borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
                               verticalAlign: "top",
                             }}
                           >
@@ -230,21 +230,21 @@ export function ArticleBody({ article }: { article: Article }) {
       })}
       {article.references && article.references.length > 0 && (
         <div style={{ marginTop: theme.spacing.xl }}>
-          <p style={{ margin: 0, color: theme.colors.navyStatic, fontSize: theme.typography.size.lg }}>References</p>
+          <p style={{ margin: 0, color: theme.colors.themed.navy, fontSize: theme.typography.size.lg }}>References</p>
           <ul
             style={{
               listStyle: "none",
               marginTop: theme.spacing.sm,
               marginBottom: 0,
               padding: 0,
-              color: theme.colors.navyStatic,
+              color: theme.colors.themed.navy,
               fontSize: theme.typography.size.sm,
             }}
           >
             {article.references.map((reference) => (
               <li key={reference.id} id={`ref-${reference.id}`} style={{ marginTop: theme.spacing.xs }}>
                 {reference.id}.{" "}
-                <ExternalLink href={reference.url} style={{ color: theme.colors.secondaryGreen }}>
+                <ExternalLink href={reference.url} style={{ color: theme.colors.themed.link }}>
                   {reference.url}
                 </ExternalLink>
               </li>

@@ -26,12 +26,12 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
       style={{
         display: "inline-block",
         margin: 0,
-        backgroundColor: "#D6E9FF",
+        backgroundColor: theme.colors.static.accentPanelBg,
         // Static, not inherited -- this heading's own light-blue background
         // doesn't invert in dark mode, so its text can't rely on inheriting
         // the canvas's flipping default color (it never set its own before,
         // which is exactly the bug: it inherited white in dark mode).
-        color: theme.colors.navyStatic,
+        color: theme.colors.static.ink,
         padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
         fontSize: theme.typography.size.lg,
       }}
@@ -154,7 +154,7 @@ export default function TrackPage() {
         margin: "0 auto",
       }}
     >
-      {error && <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>{error}</p>}
+      {error && <p style={{ color: theme.colors.themed.error, fontSize: theme.typography.size.sm }}>{error}</p>}
 
       <section>
         {currentWorkout ? (

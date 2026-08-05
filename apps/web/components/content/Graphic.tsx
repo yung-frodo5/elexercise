@@ -25,7 +25,7 @@ export function Graphic({ graphic, maxWidth }: { graphic: GraphicBlock; maxWidth
             marginBottom: 0,
             fontSize: theme.typography.size.xxs,
             fontStyle: "italic",
-            color: theme.colors.navy,
+            color: theme.colors.themed.navy,
             textAlign: "center",
           }}
         >

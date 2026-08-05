@@ -105,12 +105,6 @@ export default function LandingPage() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        /* The definition panel itself has no background of its own -- it
-           sits directly on the home page's canvas, which inverts to dark
-           navy in dark mode, so its black text needs to flip to white too. */
-        html[data-theme="dark"] .definition-panel {
-          color: #FFFFFF !important;
-        }
         /* The headword's 60px nowrap text is wider than any phone viewport
            -- without this it forces the whole page to scroll horizontally.
            !important is needed to beat the matching inline styles. */
@@ -182,7 +176,10 @@ export default function LandingPage() {
           <div
             className="definition-panel"
             style={{
-              color: "#000000",
+              // The definition panel itself has no background of its own --
+              // it sits directly on the home page's canvas, which inverts to
+              // dark navy in dark mode, so its text needs to flip too.
+              color: theme.colors.themed.definitionText,
               padding: theme.spacing.xl,
               borderRadius: theme.radii.lg,
               fontFamily: "Georgia, 'Times New Roman', serif",
@@ -247,7 +244,7 @@ export default function LandingPage() {
           bottom: FOOTER_HEIGHT + theme.spacing.md,
           transform: "translateX(-50%)",
           fontSize: theme.typography.size.xl,
-          color: "#D6E9FF",
+          color: theme.colors.static.accentPanelBg,
           zIndex: 40,
         }}
       >
@@ -256,7 +253,7 @@ export default function LandingPage() {
 
       <section
         style={{
-          backgroundColor: "#D6E9FF",
+          backgroundColor: theme.colors.static.accentPanelBg,
           // Breaks out of ContentPanel's own fixed 0.5in side margins AND
           // its own xxl side padding (see ContentPanel.tsx's home branch --
           // both apply, margin outside padding inside, and this section
@@ -301,7 +298,7 @@ export default function LandingPage() {
                       <p
                         style={{
                           margin: 0,
-                          color: theme.colors.navyStatic,
+                          color: theme.colors.static.ink,
                           fontWeight: theme.typography.weight.semibold,
                           fontSize: theme.typography.size.lg,
                         }}
@@ -311,7 +308,7 @@ export default function LandingPage() {
                       <div
                         style={{
                           marginTop: theme.spacing.sm,
-                          color: theme.colors.navyStatic,
+                          color: theme.colors.static.ink,
                           fontSize: theme.typography.size.sm,
                           lineHeight: 1.5,
                         }}

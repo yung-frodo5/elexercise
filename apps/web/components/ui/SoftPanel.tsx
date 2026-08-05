@@ -17,10 +17,14 @@ export function SoftPanel({
     <div
       className={className}
       style={{
-        backgroundColor: "#FFFFFF",
+        // Static -- this panel is always a light card, in both themes.
+        // Consumers must pair it with theme.colors.static.* text, not a
+        // flipping token (see history/page.tsx's empty state for why this
+        // matters).
+        backgroundColor: theme.colors.static.panelBg,
         border: `1px solid ${withAlpha(theme.colors.border, 0.28)}`,
         borderRadius: theme.radii.lg,
-        boxShadow: `0 4px 16px ${withAlpha(theme.colors.navyStatic, 0.06)}`,
+        boxShadow: `0 4px 16px ${withAlpha(theme.colors.static.ink, 0.06)}`,
         ...style,
       }}
     >

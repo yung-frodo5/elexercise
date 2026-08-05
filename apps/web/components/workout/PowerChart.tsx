@@ -35,10 +35,10 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
     >
       {/* Static -- this tooltip's own white background doesn't invert in
           dark mode. */}
-      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.navyStatic }}>
+      <div style={{ fontWeight: theme.typography.weight.semibold, color: theme.colors.static.ink }}>
         {Math.round(point.powerW)} W
       </div>
-      <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic }}>
+      <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.static.ink }}>
         {formatDuration(point.tMs / 1000)}
       </div>
     </div>

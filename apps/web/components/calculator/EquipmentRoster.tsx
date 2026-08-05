@@ -7,10 +7,10 @@ import { BrandedEquipmentLabel } from "./BrandedEquipmentLabel";
 // Light, warm fill for pills -- distinct from the app's usual light-blue panel background, chosen so
 // dark text/borders read clearly against it regardless of which accent color a given pill's border uses.
 const PILL_FILL = "#FAF3E0";
-// The currently-selected pill instead gets the app's usual light-blue panel fill (the same "#D6E9FF" the
-// Editor/Results panels use), so it's visually tied to "this is what's loaded below" rather than just
-// relying on the border-width bump.
-const ACTIVE_PILL_FILL = "#D6E9FF";
+// The currently-selected pill instead gets the app's usual light-blue panel fill (the same
+// theme.colors.static.accentPanelBg the Editor/Results panels use), so it's visually tied to "this is
+// what's loaded below" rather than just relying on the border-width bump.
+const ACTIVE_PILL_FILL = theme.colors.static.accentPanelBg;
 
 // The dark-navy-backdrop version of this (accent-colored border AND fill, white text) that these pills
 // used to have read poorly -- some of the per-equipment accent colors didn't have enough contrast against
@@ -111,7 +111,7 @@ export function EquipmentRoster({
         flexWrap: "wrap",
         gap: theme.spacing.sm,
         alignItems: "center",
-        backgroundColor: theme.colors.navyStatic,
+        backgroundColor: theme.colors.static.ink,
         borderRadius: theme.radii.lg,
         padding: theme.spacing.md,
       }}

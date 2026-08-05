@@ -11,19 +11,19 @@ import { AvatarCircle } from "../../../components/profile/AvatarCircle";
 const headerCell: CSSProperties = {
   textAlign: "left",
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-  borderBottom: `1px solid #D6E9FF`,
+  borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
   // Static, not the flipping token -- this header row's own background
-  // (#D6E9FF, set where it's rendered) stays light blue in dark mode, so
-  // its text must stay navy rather than inverting to white.
-  color: theme.colors.navyStatic,
+  // (static.accentPanelBg, set where it's rendered) stays light blue in
+  // dark mode, so its text must stay navy rather than inverting to white.
+  color: theme.colors.static.ink,
   fontSize: theme.typography.size.sm,
   textTransform: "uppercase",
 };
 
 const cell: CSSProperties = {
   padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-  borderBottom: `1px solid #D6E9FF`,
-  color: theme.colors.navy,
+  borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
+  color: theme.colors.themed.navy,
   fontSize: theme.typography.size.sm,
 };
 
@@ -90,17 +90,17 @@ export default function LeaderboardPage() {
 
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 640, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-      <h1 style={{ color: theme.colors.navy, fontSize: theme.typography.size.lg }}>Leaderboard</h1>
+      <h1 style={{ color: theme.colors.themed.navy, fontSize: theme.typography.size.lg }}>Leaderboard</h1>
 
-      {error && <p style={{ color: theme.colors.error }}>{error}</p>}
+      {error && <p style={{ color: theme.colors.themed.error }}>{error}</p>}
 
       {loading ? (
-        <p style={{ marginTop: theme.spacing.xl, color: theme.colors.navy }}>Loading…</p>
+        <p style={{ marginTop: theme.spacing.xl, color: theme.colors.themed.navy }}>Loading…</p>
       ) : (
         <div style={{ overflowX: "auto", marginTop: theme.spacing.xl }}>
         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
           <thead>
-            <tr style={{ backgroundColor: "#D6E9FF" }}>
+            <tr style={{ backgroundColor: theme.colors.static.accentPanelBg }}>
               <th style={headerCell}>#</th>
               <th style={headerCell}></th>
               <th style={headerCell}>Name</th>
@@ -110,11 +110,14 @@ export default function LeaderboardPage() {
           </thead>
           <tbody>
             {rows.map((row, index) => {
-              // Static -- the "isMe" row's own white background (below)
-              // doesn't invert in dark mode either.
-              const rowColor = row.isMe ? { color: theme.colors.navyStatic } : undefined;
+              // Static -- the "isMe" row's own accent-panel background
+              // (below) doesn't invert in dark mode either. Reuses the same
+              // light-blue accent tone as the header row above, rather than
+              // plain white, so the highlight reads as intentional instead
+              // of a stray light box once the rest of the table is dark.
+              const rowColor = row.isMe ? { color: theme.colors.static.ink } : undefined;
               return (
-              <tr key={row.id} style={row.isMe ? { backgroundColor: "#FFFFFF" } : undefined}>
+              <tr key={row.id} style={row.isMe ? { backgroundColor: theme.colors.static.accentPanelBg } : undefined}>
                 <td style={{ ...cell, ...rowColor }}>
                   {index + 1}
                   {index === 0 ? " 👑" : ""}
@@ -174,7 +177,7 @@ export default function LeaderboardPage() {
           {adding ? "Adding…" : "Add friend"}
         </button>
       </form>
-      {addError && <p style={{ marginTop: theme.spacing.xs, color: theme.colors.error }}>{addError}</p>}
+      {addError && <p style={{ marginTop: theme.spacing.xs, color: theme.colors.themed.error }}>{addError}</p>}
     </main>
   );
 }

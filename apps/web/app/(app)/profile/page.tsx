@@ -102,7 +102,7 @@ export default function ProfilePage() {
   return (
     <main style={{ padding: theme.spacing.xl, maxWidth: 360, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
-        <h1 style={{ margin: 0, color: "#228B22", fontSize: theme.typography.size.lg }}>
+        <h1 style={{ margin: 0, color: theme.colors.themed.brandAccent, fontSize: theme.typography.size.lg }}>
           {displayNameInput || "Profile Details"}
         </h1>
         <AvatarCircle src={avatarUrlInput} size={40} badgeEmoji={badgeEmoji} />
@@ -125,7 +125,7 @@ export default function ProfilePage() {
           />
         </div>
         {badgeError && (
-          <p style={{ marginTop: theme.spacing.xs, color: theme.colors.error, fontSize: theme.typography.size.sm }}>
+          <p style={{ marginTop: theme.spacing.xs, color: theme.colors.themed.error, fontSize: theme.typography.size.sm }}>
             {badgeError}
           </p>
         )}

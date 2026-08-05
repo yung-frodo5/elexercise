@@ -37,7 +37,7 @@ function GridCell({
           : bold
             ? theme.typography.weight.bold
             : theme.typography.weight.regular,
-        color: theme.colors.navyStatic,
+        color: theme.colors.static.ink,
         // This is the header row of a div-based grid, not a real <th> --
         // the global `th { ... }` rule (layout.tsx) can't reach it, so set
         // explicitly to match every other table header on the site.
@@ -45,10 +45,11 @@ function GridCell({
         wordBreak: "break-word",
         borderRight: divider ? dividerStyle : undefined,
         // Keeps the row name in view while scrolling the equipment columns horizontally. The background
-        // has to be opaque and match the Results panel's own (Calculator.tsx's hardcoded "#D6E9FF" -- the
-        // same one-off hex this codebase already repeats at each of its call sites, e.g. app/page.tsx),
-        // since scrolled-under column content would otherwise show through a sticky box with no fill.
-        ...(sticky ? { position: "sticky" as const, left: 0, zIndex: 1, backgroundColor: "#D6E9FF" } : {}),
+        // has to be opaque and match the Results panel's own (theme.colors.static.accentPanelBg), since
+        // scrolled-under column content would otherwise show through a sticky box with no fill.
+        ...(sticky
+          ? { position: "sticky" as const, left: 0, zIndex: 1, backgroundColor: theme.colors.static.accentPanelBg }
+          : {}),
       }}
     >
       {children}
@@ -131,7 +132,7 @@ function SectionHeading({
           // font-weight (semibold here vs regular there).
           fontSize: theme.typography.size.sm,
           fontWeight: theme.typography.weight.semibold,
-          color: theme.colors.navyStatic,
+          color: theme.colors.static.ink,
           fontFamily: familjenGrotesk.style.fontFamily,
         }}
       >
@@ -155,7 +156,7 @@ export function CalculatorResultsTable({
 
   if (equipment.length === 0) {
     return (
-      <p style={{ color: theme.colors.navyStatic, fontSize: theme.typography.size.sm }}>
+      <p style={{ color: theme.colors.static.ink, fontSize: theme.typography.size.sm }}>
         Add equipment to see results.
       </p>
     );

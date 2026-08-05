@@ -40,7 +40,7 @@ export function SiteFooter() {
           paddingLeft: theme.spacing.lg,
           paddingRight: theme.spacing.lg,
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
-          backgroundColor: "#D6E9FF",
+          backgroundColor: theme.colors.static.accentPanelBg,
           boxSizing: "border-box",
           fontFamily: "'Clash Display', sans-serif",
         }}

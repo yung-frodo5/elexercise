@@ -63,6 +63,18 @@ platforms.
 - Colors reflect real design decisions and should only change with explicit
   sign-off; typography/spacing should stay a small, reusable scale rather
   than one-off numbers per component.
+- On `apps/web`, colors that touch the UI must go through either
+  `theme.colors.themed.*` (flips with light/dark mode — text and chrome
+  surfaces) or `theme.colors.static.*` (same value in both themes — light
+  "card" surfaces like the history table, calculator panels, and tooltips).
+  Never pair a `themed.*` foreground with a `static.*` background or vice
+  versa — check what surface a color is actually rendered on before picking
+  one. See `packages/design-tokens/README.md` for the full explanation.
+- Adding a new entry to `themedColors` or `staticColors`? Add a
+  corresponding case to `packages/design-tokens/src/contrast.test.ts` for
+  every surface it's actually composited against, so a future edit that
+  breaks the contrast ratio fails a test instead of shipping a dark-mode (or
+  light-mode) regression.
 
 ## Content changes
 

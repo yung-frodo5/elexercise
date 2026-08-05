@@ -22,7 +22,7 @@ export function LivePowerChart({ sessionId, activityType }: { sessionId: string;
 
   if (error) {
     return (
-      <p style={{ color: theme.colors.error, fontSize: theme.typography.size.sm }}>
+      <p style={{ color: theme.colors.themed.error, fontSize: theme.typography.size.sm }}>
         Couldn&rsquo;t load live power: {error}
       </p>
     );

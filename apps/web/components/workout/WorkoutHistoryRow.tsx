@@ -158,7 +158,7 @@ export function WorkoutHistoryRow({
   const cell: CSSProperties = {
     padding: `${theme.spacing.md}px`,
     fontSize: theme.typography.size.sm,
-    color: theme.colors.navyStatic,
+    color: theme.colors.static.ink,
     verticalAlign: "middle",
     fontFamily: familjenGrotesk.style.fontFamily,
     borderBottom: open ? "none" : `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
@@ -179,7 +179,7 @@ export function WorkoutHistoryRow({
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
     borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.2)}`,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.colors.static.panelBg,
   };
 
   const subNumeric: CSSProperties = {
@@ -188,12 +188,12 @@ export function WorkoutHistoryRow({
     fontSize: theme.typography.size.sm,
     letterSpacing: "-0.01em",
     whiteSpace: "nowrap",
-    color: theme.colors.navyStatic,
+    color: theme.colors.static.ink,
     textAlign: "right",
     fontVariantNumeric: "tabular-nums",
   };
 
-  const rowBg = open || hovered ? ROW_HOVER_BG : zebra ? "#D6E9FF" : "#FFFFFF";
+  const rowBg = open || hovered ? ROW_HOVER_BG : zebra ? theme.colors.static.accentPanelBg : theme.colors.static.panelBg;
 
   return (
     <>
@@ -225,7 +225,7 @@ export function WorkoutHistoryRow({
               style={{
                 display: "inline-block",
                 marginTop: 2,
-                color: theme.colors.navyStatic,
+                color: theme.colors.static.ink,
                 fontSize: theme.typography.size.xxs,
                 lineHeight: 1.2,
                 flexShrink: 0,
@@ -237,7 +237,7 @@ export function WorkoutHistoryRow({
               <span
                 style={{
                   display: "block",
-                  color: theme.colors.navyStatic,
+                  color: theme.colors.static.ink,
                   fontWeight: theme.typography.weight.semibold,
                   fontSize: theme.typography.size.sm,
                   whiteSpace: "nowrap",
@@ -253,7 +253,7 @@ export function WorkoutHistoryRow({
                     display: "block",
                     marginTop: 2,
                     fontSize: theme.typography.size.sm,
-                    color: theme.colors.navyStatic,
+                    color: theme.colors.static.ink,
                   }}
                 >
                   {statusLabel}
@@ -266,7 +266,7 @@ export function WorkoutHistoryRow({
         <td
           style={{
             ...cell,
-            color: theme.colors.navyStatic,
+            color: theme.colors.static.ink,
             whiteSpace: "nowrap",
             fontSize: theme.typography.size.sm,
           }}
@@ -305,7 +305,7 @@ export function WorkoutHistoryRow({
             colSpan={colSpan}
             style={{
               padding: `${theme.spacing.md}px ${theme.spacing.xl}px ${theme.spacing.xl}px`,
-              backgroundColor: "#FFFFFF",
+              backgroundColor: theme.colors.static.panelBg,
               borderBottom: `1px solid ${withAlpha(theme.colors.border, 0.25)}`,
               boxShadow: EXPAND_ACCENT,
             }}
@@ -315,7 +315,7 @@ export function WorkoutHistoryRow({
                 {powerError ? (
                   <p
                     style={{
-                      color: theme.colors.error,
+                      color: theme.colors.static.errorInk,
                       margin: 0,
                       textAlign: "center",
                       fontSize: theme.typography.size.sm,
@@ -326,7 +326,7 @@ export function WorkoutHistoryRow({
                 ) : powerLoading ? (
                   <p
                     style={{
-                      color: theme.colors.navyStatic,
+                      color: theme.colors.static.ink,
                       margin: 0,
                       textAlign: "center",
                       fontSize: theme.typography.size.sm,
@@ -392,7 +392,7 @@ function ActivitySubRow({
             style={{
               fontSize: theme.typography.size.sm,
               fontWeight: theme.typography.weight.medium,
-              color: theme.colors.navyStatic,
+              color: theme.colors.static.ink,
             }}
           >
             {session.activityType || "Activity"}

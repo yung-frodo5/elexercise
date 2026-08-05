@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { theme } from "@exercise-tracker/design-tokens";
+import { theme, generateThemeCss } from "@exercise-tracker/design-tokens";
 import { SiteHeader } from "../components/nav/SiteHeader";
 import { SiteFooter, FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 import { ContentPanel } from "../components/layout/ContentPanel";
@@ -37,8 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // per-button at their own source), and the home page definition
           // (Georgia, set locally there).
           fontFamily: familjenGrotesk.style.fontFamily,
-          backgroundColor: "#FFFFFF",
-          color: theme.colors.navy,
+          backgroundColor: theme.colors.themed.canvasBg,
+          color: theme.colors.themed.navy,
         }}
       >
         {/* Browsers apply their own UA font to form controls regardless of
@@ -60,27 +60,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             font-size: inherit;
           }
           button {
-            background-color: #FFFFFF;
+            background-color: var(--elex-canvas-bg, #FFFFFF);
+            color: var(--elex-text, #0033A0);
           }
           input[type="file"]::file-selector-button,
           input[type="file"]::-webkit-file-upload-button {
             font-family: inherit;
             font-size: inherit;
-            background-color: #FFFFFF;
+            background-color: var(--elex-canvas-bg, #FFFFFF);
           }
-          /* --elex-navy backs theme.colors.navy (see design-tokens/colors.ts)
-             -- every existing "color: theme.colors.navy" call site across
-             the app flips to white under dark mode for free, with no
-             per-component changes needed. */
-          :root {
-            --elex-navy: #0033A0;
-          }
-          html[data-theme="dark"] {
-            --elex-navy: #FFFFFF;
-          }
-          html[data-theme="dark"] body {
-            background-color: #001F3F !important;
-          }
+          /* Every --elex-* custom property below backs a theme.colors.themed.*
+             token (see design-tokens/colors.ts + webTheme.ts) -- declared once
+             here, from the same themedColors object every component reads,
+             instead of hand-duplicated per token. */
+          ${generateThemeCss()}
           /* Clash Display for header/heading text everywhere -- page
              titles ("Workout Log", "Leaderboard", "Resources", ...),
              section headings ("Start a workout"/"Workout in progress",

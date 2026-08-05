@@ -44,7 +44,7 @@ export function CashFlowChart({
     textAlign: "center" as const,
     fontSize: theme.typography.size.md,
     fontWeight: theme.typography.weight.bold,
-    color: theme.colors.navyStatic,
+    color: theme.colors.static.ink,
   };
 
   return (
@@ -107,15 +107,15 @@ export function CashFlowChart({
             domain={[0, "dataMax"]}
             allowDecimals={false}
             tickFormatter={(value: number) => `${Math.round(value)}`}
-            stroke={theme.colors.navyStatic}
+            stroke={theme.colors.static.ink}
             tickLine={false}
             axisLine={false}
             fontSize={theme.typography.size.sm}
-            label={{ value: "Years", position: "insideBottom", offset: -8, fill: theme.colors.navyStatic }}
+            label={{ value: "Years", position: "insideBottom", offset: -8, fill: theme.colors.static.ink }}
           />
           <YAxis
             tickFormatter={(value: number) => `$${Math.round(value)}`}
-            stroke={theme.colors.navyStatic}
+            stroke={theme.colors.static.ink}
             tickLine={false}
             axisLine={false}
             fontSize={theme.typography.size.sm}
@@ -134,7 +134,7 @@ export function CashFlowChart({
                     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
                   }}
                 >
-                  <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.navyStatic, marginBottom: 4 }}>
+                  <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.static.ink, marginBottom: 4 }}>
                     {Math.round(Number(label))} {Math.round(Number(label)) === 1 ? "year" : "years"}
                   </div>
                   {payload.map((entry) => {
