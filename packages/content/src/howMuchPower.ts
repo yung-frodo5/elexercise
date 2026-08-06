@@ -1,3 +1,4 @@
+import { formatEnergyAuto } from "./formatEnergy";
 import type { Article } from "./types";
 
 export const howMuchPowerArticle: Article = {
@@ -222,11 +223,11 @@ export const howMuchPowerArticle: Article = {
     {
       type: "table",
       heading: "Common Energy Quantities",
-      headers: ["Item", "Energy (kWh)", "Source"],
+      headers: ["Item", "Energy", "Source"],
       rows: [
         [
           [{ text: "Full iPhone charge" }],
-          [{ text: "~0.013" }],
+          [{ text: `~${formatEnergyAuto(13)}` }],
           [
             {
               text: "Macworld, iPhone battery capacities compared",
@@ -237,7 +238,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Microwave, 2 minutes of use (~1,000 W)" }],
-          [{ text: "~0.033" }],
+          [{ text: `~${formatEnergyAuto(33)}` }],
           [
             {
               text: "Maytag, microwave wattage guide",
@@ -247,7 +248,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Full laptop charge" }],
-          [{ text: "~0.05" }],
+          [{ text: `~${formatEnergyAuto(50)}` }],
           [
             {
               text: "Battery Skills, average laptop battery capacity",
@@ -257,12 +258,12 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Casual 45-minute workout (~100 W)", bold: true }],
-          [{ text: "~0.075" }],
+          [{ text: `~${formatEnergyAuto(75)}` }],
           [{ text: "Wikipedia, “Human power”", href: "https://en.wikipedia.org/wiki/Human_power" }],
         ],
         [
           [{ text: "Microwave, vampire draw for one day (~4 W idle)" }],
-          [{ text: "~0.096" }],
+          [{ text: `~${formatEnergyAuto(96)}` }],
           [
             {
               text: "ASAP, new standards cut vampire energy waste",
@@ -272,7 +273,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Television, 1 hour of use (~100 W)" }],
-          [{ text: "~0.1" }],
+          [{ text: `~${formatEnergyAuto(100)}` }],
           [
             {
               text: "EcoFlow, how much electricity does a TV use",
@@ -282,7 +283,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "PS5, 1 hour of gaming (~200 W)" }],
-          [{ text: "~0.2" }],
+          [{ text: `~${formatEnergyAuto(200)}` }],
           [
             {
               text: "EcoFlow, how many watts does a PS5 use",
@@ -292,7 +293,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Hard 90-minute workout (~250 W)", bold: true }],
-          [{ text: "~0.375" }],
+          [{ text: `~${formatEnergyAuto(375)}` }],
           [
             {
               text: "Princeton, “Human Power and Propulsion”",
@@ -302,7 +303,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Dyson Airwrap, 20 minutes of use (~1,300 W)" }],
-          [{ text: "~0.433" }],
+          [{ text: `~${formatEnergyAuto(433)}` }],
           [
             {
               text: "Engineer Fix, how many watts does the Dyson Airwrap use",
@@ -312,7 +313,7 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Refrigerator, one day" }],
-          [{ text: "~1.5" }],
+          [{ text: `~${formatEnergyAuto(1500)}` }],
           [
             {
               text: "EnergySage, how many watts does a refrigerator use",
@@ -322,12 +323,12 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Average U.S. household, one day" }],
-          [{ text: "~29" }],
+          [{ text: `~${formatEnergyAuto(29000)}` }],
           [{ text: "U.S. EIA", href: "https://www.eia.gov/tools/faqs/faq.php?id=97&t=3" }],
         ],
         [
           [{ text: "Average EV, full battery charge" }],
-          [{ text: "~75" }],
+          [{ text: `~${formatEnergyAuto(75000)}` }],
           [
             {
               text: "Recharged.com, EV Battery Capacity Guide",
@@ -337,12 +338,12 @@ export const howMuchPowerArticle: Article = {
         ],
         [
           [{ text: "Average U.S. household, one month" }],
-          [{ text: "~899" }],
+          [{ text: `~${formatEnergyAuto(899000)}` }],
           [{ text: "U.S. EIA", href: "https://www.eia.gov/tools/faqs/faq.php?id=97&t=3" }],
         ],
         [
           [{ text: "Average U.S. household, one year" }],
-          [{ text: "~10,791" }],
+          [{ text: `~${formatEnergyAuto(10_791_000)}` }],
           [{ text: "U.S. EIA", href: "https://www.eia.gov/tools/faqs/faq.php?id=97&t=3" }],
         ],
       ],

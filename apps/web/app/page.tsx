@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { GraphicKey } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
@@ -131,7 +132,30 @@ const LANDING_LINKS: LandingLink[] = [
   },
 ];
 
+const ARTICLES_SECTION_ID = "landing-articles";
+// A full viewport per click overshot past the next card instead of just
+// revealing it -- 0.7 keeps some of the previous card on screen as context.
+const PAGE_DOWN_SCROLL_FRACTION = 0.7;
+// Small buffer, not an exact >= check -- fractional-pixel scroll math
+// (subpixel zoom, some mobile browsers) can leave scrollY a hair short of
+// the true max, which would otherwise never satisfy an exact equality.
+const BOTTOM_SCROLL_BUFFER_PX = 4;
+
 export default function LandingPage() {
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  useEffect(() => {
+    function checkIsAtBottom() {
+      const scrolledToBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_SCROLL_BUFFER_PX;
+      setIsAtBottom(scrolledToBottom);
+    }
+
+    checkIsAtBottom();
+    window.addEventListener("scroll", checkIsAtBottom, { passive: true });
+    return () => window.removeEventListener("scroll", checkIsAtBottom);
+  }, []);
+
   return (
     <>
       {/* A real <style> rule is needed for the mobile media query below,
@@ -286,8 +310,8 @@ export default function LandingPage() {
               style={{ margin: 0, marginTop: DEFINITION_LINE_GAP, paddingLeft: DEFINITION_LINE_INDENT }}
             >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> a
-              movement; an ideal; an empowerment of people to simultaneously meet their personal health goals and
-              contribute to planetary health
+              movement; an ideal; the empowerment of people to meet personal health goals while contributing to
+              planetary health
             </p>
           </div>
         </div>
@@ -301,24 +325,45 @@ export default function LandingPage() {
           flow-positioned indicator below the fold regardless of that
           calculation. Fixed to the viewport instead guarantees it's always
           visible on load. Pinned just above the fixed footer, not
-          overlapping it. */}
-      <div
-        className="scroll-indicator"
-        aria-hidden
-        style={{
-          position: "fixed",
-          left: "50%",
-          bottom: FOOTER_HEIGHT + theme.spacing.md,
-          transform: "translateX(-50%)",
-          fontSize: theme.typography.size.xl,
-          color: theme.colors.static.accentPanelBg,
-          zIndex: 40,
-        }}
-      >
-        ⌄
-      </div>
+          overlapping it. Hidden once the page is scrolled to the bottom,
+          where "scroll down" no longer makes sense. */}
+      {!isAtBottom && (
+        <button
+          type="button"
+          className="scroll-indicator"
+          aria-label="Scroll to articles"
+          onClick={() => {
+            const articlesSection = document.getElementById(ARTICLES_SECTION_ID);
+            // First click (still above the articles section): jump straight
+            // to it. Once already there, jumping again would be a no-op --
+            // page down by a viewport instead, so repeated clicks keep
+            // advancing through the article cards below.
+            if (articlesSection && window.scrollY < articlesSection.offsetTop) {
+              articlesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              window.scrollBy({ top: window.innerHeight * PAGE_DOWN_SCROLL_FRACTION, behavior: "smooth" });
+            }
+          }}
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: FOOTER_HEIGHT + theme.spacing.md,
+            transform: "translateX(-50%)",
+            fontSize: theme.typography.size.xl,
+            color: theme.colors.themed.controlOnChrome,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            zIndex: 40,
+          }}
+        >
+          ⌄
+        </button>
+      )}
 
       <section
+        id={ARTICLES_SECTION_ID}
         style={{
           backgroundColor: theme.colors.static.accentPanelBg,
           // Breaks out of ContentPanel's side margin AND its side padding

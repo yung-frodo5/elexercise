@@ -1,8 +1,82 @@
-import type { Article } from "@exercise-tracker/content";
+import type { Article, Table } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
 import { Graphic } from "./Graphic";
 import { RichText } from "./RichText";
 import { ExternalLink } from "../ui/ExternalLink";
+
+export function ArticleTable({ table }: { table: Table }) {
+  return (
+    <div>
+      {table.heading && (
+        <p
+          style={{
+            margin: 0,
+            marginBottom: theme.spacing.sm,
+            fontWeight: theme.typography.weight.bold,
+            fontSize: theme.typography.size.sm,
+            color: theme.colors.themed.navy,
+          }}
+        >
+          {table.heading}
+        </p>
+      )}
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          border: `1px solid ${theme.colors.static.accentPanelBg}`,
+          fontSize: theme.typography.size.sm,
+          color: theme.colors.themed.navy,
+        }}
+      >
+        <thead>
+          <tr>
+            {table.headers.map((header, headerIndex) => (
+              <th
+                key={headerIndex}
+                style={{
+                  padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+                  textAlign: "left",
+                  borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
+                  fontWeight: theme.typography.weight.bold,
+                }}
+              >
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => {
+                // Short cell values (e.g. "~112.79 MWh") shouldn't wrap --
+                // auto table layout otherwise starves that column of width
+                // in favor of longer prose columns like Item/Source, forcing
+                // an ugly mid-value line break.
+                const cellText = cell.map((node) => node.text).join("");
+                return (
+                  <td
+                    key={cellIndex}
+                    style={{
+                      padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+                      textAlign: "left",
+                      borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
+                      verticalAlign: "top",
+                      whiteSpace: cellText.length <= 20 ? "nowrap" : undefined,
+                    }}
+                  >
+                    <RichText nodes={cell} />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function ArticleHeader({
   article,
@@ -161,65 +235,7 @@ export function ArticleBody({ article }: { article: Article }) {
           case "table":
             return (
               <div key={index} style={{ marginTop: theme.spacing.xl }}>
-                {block.heading && (
-                  <p
-                    style={{
-                      margin: 0,
-                      marginBottom: theme.spacing.sm,
-                      fontWeight: theme.typography.weight.bold,
-                      fontSize: theme.typography.size.sm,
-                      color: theme.colors.themed.navy,
-                    }}
-                  >
-                    {block.heading}
-                  </p>
-                )}
-                <table
-                  style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    border: `1px solid ${theme.colors.static.accentPanelBg}`,
-                    fontSize: theme.typography.size.sm,
-                    color: theme.colors.themed.navy,
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      {block.headers.map((header, headerIndex) => (
-                        <th
-                          key={headerIndex}
-                          style={{
-                            padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-                            textAlign: "left",
-                            borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
-                            fontWeight: theme.typography.weight.bold,
-                          }}
-                        >
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {block.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                          <td
-                            key={cellIndex}
-                            style={{
-                              padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-                              textAlign: "left",
-                              borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
-                              verticalAlign: "top",
-                            }}
-                          >
-                            <RichText nodes={cell} />
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <ArticleTable table={block} />
               </div>
             );
           default: {

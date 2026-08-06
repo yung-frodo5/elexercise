@@ -11,6 +11,7 @@ export type {
   Article,
   GraphicKey,
 } from "./types";
+export { formatEnergyAuto } from "./formatEnergy";
 export { landingArticle } from "./landing";
 export { powerGenerationWorthItArticle } from "./powerGenerationWorthIt";
 export { howMuchPowerArticle } from "./howMuchPower";
