@@ -18,6 +18,7 @@ import { formatDurationHoursMinutes, formatEnergy, formatEnergyComparison } from
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
+import { EnergyReferenceModal } from "../../../components/workout/EnergyReferenceModal";
 import { familjenGrotesk } from "../../../lib/fonts";
 
 const mainStyle: CSSProperties = {
@@ -42,6 +43,7 @@ export default function HistoryPage() {
   const [sortKey, setSortKey] = useState<HistorySortKey>("date");
   const [sortDir, setSortDir] = useState<HistorySortDir>("desc");
   const [shareCopied, setShareCopied] = useState(false);
+  const [energyModalOpen, setEnergyModalOpen] = useState(false);
 
   const sportOptions = useMemo(() => uniqueWorkoutActivityTypes(workouts), [workouts]);
   const filtered = useMemo(
@@ -58,7 +60,7 @@ export default function HistoryPage() {
   );
   const shareText =
     `I've generated ${formatEnergy(totalEnergyJ)} by exercising for ` +
-    `${formatDurationHoursMinutes(totalDurationS)}—${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
+    `${formatDurationHoursMinutes(totalDurationS)}—enough for ${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
     `Join elexercise to generate some electricity of your own. Learn more at elexercise.org`;
 
   async function toggleExpand(workoutId: string) {
@@ -222,7 +224,7 @@ export default function HistoryPage() {
                 <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
                   {formatEnergy(totalEnergyJ)}
                 </span>
-                —{formatEnergyComparison(totalEnergyJ / 3600)}!
+                —enough for {formatEnergyComparison(totalEnergyJ / 3600)}!
               </span>
               {/* A real <a href="sms:..."> rather than a button + JS
                   location.href assignment -- several mobile browsers only
@@ -261,6 +263,30 @@ export default function HistoryPage() {
               >
                 Share
               </a>
+              <button
+                type="button"
+                onClick={() => setEnergyModalOpen(true)}
+                style={{
+                  display: "inline-block",
+                  marginLeft: theme.spacing.sm,
+                  fontFamily: "'Clash Display', sans-serif",
+                  fontSize: theme.typography.size.sm,
+                  padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+                  borderRadius: theme.radii.pill,
+                  border: "none",
+                  // Themed, not accentBlue's static hex -- that's a fixed
+                  // dark navy that blends into the canvas once it flips dark
+                  // in dark mode. controlOnChrome is the token built for
+                  // exactly this ("UI element that needs to visually
+                  // separate from the background in both themes").
+                  background: theme.colors.themed.controlOnChrome,
+                  color: "#FFFFFF",
+                  fontWeight: theme.typography.weight.semibold,
+                  cursor: "pointer",
+                }}
+              >
+                Learn more
+              </button>
               {shareCopied && (
                 // Static -- this badge's own light-blue background doesn't
                 // invert in dark mode.
@@ -281,6 +307,7 @@ export default function HistoryPage() {
           )}
         </section>
       </main>
+      <EnergyReferenceModal open={energyModalOpen} onClose={() => setEnergyModalOpen(false)} />
     </>
   );
 }
