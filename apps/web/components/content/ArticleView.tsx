@@ -49,19 +49,27 @@ export function ArticleTable({ table }: { table: Table }) {
         <tbody>
           {table.rows.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={cellIndex}
-                  style={{
-                    padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
-                    textAlign: "left",
-                    borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
-                    verticalAlign: "top",
-                  }}
-                >
-                  <RichText nodes={cell} />
-                </td>
-              ))}
+              {row.map((cell, cellIndex) => {
+                // Short cell values (e.g. "~112.79 MWh") shouldn't wrap --
+                // auto table layout otherwise starves that column of width
+                // in favor of longer prose columns like Item/Source, forcing
+                // an ugly mid-value line break.
+                const cellText = cell.map((node) => node.text).join("");
+                return (
+                  <td
+                    key={cellIndex}
+                    style={{
+                      padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+                      textAlign: "left",
+                      borderBottom: `1px solid ${theme.colors.static.accentPanelBg}`,
+                      verticalAlign: "top",
+                      whiteSpace: cellText.length <= 20 ? "nowrap" : undefined,
+                    }}
+                  >
+                    <RichText nodes={cell} />
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type CSSProperties } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
+import { formatEnergyAuto } from "@exercise-tracker/content";
 import { useSupabaseSession } from "../../../lib/useSession";
 import {
   filterAndSortHistoryWorkouts,
@@ -14,7 +15,7 @@ import {
   type HistorySortKey,
 } from "../../../lib/historySessions";
 import { useHistoryWorkouts } from "../../../lib/useHistoryWorkouts";
-import { formatDurationHoursMinutes, formatEnergy, formatEnergyComparison } from "../../../lib/format";
+import { formatDurationHoursMinutes, formatEnergyComparison } from "../../../lib/format";
 import { SoftPanel } from "../../../components/ui/SoftPanel";
 import { HistoryToolbar } from "../../../components/workout/HistoryToolbar";
 import { HistoryTable } from "../../../components/workout/HistoryTable";
@@ -59,7 +60,7 @@ export default function HistoryPage() {
     [filtered]
   );
   const shareText =
-    `I've generated ${formatEnergy(totalEnergyJ)} by exercising for ` +
+    `I've generated ${formatEnergyAuto(totalEnergyJ / 3600)} by exercising for ` +
     `${formatDurationHoursMinutes(totalDurationS)}—enough for ${formatEnergyComparison(totalEnergyJ / 3600)}! ` +
     `Join elexercise to generate some electricity of your own. Learn more at elexercise.org`;
 
@@ -222,7 +223,7 @@ export default function HistoryPage() {
               <span>
                 Total energy generated:{" "}
                 <span style={{ fontWeight: theme.typography.weight.bold, textDecoration: "underline" }}>
-                  {formatEnergy(totalEnergyJ)}
+                  {formatEnergyAuto(totalEnergyJ / 3600)}
                 </span>
                 —enough for {formatEnergyComparison(totalEnergyJ / 3600)}!
               </span>
