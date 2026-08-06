@@ -133,6 +133,9 @@ const LANDING_LINKS: LandingLink[] = [
 ];
 
 const ARTICLES_SECTION_ID = "landing-articles";
+// A full viewport per click overshot past the next card instead of just
+// revealing it -- 0.7 keeps some of the previous card on screen as context.
+const PAGE_DOWN_SCROLL_FRACTION = 0.7;
 // Small buffer, not an exact >= check -- fractional-pixel scroll math
 // (subpixel zoom, some mobile browsers) can leave scrollY a hair short of
 // the true max, which would otherwise never satisfy an exact equality.
@@ -338,7 +341,7 @@ export default function LandingPage() {
             if (articlesSection && window.scrollY < articlesSection.offsetTop) {
               articlesSection.scrollIntoView({ behavior: "smooth", block: "start" });
             } else {
-              window.scrollBy({ top: window.innerHeight, behavior: "smooth" });
+              window.scrollBy({ top: window.innerHeight * PAGE_DOWN_SCROLL_FRACTION, behavior: "smooth" });
             }
           }}
           style={{
