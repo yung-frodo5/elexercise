@@ -10,14 +10,56 @@ import { graphicAssets } from "../lib/content/graphicAssets";
 import { HEADER_HEIGHT } from "../lib/layoutConstants";
 import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 
+// ContentPanel publishes its own responsive geometry as custom properties on
+// .content-panel-home (see the comment there): the combined horizontal
+// margin+padding per side, and the combined top margin+padding. Read those
+// rather than restating "0.5in + xxl", which went stale the moment
+// ContentPanel's own media query collapsed the panel to a 12px inset. The
+// fallbacks are ContentPanel's desktop home values and only apply if this
+// page ever renders outside ContentPanel.
+const CONTENT_INSET = `var(--elex-content-inset, calc(0.5in + ${theme.spacing.xxl}px))`;
+const CONTENT_TOP_OFFSET = `var(--elex-content-top-offset, calc(0.5in + ${theme.spacing.xxl}px))`;
+
+// Fluid scales for the definition below. Two independent axes, because a
+// viewport can be cramped in either one and a width-only breakpoint sees
+// only one:
+//   cqi -> 1% of the definition section's own inline size (it's a
+//          container-query container, see the .definition-section rule
+//          below), so type and indents track the width actually available
+//          inside ContentPanel's margins/padding, not the raw viewport width
+//          -- same reasoning as .landing-cards's own container query below.
+//   svh -> 1% of the small/stable viewport height, so vertical rhythm and
+//          the type ceilings also compress on SHORT viewports -- a
+//          landscape phone or a short desktop window, neither of which any
+//          width query can see.
+// min(cqi-term, svh-term) takes whichever axis is scarcer. Every clamp below
+// is fitted so a >=1278x890 window lands on today's exact values (headword
+// 60, body 48, gaps 32, indent 64, padding 24) -- on a normal desktop this
+// whole block is a no-op.
+const HEADWORD_FONT_SIZE = "clamp(26px, min(calc(20px + 3.8cqi), 9svh), 60px)";
+const DEFINITION_FONT_SIZE = "clamp(18px, min(calc(18px + 2.8cqi), 6svh), 48px)";
+const DEFINITION_PANEL_PADDING = `clamp(${theme.spacing.sm}px, 3svh, ${theme.spacing.xl}px) clamp(${theme.spacing.lg}px, 2.5cqi, ${theme.spacing.xl}px)`;
+const DEFINITION_LINE_GAP = `clamp(10px, 4svh, ${theme.spacing.xxl}px)`;
+const DEFINITION_LINE_INDENT = `clamp(${theme.spacing.lg}px, 6cqi, ${theme.spacing.xxl * 2}px)`;
+const SECTION_PADDING_TOP = `clamp(${theme.spacing.sm}px, 3svh, ${theme.spacing.xl}px)`;
+// vw, not cqi: this padding is on the container element itself, and cqi
+// resolves against that element's content box -- which its own padding
+// defines. Circular. Everything INSIDE the container uses cqi instead.
+const SECTION_PADDING_X = `clamp(${theme.spacing.md}px, 4vw, ${theme.spacing.xxl}px)`;
+
 // The fixed header/footer (reserved via padding in layout.tsx) and
-// ContentPanel's own home-branch top margin (0.5in = 48px) + top padding
-// (xxl) all eat into the viewport before this section's own box even
-// starts -- a plain "80vh" doesn't know about any of that, so on a typical
-// screen the scroll indicator at this section's bottom ends up below the
-// fold. This computes the actual height available in the first-load
-// viewport instead.
-const DEFINITION_SECTION_HEIGHT = `calc(100vh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px - 48px - ${theme.spacing.xxl}px)`;
+// ContentPanel's own top offset all eat into the viewport before this
+// section's own box even starts -- a plain "80vh" doesn't know about any of
+// that, so on a typical screen the scroll indicator at this section's
+// bottom ends up below the fold. This computes the actual height available
+// in the first-load viewport instead.
+// svh, not vh: on a mobile browser, vh resolves to the LARGE viewport (URL
+// bar hidden), which is taller than what's actually on screen at load, so
+// it over-reserved and pushed the fold down. svh is the load-time viewport
+// and is stable (doesn't reflow as the URL bar hides while scrolling),
+// which is what "the definition exactly fills the first-load viewport"
+// (see below) actually wants.
+const DEFINITION_SECTION_HEIGHT = `calc(100svh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px - ${CONTENT_TOP_OFFSET})`;
 
 interface LandingLink {
   href: string;
@@ -105,14 +147,27 @@ export default function LandingPage() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        /* The headword's 60px nowrap text is wider than any phone viewport
-           -- without this it forces the whole page to scroll horizontally.
-           !important is needed to beat the matching inline styles. */
-        @media (max-width: 600px) {
-          .definition-wrap { width: 100%; box-sizing: border-box; }
-          .definition-panel { font-size: 26px !important; padding: 16px !important; }
-          .definition-headword { white-space: normal !important; font-size: 30px !important; }
-          .definition-body-line { padding-left: 16px !important; }
+        /* Makes this section a container-query container so the definition's
+           type and indents can be sized in cqi -- 1% of the width actually
+           available inside ContentPanel's margins/padding, which a viewport
+           media query can't see (same reasoning as .landing-cards below).
+           Safe on this element specifically: its inline size comes from its
+           block parent, not from its own contents. Do NOT move this to
+           .definition-wrap -- that's a fit-content flex item, and inline-size
+           containment would make it resolve its width against empty
+           contents and collapse to zero.
+           Everything that used to live in a max-width: 600px block here (a
+           single abrupt jump that missed tablets/small laptops between
+           600px and ~1200px, and any short-but-wide landscape viewport
+           regardless of width) is now a fluid clamp() in the inline styles
+           below -- which is why none of it needs !important anymore. */
+        .definition-section { container-type: inline-size; }
+        /* Decorative and aria-hidden. On a viewport this short the
+           definition already visibly runs past the fold, so the affordance
+           is redundant, and a fixed element pinned near the bottom would
+           sit on top of the text. */
+        @media (max-height: 480px) {
+          .scroll-indicator { display: none; }
         }
         /* Below the row/column breakpoint, every card stacks in DOM order
            (image, then text) regardless of its alternating side -- the
@@ -157,11 +212,12 @@ export default function LandingPage() {
           reachable by actually scrolling, not just visible tucked under a
           large top margin. */}
       <section
+        className="definition-section"
         style={{
           minHeight: DEFINITION_SECTION_HEIGHT,
-          paddingTop: theme.spacing.xl,
-          paddingLeft: theme.spacing.xxl,
-          paddingRight: theme.spacing.xxl,
+          paddingTop: SECTION_PADDING_TOP,
+          paddingLeft: SECTION_PADDING_X,
+          paddingRight: SECTION_PADDING_X,
           // flex-start (not center) -- the definition sits close to the
           // top, and the leftover space (now larger, since it's no longer
           // split evenly above/below) collects below it, where the scroll
@@ -180,13 +236,20 @@ export default function LandingPage() {
               // it sits directly on the home page's canvas, which inverts to
               // dark navy in dark mode, so its text needs to flip too.
               color: theme.colors.themed.definitionText,
-              padding: theme.spacing.xl,
+              padding: DEFINITION_PANEL_PADDING,
               borderRadius: theme.radii.lg,
               fontFamily: "Georgia, 'Times New Roman', serif",
-              fontSize: 48,
+              fontSize: DEFINITION_FONT_SIZE,
             }}
           >
-            <p className="definition-headword" style={{ margin: 0, whiteSpace: "nowrap", fontSize: 60 }}>
+            {/* No white-space: nowrap. It only differs from the default in
+                the case where the line doesn't fit, and there it turns
+                "wrap gracefully" into "scroll the whole page sideways" --
+                which it did on every viewport from ~1200px down, not just
+                the phones the old max-width: 600px rule covered. Left to
+                wrap naturally, it stays on one line whenever there's room,
+                which is all the nowrap was ever for. */}
+            <p className="definition-headword" style={{ margin: 0, fontSize: HEADWORD_FONT_SIZE }}>
               <span style={{ fontWeight: theme.typography.weight.bold }}>elexercise</span>{" "}
               \ɪˈlɛk &middot; sɚ &middot; saɪz\{" "}
               <button
@@ -199,7 +262,11 @@ export default function LandingPage() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  fontSize: 32,
+                  // em, so the speaker tracks the headword instead of
+                  // staying fixed at 32px next to a shrunk word on a small
+                  // screen. 0.55em of the 60px desktop cap is 33px, i.e.
+                  // today's value.
+                  fontSize: "0.55em",
                   verticalAlign: "middle",
                   padding: 0,
                 }}
@@ -209,14 +276,14 @@ export default function LandingPage() {
             </p>
             <p
               className="definition-body-line"
-              style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
+              style={{ margin: 0, marginTop: DEFINITION_LINE_GAP, paddingLeft: DEFINITION_LINE_INDENT }}
             >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>verb.</span> to produce
               electricity through exercise
             </p>
             <p
               className="definition-body-line"
-              style={{ margin: 0, marginTop: theme.spacing.xxl, paddingLeft: theme.spacing.xxl * 2 }}
+              style={{ margin: 0, marginTop: DEFINITION_LINE_GAP, paddingLeft: DEFINITION_LINE_INDENT }}
             >
               <span style={{ fontWeight: theme.typography.weight.bold, fontStyle: "italic" }}>noun.</span> a
               movement; an ideal; an empowerment of people to simultaneously meet their personal health goals and
@@ -254,17 +321,19 @@ export default function LandingPage() {
       <section
         style={{
           backgroundColor: theme.colors.static.accentPanelBg,
-          // Breaks out of ContentPanel's own fixed 0.5in side margins AND
-          // its own xxl side padding (see ContentPanel.tsx's home branch --
-          // both apply, margin outside padding inside, and this section
+          // Breaks out of ContentPanel's side margin AND its side padding
+          // (both apply -- margin outside, padding inside, and this section
           // sits inside both) so the background reaches the actual window
-          // edge on both sides.
-          marginLeft: `calc(-0.5in - ${theme.spacing.xxl}px)`,
-          marginRight: `calc(-0.5in - ${theme.spacing.xxl}px)`,
-          paddingTop: theme.spacing.xxl,
-          paddingBottom: theme.spacing.xxl,
-          paddingLeft: theme.spacing.xxl,
-          paddingRight: theme.spacing.xxl,
+          // edge. Read from ContentPanel's own published variable rather
+          // than restated as a literal: it collapses from 80px to 12px per
+          // side at ContentPanel's own breakpoints, and a hardcoded -80px
+          // overshot the window edge by 68px per side on every phone.
+          marginLeft: `calc(-1 * ${CONTENT_INSET})`,
+          marginRight: `calc(-1 * ${CONTENT_INSET})`,
+          paddingTop: `clamp(${theme.spacing.lg}px, 3svh, ${theme.spacing.xxl}px)`,
+          paddingBottom: `clamp(${theme.spacing.lg}px, 3svh, ${theme.spacing.xxl}px)`,
+          paddingLeft: SECTION_PADDING_X,
+          paddingRight: SECTION_PADDING_X,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
