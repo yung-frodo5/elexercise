@@ -36,18 +36,37 @@ export function formatEnergy(joules: number): string {
   return `${wh.toFixed(wh < 10 ? 2 : 1)} Wh`;
 }
 
-const ENERGY_COMPARISONS: { verb: string; label: string; capacityWh: number }[] = [
-  { verb: "charge", label: "a phone", capacityWh: 12 },
-  { verb: "charge", label: "a laptop", capacityWh: 50 },
-  { verb: "power", label: "a home for an hour", capacityWh: 1200 },
-  { verb: "charge", label: "an electric car", capacityWh: 60000 },
+interface EnergyComparisonTier {
+  // Exclusive upper bound of this tier's kWh range; the last tier has no
+  // upper bound. Tiers are listed in ascending order.
+  maxKWh: number;
+  // Energy per one unit of the comparison (e.g. 0.1 kWh per hour of TV) --
+  // the input's kWh divided by this gives the multiplier to display.
+  unitKWh: number;
+  singular: string;
+  plural: string;
+}
+
+// Real-world figures matched to packages/content/src/howMuchPower.ts's
+// "Common Energy Quantities" table rows (phone/laptop/TV-hour/EV-charge
+// figures there are ~0.013/~0.05/~0.1/~75 kWh) so this sentence and the
+// "Learn more" reference table tell a consistent story, even though the
+// data isn't literally shared between the two packages.
+const ENERGY_COMPARISON_TIERS: EnergyComparisonTier[] = [
+  { maxKWh: 0.05, unitKWh: 0.013, singular: "phone charge", plural: "phone charges" },
+  { maxKWh: 0.1, unitKWh: 0.05, singular: "laptop charge", plural: "laptop charges" },
+  { maxKWh: 1, unitKWh: 0.1, singular: "hour of television use", plural: "hours of television use" },
+  { maxKWh: 75, unitKWh: 1.2, singular: "hour of powering a home", plural: "hours of powering a home" },
+  { maxKWh: Infinity, unitKWh: 75, singular: "EV charge", plural: "EV charges" },
 ];
 
-/** e.g. "enough to charge a laptop to 64%". Caps at 100% even past the largest reference. */
+/** e.g. "3 hours of television use" for 270.1 Wh. Picks the shortlist tier whose range contains the value, then scales to the nearest whole multiple of that tier's reference unit. */
 export function formatEnergyComparison(wh: number): string {
-  const item = ENERGY_COMPARISONS.find((c) => wh <= c.capacityWh) ?? ENERGY_COMPARISONS[ENERGY_COMPARISONS.length - 1];
-  const pct = Math.min(100, Math.round((wh / item!.capacityWh) * 100));
-  return `enough to ${item!.verb} ${item!.label} to ${pct}%`;
+  const kWh = wh / 1000;
+  const tier =
+    ENERGY_COMPARISON_TIERS.find((t) => kWh < t.maxKWh) ?? ENERGY_COMPARISON_TIERS[ENERGY_COMPARISON_TIERS.length - 1];
+  const multiplier = Math.max(1, Math.round(kWh / tier.unitKWh));
+  return `${multiplier} ${multiplier === 1 ? tier.singular : tier.plural}`;
 }
 
 /** Watts with unit, or em dash when missing. */
