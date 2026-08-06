@@ -62,7 +62,33 @@ export function ContentPanel({ children }: { children: ReactNode }) {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        @media (max-width: 640px) {
+        /* This panel's own geometry, published to its descendants. page.tsx's
+           full-bleed accent section has to cancel exactly this much
+           horizontal inset to reach the window edge, and its first-viewport
+           hero section has to subtract exactly this much from the viewport
+           height. Both used to restate "0.5in + xxl" as a literal, which
+           silently went stale the moment the media query below collapsed
+           this panel to a 12px inset -- the accent section overshot the
+           window edge by 68px per side and scrolled the whole page sideways.
+           Custom properties, because this is the only way a value computed
+           in JS (an inline style in page.tsx) can track a breakpoint that
+           only exists in CSS -- this codebase deliberately has no JS
+           matchMedia hooks anywhere. Declared here in the stylesheet rather
+           than the inline style prop below so the base value and its
+           override sit next to each other and the override doesn't need
+           !important to beat an inline declaration -- don't move these into
+           the style prop. */
+        .content-panel-home {
+          --elex-content-inset: calc(0.5in + ${theme.spacing.xxl}px);
+          --elex-content-top-offset: calc(0.5in + ${theme.spacing.xxl}px);
+        }
+        /* Second condition: a landscape phone or short foldable is wider
+           than 640px but has no vertical room to spare, and 160px of
+           horizontal panel chrome out of an 844px-wide screen reads as a
+           sliver. Bounded by max-width: 900px so an ordinary desktop window
+           that happens to be short keeps its panel framing. Comma is OR in
+           a media query list, so both conditions share one rule body. */
+        @media (max-width: 640px), (max-width: 900px) and (max-height: 500px) {
           .content-panel {
             width: 100% !important;
             max-width: none !important;
@@ -72,6 +98,11 @@ export function ContentPanel({ children }: { children: ReactNode }) {
           .content-panel-home {
             margin: 12px 0 20px 0 !important;
             padding: 12px 12px 20px 12px !important;
+            /* margin-left/right 0 + padding-left/right 12 */
+            --elex-content-inset: 12px;
+            /* margin-top 12 + padding-top 12 (the padding shorthand above
+               resets padding-top to 12, not xxl) */
+            --elex-content-top-offset: 24px;
           }
         }
       `,
