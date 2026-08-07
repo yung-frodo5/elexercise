@@ -4,14 +4,9 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
+import { useWattcycleSession } from "../../../lib/useWattcycleSession";
 import { useWorkoutSummaries } from "../../../lib/WorkoutSummaryContext";
-import {
-  endSession,
-  endWorkout,
-  getWorkout,
-  startMachineSession,
-  startManualSession,
-} from "../../../lib/api";
+import { endSession, endWorkout, getWorkout, startManualSession } from "../../../lib/api";
 import { StartActivityForm } from "../../../components/workout/StartActivityForm";
 import { StartMachineForm } from "../../../components/workout/StartMachineForm";
 import { SessionList } from "../../../components/workout/SessionList";
@@ -45,6 +40,7 @@ export default function TrackPage() {
   const { session } = useSupabaseSession();
   const { currentWorkout: currentWorkoutSummary, loading: summariesLoading, refresh: refreshSummaries } =
     useWorkoutSummaries();
+  const wattcycle = useWattcycleSession(session?.access_token);
 
   const [currentWorkout, setCurrentWorkout] = useState<WorkoutWithSessions | null>(null);
   const [detailLoading, setDetailLoading] = useState(true);
@@ -93,12 +89,15 @@ export default function TrackPage() {
     }
   }
 
+  // BLE-only end to end -- see useWattcycleSession. A machine with no real
+  // Bluetooth mapping throws the same error a failed connection would,
+  // rather than falling back to the simulated pathway.
   async function handleStartMachine(scanToken: string) {
     if (!session) return;
     setBusy(true);
     setError(null);
     try {
-      await startMachineSession(session.access_token, scanToken);
+      await wattcycle.connect(scanToken);
       await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to connect to machine");
@@ -112,7 +111,13 @@ export default function TrackPage() {
     setBusy(true);
     setError(null);
     try {
-      await endSession(session.access_token, sessionId);
+      // Stopping the BLE-tracked session must disconnect it, not just mark
+      // it completed -- see useWattcycleSession.stop().
+      if (sessionId === wattcycle.sessionId) {
+        await wattcycle.stop();
+      } else {
+        await endSession(session.access_token, sessionId);
+      }
       await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to stop activity");
@@ -126,6 +131,9 @@ export default function TrackPage() {
     setBusy(true);
     setError(null);
     try {
+      if (wattcycle.sessionId) {
+        await wattcycle.stop();
+      }
       await endWorkout(session.access_token, currentWorkout.id);
       await refreshSummaries();
     } catch (err) {
@@ -151,6 +159,15 @@ export default function TrackPage() {
   }
 
   const inProgressSession = currentWorkout?.sessions.find((s) => s.status === "in_progress");
+
+  const wattcycleStatusMessage: string | null =
+    wattcycle.status === "looking-up"
+      ? "Looking up machine…"
+      : wattcycle.status === "connecting"
+        ? "Connecting via Bluetooth — check for a browser device picker…"
+        : wattcycle.status === "disconnected"
+          ? "Bluetooth connection lost. Click Stop on the session below to end it."
+          : null;
 
   return (
     <main
@@ -195,6 +212,11 @@ export default function TrackPage() {
               Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />
+            {wattcycleStatusMessage && (
+              <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
+                {wattcycleStatusMessage}
+              </p>
+            )}
             <button
               onClick={() => void handleEnd()}
               disabled={busy}
@@ -213,6 +235,11 @@ export default function TrackPage() {
               Or connect to a machine (stand-in for scanning, until that&apos;s built):
             </p>
             <StartMachineForm onStart={handleStartMachine} busy={busy} />
+            {wattcycleStatusMessage && (
+              <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
+                {wattcycleStatusMessage}
+              </p>
+            )}
           </>
         )}
       </section>

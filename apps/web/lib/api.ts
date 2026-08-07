@@ -1,4 +1,4 @@
-import type { Workout, WorkoutWithSessions, Session as WorkoutSession } from "@exercise-tracker/shared-types";
+import type { Machine, Workout, WorkoutWithSessions, Session as WorkoutSession } from "@exercise-tracker/shared-types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -43,6 +43,18 @@ export async function startManualSession(
     body: JSON.stringify({ activityType }),
   });
   if (!res.ok) throw new Error(`Failed to start session (${res.status})`);
+  return res.json();
+}
+
+// Looked up before starting a session -- lets the caller check
+// machine.bleDeviceName and attempt a Web Bluetooth connection first,
+// without creating a workout/session until that actually succeeds.
+export async function getMachineByScanToken(accessToken: string, scanToken: string): Promise<Machine> {
+  const res = await fetch(`${API_URL}/api/machines/${encodeURIComponent(scanToken)}`, {
+    headers: authHeaders(accessToken),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Machine not found (${res.status})`);
   return res.json();
 }
 

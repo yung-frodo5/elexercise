@@ -27,6 +27,7 @@ interface MachineRow {
   scan_token: string;
   status: Machine["status"];
   last_seen_at: string | null;
+  ble_device_name: string | null;
 }
 
 interface WorkoutRow {
@@ -63,6 +64,7 @@ function rowToMachine(row: MachineRow): Machine {
     scanToken: row.scan_token,
     status: row.status,
     lastSeenAt: row.last_seen_at ?? undefined,
+    bleDeviceName: row.ble_device_name ?? undefined,
   };
 }
 

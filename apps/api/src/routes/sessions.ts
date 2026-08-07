@@ -15,9 +15,17 @@ export function createSessionRouter(repo: WorkoutRepository): Router {
     try {
       const { closedSessionIds, ...result } = await repo.startMachineSession(req.userId!, scanToken);
       for (const id of closedSessionIds ?? []) stopFakePowerGeneration(id);
-      startFakePowerGeneration(result.session.id, result.session.activityType, (tMs, powerW) =>
-        repo.insertPowerSample(result.session.id, tMs, powerW)
-      );
+
+      // Machines with a real BLE mapping get their power_samples written by
+      // the browser (Web Bluetooth) instead — starting the fake simulator
+      // too would interleave simulated samples into the same session.
+      const machine = await repo.getMachineByScanToken(scanToken);
+      if (!machine?.bleDeviceName) {
+        startFakePowerGeneration(result.session.id, result.session.activityType, (tMs, powerW) =>
+          repo.insertPowerSample(result.session.id, tMs, powerW)
+        );
+      }
+
       res.status(201).json(result);
     } catch (err) {
       if (err instanceof MachineNotFoundError) return res.status(404).json({ error: err.message });
