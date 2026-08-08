@@ -27,6 +27,11 @@ duplication, not an intentional split.
 
 ## Features
 
+- **Invite-only account creation** — when logged out, the nav shows a lock
+  icon instead of "Log in". Clicking it prompts for a shared access code
+  (checked server-side by `apps/api`'s `/api/access-code/verify`, never
+  shipped to the browser) before showing the sign-in/sign-up modal; a correct
+  code is remembered for the rest of that browser tab session.
 - **Workout tracking** — machines, sessions, and (simulated) power, per
   "Storage strategy" below.
 - **Leveling/XP** — a progress bar toward the next level on both web

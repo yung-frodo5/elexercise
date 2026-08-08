@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import { theme } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
@@ -23,7 +22,6 @@ const pillButtonStyle: CSSProperties = {
 
 export function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { session } = useSupabaseSession();
-  const router = useRouter();
 
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
@@ -34,9 +32,8 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
   useEffect(() => {
     if (open && session) {
       onClose();
-      router.push("/track");
     }
-  }, [open, session, onClose, router]);
+  }, [open, session, onClose]);
 
   if (!open) return null;
 
@@ -127,7 +124,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             setError(null);
             setInfo(null);
           }}
-          style={{ ...pillButtonStyle, background: theme.colors.error, marginTop: theme.spacing.sm }}
+          style={{ ...pillButtonStyle, background: theme.colors.error, marginTop: theme.spacing.sm, width: "100%" }}
         >
           {mode === "signIn" ? "Need an account? Create one" : "Have an account? Sign in"}
         </button>

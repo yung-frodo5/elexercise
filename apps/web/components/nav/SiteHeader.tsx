@@ -8,6 +8,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
+import { AccessCodeModal } from "../auth/AccessCodeModal";
 import { LoginModal } from "../auth/LoginModal";
 import { LevelProgress } from "../profile/LevelProgress";
 import { AvatarCircle } from "../profile/AvatarCircle";
@@ -32,6 +33,7 @@ export function SiteHeader() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [accessCodeOpen, setAccessCodeOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   // Accordion -- at most one of the three expandable sections open at once.
   const [expandedSection, setExpandedSection] = useState<"social" | "exercise" | "resources" | null>(null);
@@ -326,7 +328,14 @@ export function SiteHeader() {
             ) : (
               <button
                 type="button"
-                onClick={() => setLoginOpen(true)}
+                aria-label="Log in"
+                onClick={() => {
+                  if (sessionStorage.getItem("accessCodeVerified") === "true") {
+                    setLoginOpen(true);
+                  } else {
+                    setAccessCodeOpen(true);
+                  }
+                }}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -340,7 +349,7 @@ export function SiteHeader() {
                   fontSize: theme.typography.size.md,
                 }}
               >
-                <span>Log in</span>
+                <span>{theme.icons.login}</span>
               </button>
             )}
           </>
@@ -348,6 +357,14 @@ export function SiteHeader() {
         </div>
       </div>
 
+      <AccessCodeModal
+        open={accessCodeOpen}
+        onClose={() => setAccessCodeOpen(false)}
+        onVerified={() => {
+          setAccessCodeOpen(false);
+          setLoginOpen(true);
+        }}
+      />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       </header>
     </>

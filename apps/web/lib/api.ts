@@ -6,6 +6,18 @@ function authHeaders(accessToken: string): HeadersInit {
   return { Authorization: `Bearer ${accessToken}` };
 }
 
+// No auth header -- called before the user has any session, to gate whether
+// they can reach the sign-in/sign-up modal at all.
+export async function verifyAccessCode(code: string): Promise<{ valid: boolean }> {
+  const res = await fetch(`${API_URL}/api/access-code/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
+  });
+  if (!res.ok) throw new Error(`Failed to verify access code (${res.status})`);
+  return res.json();
+}
+
 export async function getCurrentWorkout(accessToken: string): Promise<Workout | null> {
   const res = await fetch(`${API_URL}/api/workouts/current`, {
     headers: authHeaders(accessToken),
