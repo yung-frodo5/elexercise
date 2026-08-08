@@ -3,6 +3,7 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { Graphic } from "./Graphic";
 import { RichText } from "./RichText";
 import { ExternalLink } from "../ui/ExternalLink";
+import { HEADER_HEIGHT } from "../../lib/layoutConstants";
 
 export function ArticleTable({ table }: { table: Table }) {
   return (
@@ -168,6 +169,20 @@ export function ArticleBody({ article }: { article: Article }) {
                 <RichText nodes={block.content} />
               </p>
             );
+          case "subheading":
+            return (
+              <p
+                key={index}
+                style={{
+                  marginTop: theme.spacing.xl,
+                  color: theme.colors.themed.navy,
+                  fontSize: theme.typography.size.md,
+                  fontWeight: theme.typography.weight.semibold,
+                }}
+              >
+                <RichText nodes={block.content} />
+              </p>
+            );
           case "graphic":
             return (
               <div key={index} style={{ marginTop: theme.spacing.xl }}>
@@ -212,24 +227,41 @@ export function ArticleBody({ article }: { article: Article }) {
                       marginBottom: theme.spacing.sm,
                       fontWeight: theme.typography.weight.bold,
                       fontSize: theme.typography.size.sm,
+                      textAlign: "center",
+                      textDecoration: "underline",
                     }}
                   >
                     {block.heading}
                   </p>
                 )}
-                <ul
-                  style={{
-                    margin: 0,
-                    paddingLeft: theme.spacing.lg,
-                    fontSize: theme.typography.size.sm,
-                  }}
-                >
-                  {block.items.map((item, itemIndex) => (
-                    <li key={itemIndex}>
+                {block.style === "prose" ? (
+                  block.items.map((item, itemIndex) => (
+                    <p
+                      key={itemIndex}
+                      style={{
+                        margin: 0,
+                        marginTop: itemIndex > 0 ? theme.spacing.sm : 0,
+                        fontSize: theme.typography.size.sm,
+                      }}
+                    >
                       <RichText nodes={item} linkColor={theme.colors.static.ink} />
-                    </li>
-                  ))}
-                </ul>
+                    </p>
+                  ))
+                ) : (
+                  <ul
+                    style={{
+                      margin: 0,
+                      paddingLeft: theme.spacing.lg,
+                      fontSize: theme.typography.size.sm,
+                    }}
+                  >
+                    {block.items.map((item, itemIndex) => (
+                      <li key={itemIndex}>
+                        <RichText nodes={item} linkColor={theme.colors.static.ink} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             );
           case "table":
@@ -258,8 +290,19 @@ export function ArticleBody({ article }: { article: Article }) {
             }}
           >
             {article.references.map((reference) => (
-              <li key={reference.id} id={`ref-${reference.id}`} style={{ marginTop: theme.spacing.xs }}>
-                {reference.id}.{" "}
+              <li
+                key={reference.id}
+                id={`ref-${reference.id}`}
+                // A native `#ref-N` anchor jump aligns this element's top
+                // edge with the viewport's top edge -- exactly where the
+                // fixed SiteHeader sits, hiding the target underneath it.
+                // scroll-margin-top leaves room above it, the same fix as
+                // the landing page's chevron scroll (see HEADER_HEIGHT
+                // usage in app/page.tsx), but expressed in CSS since this
+                // is a plain anchor link, not a JS scroll handler.
+                style={{ marginTop: theme.spacing.xs, scrollMarginTop: HEADER_HEIGHT }}
+              >
+                {reference.id}. {reference.citation && `${reference.citation} `}
                 <ExternalLink href={reference.url} style={{ color: theme.colors.themed.link }}>
                   {reference.url}
                 </ExternalLink>

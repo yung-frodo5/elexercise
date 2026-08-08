@@ -102,17 +102,21 @@ Add the optional flag to `RichTextNode` in `src/types.ts`, then handle it in
 
 **Block types.** An article `body` is an ordered list of `Paragraph`,
 `Subtitle` (identical to a `Paragraph` but rendered larger — e.g. a tagline
-directly under the title), `Graphic`, `List` (a bulleted list of items, each
-an ordered list of rich-text runs), `Callout` (same shape as `List` plus
-an optional `heading`, but rendered on a rounded, tinted background — e.g.
-an executive summary), and `Table` (plain-text `headers` plus `rows` of
-rich-text cells, plus an optional `heading` — for reference/comparison data
-the prose points back to instead of repeating inline) blocks. Adding a new
-block type? Add the interface in
-`src/types.ts`, add it to the `ArticleBodyBlock` union, then add a matching
-case to **both** platforms' `ArticleView.tsx` — they switch exhaustively (a
-`never` check), so a block type missed on one platform is a compile error,
-not silently-dropped content.
+directly under the title), `Subheading` (a third heading level, smaller than
+`Subtitle`, for a subsection nested under one — e.g. "Closing the efficacy
+gap" under "Individual: Efficacy, Identity, and Audience"), `Graphic`, `List`
+(a bulleted list of items, each an ordered list of rich-text runs), `Callout`
+(same shape as `List` plus an optional `heading`, rendered on a rounded,
+tinted background — e.g. an executive summary; set `style: "prose"` instead
+of the default `"bulleted"` when the box holds flowing text rather than a
+list of points, e.g. an abstract), and `Table` (plain-text `headers` plus
+`rows` of rich-text cells, plus an optional `heading` — for
+reference/comparison data the prose points back to instead of repeating
+inline) blocks. Adding a new block type? Add the interface in `src/types.ts`,
+add it to the `ArticleBodyBlock` union, then add a matching case to **both**
+platforms' `ArticleView.tsx` — they switch exhaustively (a `never` check), so
+a block type missed on one platform is a compile error, not silently-dropped
+content.
 
 **Last updated.** An `Article`'s optional `lastUpdated` is a plain authored
 display string (e.g. `"August 3rd, 2026"`), not a parsed date or something
@@ -121,12 +125,16 @@ same commit as any other content change to that article, the same way you'd
 update the body copy itself.
 
 **References/footnotes.** An `Article`'s optional `references: Reference[]`
-(`{ id: number; url: string }`) lives at the article level rather than as a
-body block, since footnotes are always rendered once, in order, at the end
-of the article — there's no body position for an author to place them at.
-Mark the citing text with `footnote: <id>` on its `RichTextNode` run, and add
-the matching `{ id, url }` to `references`; both platforms' `ArticleView.tsx`
-render a "References" list after the body when present.
+(`{ id: number; url: string; citation?: string }`) lives at the article
+level rather than as a body block, since footnotes are always rendered once,
+in order, at the end of the article — there's no body position for an author
+to place them at. Mark the citing text with `footnote: <id>` on its
+`RichTextNode` run, and add the matching entry to `references`; both
+platforms' `ArticleView.tsx` render a "References" list after the body when
+present, showing `citation` (if given) before the linked `url`. `citation` is
+optional — omit it for a bare source link, as the three earlier articles do;
+set it to the full formatted citation text (e.g. APA) for an article that
+cites academic sources, as "The Psychological Bridge" does.
 
 **Assets.** Graphics are referenced by a logical `GraphicKey` only (a
 string-literal union in `src/types.ts`) — this package never stores or knows

@@ -25,6 +25,12 @@ export function ArticleView({ article }: { article: Article }) {
                 <RichText nodes={block.content} />
               </Text>
             );
+          case "subheading":
+            return (
+              <Text key={index} style={styles.subheading}>
+                <RichText nodes={block.content} />
+              </Text>
+            );
           case "graphic":
             return (
               <View key={index} style={styles.graphicWrapper}>
@@ -48,14 +54,23 @@ export function ArticleView({ article }: { article: Article }) {
             return (
               <View key={index} style={styles.calloutWrapper}>
                 {block.heading && <Text style={styles.calloutHeading}>{block.heading}</Text>}
-                {block.items.map((item, itemIndex) => (
-                  <View key={itemIndex} style={styles.listItemRow}>
-                    <Text style={styles.calloutText}>{"• "}</Text>
-                    <Text style={[styles.calloutText, styles.listItemTextBody]}>
-                      <RichText nodes={item} />
-                    </Text>
-                  </View>
-                ))}
+                {block.style === "prose"
+                  ? block.items.map((item, itemIndex) => (
+                      <Text
+                        key={itemIndex}
+                        style={[styles.calloutText, itemIndex > 0 && styles.calloutProseSpacing]}
+                      >
+                        <RichText nodes={item} />
+                      </Text>
+                    ))
+                  : block.items.map((item, itemIndex) => (
+                      <View key={itemIndex} style={styles.listItemRow}>
+                        <Text style={styles.calloutText}>{"• "}</Text>
+                        <Text style={[styles.calloutText, styles.listItemTextBody]}>
+                          <RichText nodes={item} />
+                        </Text>
+                      </View>
+                    ))}
               </View>
             );
           case "table":
@@ -92,7 +107,8 @@ export function ArticleView({ article }: { article: Article }) {
           <Text style={styles.subtitle}>References</Text>
           {article.references.map((reference) => (
             <Text key={reference.id} style={styles.referenceItem}>
-              {reference.id}. <RichText nodes={[{ text: reference.url, href: reference.url }]} />
+              {reference.id}. {reference.citation && `${reference.citation} `}
+              <RichText nodes={[{ text: reference.url, href: reference.url }]} />
             </Text>
           ))}
         </View>
@@ -126,6 +142,12 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: theme.typography.size.lg,
   },
+  subheading: {
+    marginTop: theme.spacing.xl,
+    color: theme.colors.textMuted,
+    fontSize: theme.typography.size.md,
+    fontWeight: theme.typography.weight.semibold,
+  },
   graphicWrapper: {
     marginTop: theme.spacing.xl,
   },
@@ -153,6 +175,11 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.weight.bold,
     fontSize: theme.typography.size.sm,
     color: theme.colors.navyStatic,
+    textAlign: "center",
+    textDecorationLine: "underline",
+  },
+  calloutProseSpacing: {
+    marginTop: theme.spacing.sm,
   },
   calloutText: {
     color: theme.colors.navyStatic,

@@ -113,6 +113,23 @@ const LANDING_LINKS: LandingLink[] = [
     imageAlt:
       "Line chart comparing lifetime cost across a passive, motorized, and electricity-generating treadmill in Hawaii, showing the motorized treadmill costing over $1,800 more than the electricity-generating option over 7 years",
   },
+  {
+    href: "/resources/articles/the-psychological-bridge",
+    title: "The Psychological Bridge: From Exercise to Climate Action",
+    description: (
+      <>
+        Climate anxiety is not strongly correlated with climate action because individual effort can feel
+        disconnected from tangible outcomes. We argue that <strong>elexercise can help close that gap</strong> by
+        attaching a real, measurably productive output to a workout and leveraging the vast social infrastructure of
+        fitness. This can not only strengthen individual self-efficacy but also tap into the far more powerful
+        mechanisms of collective action, which climate psychology identifies as the strongest predictor of sustained
+        engagement.
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+  },
 ];
 
 const ARTICLES_SECTION_ID = "landing-articles";

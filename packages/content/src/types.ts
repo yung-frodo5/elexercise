@@ -40,6 +40,15 @@ export interface Subtitle {
   content: RichTextNode[];
 }
 
+// A subheading is a third heading level, nested under a Subtitle — smaller
+// than Subtitle but still visually distinct from Paragraph, for articles
+// whose sections have their own named subsections (e.g. an "Individual"
+// section broken into "Efficacy", "Identity", etc.).
+export interface Subheading {
+  type: "subheading";
+  content: RichTextNode[];
+}
+
 // Graphics are referenced by a known key, never a binary or a URL — each app
 // keeps its own actual image file and maps this key to it locally (see
 // lib/content/graphicAssets.ts in apps/web and apps/mobile). Adding a key
@@ -71,14 +80,21 @@ export interface List {
   items: RichTextNode[][];
 }
 
-// A visually set-off bulleted highlight box (e.g. an executive summary),
-// rendered on a rounded, tinted background rather than inline with the rest
-// of the body — a distinct block type rather than a styling flag on `List`,
-// since it changes the surrounding layout (its own padding/background), not
-// just the text inside it.
+// A visually set-off highlight box (e.g. an executive summary or an
+// abstract), rendered on a rounded, tinted background rather than inline
+// with the rest of the body — a distinct block type rather than a styling
+// flag on `List`, since it changes the surrounding layout (its own
+// padding/background), not just the text inside it.
+// `style` picks how `items` render inside the box: "bulleted" (default, and
+// the only behavior before this field existed) shows each item as a bullet,
+// for callouts that are genuinely a list of distinct points (e.g. an
+// executive summary). "prose" renders each item as a plain paragraph with no
+// bullet, for callouts that are flowing text set off in a card (e.g. an
+// abstract) rather than a list of points.
 export interface Callout {
   type: "callout";
   heading?: string;
+  style?: "bulleted" | "prose";
   items: RichTextNode[][];
 }
 
@@ -94,8 +110,8 @@ export interface Table {
   rows: RichTextNode[][][];
 }
 
-// An article body is an ordered, hierarchical mix of paragraphs, subtitles, graphics, lists, callouts, and tables.
-export type ArticleBodyBlock = Paragraph | Subtitle | Graphic | List | Callout | Table;
+// An article body is an ordered, hierarchical mix of paragraphs, subtitles, subheadings, graphics, lists, callouts, and tables.
+export type ArticleBodyBlock = Paragraph | Subtitle | Subheading | Graphic | List | Callout | Table;
 
 export interface Author {
   name: string;
@@ -104,9 +120,12 @@ export interface Author {
 
 // A numbered citation, rendered once in an "References" list at the end of
 // the article. `id` matches the `footnote` number on the RichTextNode run(s)
-// that cite it.
+// that cite it. `citation` is the full formatted citation text (e.g. APA
+// format) shown before the link -- optional since earlier articles only ever
+// cited a bare source URL with no formal citation to show.
 export interface Reference {
   id: number;
+  citation?: string;
   url: string;
 }
 

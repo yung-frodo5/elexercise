@@ -24,6 +24,8 @@ const ARTICLE_DESCRIPTIONS: Record<string, string> = {
   "is-the-power-generation-worth-it":
     "A look at the unit economics behind electricity-generating exercise equipment.",
   "how-much-power": "Scaling workout electricity from one person to one gym to the whole planet.",
+  "the-psychological-bridge":
+    "Exploring the psychological synergies to identify opportunities for improving self-efficacy and collective success.",
 };
 
 const cell = {
