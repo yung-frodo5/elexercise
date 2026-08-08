@@ -48,6 +48,23 @@ export function createSessionRouter(repo: WorkoutRepository): Router {
     }
   });
 
+  router.post("/sessions/:id/power-samples", async (req, res) => {
+    const { tMs, powerW } = req.body as { tMs?: number; powerW?: number };
+    if (typeof tMs !== "number" || !Number.isFinite(tMs)) {
+      return res.status(400).json({ error: "tMs is required" });
+    }
+    if (typeof powerW !== "number" || !Number.isFinite(powerW)) {
+      return res.status(400).json({ error: "powerW is required" });
+    }
+    try {
+      await repo.recordPowerSample(req.userId!, req.params.id, tMs, powerW);
+      res.status(201).end();
+    } catch (err) {
+      if (err instanceof SessionNotFoundError) return res.status(404).json({ error: err.message });
+      res.status(400).json({ error: (err as Error).message });
+    }
+  });
+
   router.post("/sessions/:id/end", async (req, res) => {
     const { details } = req.body as { details?: SessionDetails };
     try {

@@ -74,6 +74,24 @@ export async function startMachineSession(
   return res.json();
 }
 
+// Records one real telemetry point for a BLE-tracked session -- the API
+// validates ownership, that the session is still in_progress, and that
+// powerW is a plausible value before writing it (see
+// apps/api/src/repositories/SupabaseWorkoutRepository.ts recordPowerSample).
+export async function postPowerSample(
+  accessToken: string,
+  sessionId: string,
+  tMs: number,
+  powerW: number
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/sessions/${sessionId}/power-samples`, {
+    method: "POST",
+    headers: { ...authHeaders(accessToken), "Content-Type": "application/json" },
+    body: JSON.stringify({ tMs, powerW }),
+  });
+  if (!res.ok) throw new Error(`Failed to record power sample (${res.status})`);
+}
+
 export async function endSession(accessToken: string, id: string): Promise<WorkoutSession> {
   const res = await fetch(`${API_URL}/api/sessions/${id}/end`, {
     method: "POST",

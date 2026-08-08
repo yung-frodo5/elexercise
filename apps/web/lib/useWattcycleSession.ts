@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { endSession, getMachineByScanToken, startMachineSession } from "./api";
-import { supabase } from "./supabase";
+import { endSession, getMachineByScanToken, postPowerSample, startMachineSession } from "./api";
 import { WattcycleBleClient } from "./wattcycle/bleClient";
 
 export type WattcycleStatus = "idle" | "looking-up" | "connecting" | "streaming" | "disconnected" | "error";
@@ -24,17 +23,14 @@ export function useWattcycleSession(accessToken: string | undefined) {
     clientRef.current = null;
   }, []);
 
-  const poll = useCallback(async (client: WattcycleBleClient, sid: string, streamStart: number) => {
+  const poll = useCallback(async (client: WattcycleBleClient, sid: string, streamStart: number, token: string) => {
     while (runningRef.current) {
       try {
         const data = await client.readAnalogQuantity();
         if (data) {
           const powerW = Math.abs(data.moduleVoltage * data.current);
           const tMs = Math.round(performance.now() - streamStart);
-          const { error: insertError } = await supabase
-            .from("power_samples")
-            .insert({ session_id: sid, t_ms: tMs, power_w: powerW });
-          if (insertError) console.error("Failed to write power sample:", insertError.message);
+          await postPowerSample(token, sid, tMs, powerW);
         }
       } catch (err) {
         console.error("wattcycle poll error:", err);
@@ -89,7 +85,7 @@ export function useWattcycleSession(accessToken: string | undefined) {
         setStatus("streaming");
 
         runningRef.current = true;
-        void poll(client, session.id, performance.now());
+        void poll(client, session.id, performance.now(), accessToken);
       } catch (err) {
         client?.disconnect();
         const message = err instanceof Error ? err.message : "Failed to connect to machine";
