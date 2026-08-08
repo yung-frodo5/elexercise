@@ -7,6 +7,7 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { SoftPanel } from "../components/ui/SoftPanel";
 import { FramedImage } from "../components/content/FramedImage";
 import { graphicAssets } from "../lib/content/graphicAssets";
+import { HEADER_HEIGHT } from "../lib/layoutConstants";
 
 // ContentPanel publishes its own responsive geometry as custom properties on
 // .content-panel-home (see the comment there): the combined horizontal
@@ -280,7 +281,16 @@ export default function LandingPage() {
           className="scroll-indicator"
           aria-label="Scroll to articles"
           onClick={() => {
-            document.getElementById(ARTICLES_SECTION_ID)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            const section = document.getElementById(ARTICLES_SECTION_ID);
+            if (!section) return;
+            // Not scrollIntoView({block: "start"}) -- that aligns the
+            // section's top with the viewport's own top edge (y=0), which
+            // is exactly where the fixed header sits regardless of scroll
+            // position, hiding the section's top behind it. Offsetting by
+            // HEADER_HEIGHT lands the section's top just below the header
+            // instead.
+            const targetY = section.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+            window.scrollTo({ top: targetY, behavior: "smooth" });
           }}
           style={{
             position: "absolute",
