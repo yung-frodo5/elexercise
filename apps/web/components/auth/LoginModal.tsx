@@ -114,6 +114,11 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
             </p>
           )}
           {info && <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>{info}</p>}
+          {mode === "signUp" && (
+            <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>
+              Note: verification email may be routed to your spam folder.
+            </p>
+          )}
           <button type="submit" style={pillButtonStyle}>
             {mode === "signIn" ? "Sign in" : "Create account"}
           </button>
