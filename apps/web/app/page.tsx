@@ -348,7 +348,13 @@ export default function LandingPage() {
             const imagePosition = index % 2 === 0 ? "right" : "left";
             return (
               <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
-                <SoftPanel style={{ padding: theme.spacing.lg }}>
+                {/* backgroundColor override -- SoftPanel defaults to a
+                    static (always-light) surface, but these cards need to
+                    flip with the theme. themed.canvasBg (not a new color)
+                    so a dark-mode card matches the page's own dark-navy
+                    canvas exactly; text below pairs with themed.navy to
+                    match, same as body text elsewhere on the canvas. */}
+                <SoftPanel style={{ padding: theme.spacing.lg, backgroundColor: theme.colors.themed.canvasBg }}>
                   <div className={`landing-card-row landing-card-row--${imagePosition}`}>
                     {image && (
                       <div className="landing-card-image">
@@ -359,7 +365,7 @@ export default function LandingPage() {
                       <p
                         style={{
                           margin: 0,
-                          color: theme.colors.static.ink,
+                          color: theme.colors.themed.navy,
                           fontWeight: theme.typography.weight.semibold,
                           fontSize: theme.typography.size.lg,
                         }}
@@ -369,7 +375,7 @@ export default function LandingPage() {
                       <div
                         style={{
                           marginTop: theme.spacing.sm,
-                          color: theme.colors.static.ink,
+                          color: theme.colors.themed.navy,
                           fontSize: theme.typography.size.sm,
                           lineHeight: 1.5,
                         }}
