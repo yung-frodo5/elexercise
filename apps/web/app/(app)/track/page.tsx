@@ -207,39 +207,50 @@ export default function TrackPage() {
             </section>
 
             <p style={{ marginTop: theme.spacing.lg, fontSize: theme.typography.size.sm }}>Add another activity:</p>
-            <StartActivityForm onStart={handleStart} busy={busy} />
-            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
-              Or connect to a machine (stand-in for scanning, until that&apos;s built):
-            </p>
-            <StartMachineForm onStart={handleStartMachine} busy={busy} />
+
+            <LightBlueHeading>Connect to a machine</LightBlueHeading>
+            <div style={{ marginTop: theme.spacing.md }}>
+              <StartMachineForm onStart={handleStartMachine} busy={busy} />
+            </div>
             {wattcycleStatusMessage && (
               <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
                 {wattcycleStatusMessage}
               </p>
             )}
+
+            <div style={{ marginTop: theme.spacing.xxl }}>
+              <LightBlueHeading>Simulate a workout</LightBlueHeading>
+              <div style={{ marginTop: theme.spacing.md }}>
+                <StartActivityForm onStart={handleStart} busy={busy} />
+              </div>
+            </div>
+
             <button
               onClick={() => void handleEnd()}
               disabled={busy}
-              style={{ marginTop: theme.spacing.sm, fontSize: theme.typography.size.sm }}
+              style={{ marginTop: theme.spacing.lg, fontSize: theme.typography.size.sm }}
             >
               End workout
             </button>
           </>
         ) : (
           <>
-            <LightBlueHeading>Start a workout</LightBlueHeading>
-            <div style={{ marginTop: theme.spacing.xxl }}>
-              <StartActivityForm onStart={handleStart} busy={busy} />
+            <LightBlueHeading>Connect to a machine</LightBlueHeading>
+            <div style={{ marginTop: theme.spacing.md }}>
+              <StartMachineForm onStart={handleStartMachine} busy={busy} />
             </div>
-            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
-              Or connect to a machine (stand-in for scanning, until that&apos;s built):
-            </p>
-            <StartMachineForm onStart={handleStartMachine} busy={busy} />
             {wattcycleStatusMessage && (
               <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
                 {wattcycleStatusMessage}
               </p>
             )}
+
+            <div style={{ marginTop: theme.spacing.xxl }}>
+              <LightBlueHeading>Simulate a workout</LightBlueHeading>
+              <div style={{ marginTop: theme.spacing.md }}>
+                <StartActivityForm onStart={handleStart} busy={busy} />
+              </div>
+            </div>
           </>
         )}
       </section>
