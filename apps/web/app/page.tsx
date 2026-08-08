@@ -242,14 +242,15 @@ export default function LandingPage() {
           paddingTop: SECTION_PADDING_TOP,
           paddingLeft: SECTION_PADDING_X,
           paddingRight: SECTION_PADDING_X,
-          // flex-start (not center) -- the definition sits close to the
-          // top, and the leftover space (now larger, since it's no longer
-          // split evenly above/below) collects below it, where the scroll
-          // indicator lives.
+          // center -- splits the section's leftover space evenly
+          // above/below the definition, so the padding beneath it matches
+          // SECTION_PADDING_TOP above it. Safe to do without disturbing the
+          // scroll indicator: that's position: fixed to the viewport (see
+          // below), not a flex child relying on this leftover space.
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "flex-start",
+          justifyContent: "center",
         }}
       >
         <div className="definition-wrap">
