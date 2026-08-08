@@ -8,7 +8,6 @@ import { theme } from "@exercise-tracker/design-tokens";
 import { SoftPanel } from "../components/ui/SoftPanel";
 import { FramedImage } from "../components/content/FramedImage";
 import { graphicAssets } from "../lib/content/graphicAssets";
-import { HEADER_HEIGHT } from "../lib/layoutConstants";
 import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 
 // ContentPanel publishes its own responsive geometry as custom properties on
@@ -19,7 +18,6 @@ import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 // fallbacks are ContentPanel's desktop home values and only apply if this
 // page ever renders outside ContentPanel.
 const CONTENT_INSET = `var(--elex-content-inset, calc(0.5in + ${theme.spacing.xxl}px))`;
-const CONTENT_TOP_OFFSET = `var(--elex-content-top-offset, calc(0.5in + ${theme.spacing.xxl}px))`;
 
 // Fluid scales for the definition below. Two independent axes, because a
 // viewport can be cramped in either one and a width-only breakpoint sees
@@ -47,20 +45,6 @@ const SECTION_PADDING_TOP = `clamp(${theme.spacing.sm}px, 3svh, ${theme.spacing.
 // resolves against that element's content box -- which its own padding
 // defines. Circular. Everything INSIDE the container uses cqi instead.
 const SECTION_PADDING_X = `clamp(${theme.spacing.md}px, 4vw, ${theme.spacing.xxl}px)`;
-
-// The fixed header/footer (reserved via padding in layout.tsx) and
-// ContentPanel's own top offset all eat into the viewport before this
-// section's own box even starts -- a plain "80vh" doesn't know about any of
-// that, so on a typical screen the scroll indicator at this section's
-// bottom ends up below the fold. This computes the actual height available
-// in the first-load viewport instead.
-// svh, not vh: on a mobile browser, vh resolves to the LARGE viewport (URL
-// bar hidden), which is taller than what's actually on screen at load, so
-// it over-reserved and pushed the fold down. svh is the load-time viewport
-// and is stable (doesn't reflow as the URL bar hides while scrolling),
-// which is what "the definition exactly fills the first-load viewport"
-// (see below) actually wants.
-const DEFINITION_SECTION_HEIGHT = `calc(100svh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px - ${CONTENT_TOP_OFFSET})`;
 
 interface LandingLink {
   href: string;
@@ -229,28 +213,24 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Its own full-viewport-height section, not just top padding on the
-          shared one below -- on load, this is the only thing on screen
-          (a "clean display of the definition only"); the article cards
-          start exactly at the bottom of the viewport, so they're only
-          reachable by actually scrolling, not just visible tucked under a
-          large top margin. */}
       <section
         className="definition-section"
         style={{
-          minHeight: DEFINITION_SECTION_HEIGHT,
           paddingTop: SECTION_PADDING_TOP,
+          // Matches paddingTop, not a minHeight-driven flex leftover --
+          // flex-start plus a viewport-filling minHeight sends ALL leftover
+          // space below the definition, so the only way to make the two
+          // gaps match with flex-start is a real, equal paddingBottom
+          // instead of relying on box height. The scroll indicator is
+          // unaffected either way -- it's position: fixed to the viewport
+          // (see below), not a flex child of this section.
+          paddingBottom: SECTION_PADDING_TOP,
           paddingLeft: SECTION_PADDING_X,
           paddingRight: SECTION_PADDING_X,
-          // center -- splits the section's leftover space evenly
-          // above/below the definition, so the padding beneath it matches
-          // SECTION_PADDING_TOP above it. Safe to do without disturbing the
-          // scroll indicator: that's position: fixed to the viewport (see
-          // below), not a flex child relying on this leftover space.
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "flex-start",
         }}
       >
         <div className="definition-wrap">
