@@ -276,7 +276,7 @@ export function SiteHeader() {
                 whiteSpace: "nowrap",
               }}
             >
-              a multimedia whitepaper
+              a digital whitepaper
             </span>
           </span>
         </span>
