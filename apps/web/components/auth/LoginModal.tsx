@@ -115,7 +115,7 @@ export function LoginModal({ open, onClose }: { open: boolean; onClose: () => vo
           )}
           {info && <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>{info}</p>}
           {mode === "signUp" && (
-            <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm }}>
+            <p style={{ color: "#FFFFFF", fontSize: theme.typography.size.sm, margin: 0 }}>
               Note: verification email may be routed to your spam folder.
             </p>
           )}
