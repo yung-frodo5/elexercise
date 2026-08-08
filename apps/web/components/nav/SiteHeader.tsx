@@ -271,7 +271,7 @@ export function SiteHeader() {
               whiteSpace: "nowrap",
             }}
           >
-            a multimedia whitepaper by Noah Korotzer
+            a multimedia whitepaper
           </span>
         </span>
       </Link>
