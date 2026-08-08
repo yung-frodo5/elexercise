@@ -1,17 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
+import { useWattcycleSession } from "../../../lib/useWattcycleSession";
 import { useWorkoutSummaries } from "../../../lib/WorkoutSummaryContext";
-import {
-  endSession,
-  endWorkout,
-  getWorkout,
-  startMachineSession,
-  startManualSession,
-} from "../../../lib/api";
+import { endSession, endWorkout, getWorkout, startManualSession } from "../../../lib/api";
 import { StartActivityForm } from "../../../components/workout/StartActivityForm";
 import { StartMachineForm } from "../../../components/workout/StartMachineForm";
 import { SessionList } from "../../../components/workout/SessionList";
@@ -43,13 +38,19 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
 
 export default function TrackPage() {
   const { session } = useSupabaseSession();
-  const { currentWorkout: currentWorkoutSummary, loading: summariesLoading, refresh: refreshSummaries } =
+  const { currentWorkout: currentWorkoutSummary, initialLoading: initialSummariesLoading, refresh: refreshSummaries } =
     useWorkoutSummaries();
+  const wattcycle = useWattcycleSession(session?.access_token);
 
   const [currentWorkout, setCurrentWorkout] = useState<WorkoutWithSessions | null>(null);
-  const [detailLoading, setDetailLoading] = useState(true);
+  // True only until the first hydration settles -- later hydrations
+  // (triggered by an action changing currentWorkoutSummary) update
+  // currentWorkout silently instead of re-blanking the page. See
+  // WorkoutSummaryContext's matching initialLoading/hasLoadedOnceRef.
+  const [initialDetailLoading, setInitialDetailLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasLoadedDetailOnceRef = useRef(false);
 
   // Hydrates full session detail (exercises/sets) for whichever current-workout
   // summary the shared context currently holds -- the summary itself is
@@ -59,7 +60,6 @@ export default function TrackPage() {
   const loadDetail = useCallback(
     async (summary: Workout | null) => {
       if (!session) return;
-      setDetailLoading(true);
       try {
         setCurrentWorkout(summary ? await getWorkout(session.access_token, summary.id) : null);
       } catch {
@@ -68,16 +68,19 @@ export default function TrackPage() {
         // error, so the page still shows something reviewable.
         setCurrentWorkout(null);
       } finally {
-        setDetailLoading(false);
+        if (!hasLoadedDetailOnceRef.current) {
+          hasLoadedDetailOnceRef.current = true;
+          setInitialDetailLoading(false);
+        }
       }
     },
     [session]
   );
 
   useEffect(() => {
-    if (summariesLoading) return;
+    if (initialSummariesLoading) return;
     void loadDetail(currentWorkoutSummary);
-  }, [summariesLoading, currentWorkoutSummary, loadDetail]);
+  }, [initialSummariesLoading, currentWorkoutSummary, loadDetail]);
 
   async function handleStart(activityType: string) {
     if (!session) return;
@@ -93,12 +96,15 @@ export default function TrackPage() {
     }
   }
 
+  // BLE-only end to end -- see useWattcycleSession. A machine with no real
+  // Bluetooth mapping throws the same error a failed connection would,
+  // rather than falling back to the simulated pathway.
   async function handleStartMachine(scanToken: string) {
     if (!session) return;
     setBusy(true);
     setError(null);
     try {
-      await startMachineSession(session.access_token, scanToken);
+      await wattcycle.connect(scanToken);
       await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to connect to machine");
@@ -112,7 +118,13 @@ export default function TrackPage() {
     setBusy(true);
     setError(null);
     try {
-      await endSession(session.access_token, sessionId);
+      // Stopping the BLE-tracked session must disconnect it, not just mark
+      // it completed -- see useWattcycleSession.stop().
+      if (sessionId === wattcycle.sessionId) {
+        await wattcycle.stop();
+      } else {
+        await endSession(session.access_token, sessionId);
+      }
       await refreshSummaries();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to stop activity");
@@ -126,6 +138,9 @@ export default function TrackPage() {
     setBusy(true);
     setError(null);
     try {
+      if (wattcycle.sessionId) {
+        await wattcycle.stop();
+      }
       await endWorkout(session.access_token, currentWorkout.id);
       await refreshSummaries();
     } catch (err) {
@@ -138,8 +153,11 @@ export default function TrackPage() {
   // The API can take 20-30s to respond on a cold start (Render free tier);
   // without a loading gate that whole window would render as "no workouts" /
   // "start a workout" -- indistinguishable from a genuinely empty account,
-  // which reads as broken/missing features rather than slow.
-  if (summariesLoading || detailLoading) {
+  // which reads as broken/missing features rather than slow. Only gates the
+  // very first load -- initialSummariesLoading/initialDetailLoading never
+  // flip back to true on a later background refresh, so starting/stopping/
+  // ending a session updates the view in place instead of blanking it.
+  if (initialSummariesLoading || initialDetailLoading) {
     return (
       <main style={{ padding: theme.spacing.xl }}>
         <p style={{ fontSize: theme.typography.size.sm }}>Loading your workouts…</p>
@@ -151,6 +169,15 @@ export default function TrackPage() {
   }
 
   const inProgressSession = currentWorkout?.sessions.find((s) => s.status === "in_progress");
+
+  const wattcycleStatusMessage: string | null =
+    wattcycle.status === "looking-up"
+      ? "Looking up machine…"
+      : wattcycle.status === "connecting"
+        ? "Connecting via Bluetooth — check for a browser device picker…"
+        : wattcycle.status === "disconnected"
+          ? "Bluetooth connection lost. Click Stop on the session below to end it."
+          : null;
 
   return (
     <main
@@ -190,29 +217,50 @@ export default function TrackPage() {
             </section>
 
             <p style={{ marginTop: theme.spacing.lg, fontSize: theme.typography.size.sm }}>Add another activity:</p>
-            <StartActivityForm onStart={handleStart} busy={busy} />
-            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
-              Or connect to a machine (stand-in for scanning, until that&apos;s built):
-            </p>
-            <StartMachineForm onStart={handleStartMachine} busy={busy} />
+
+            <LightBlueHeading>Connect to a machine</LightBlueHeading>
+            <div style={{ marginTop: theme.spacing.md }}>
+              <StartMachineForm onStart={handleStartMachine} busy={busy} />
+            </div>
+            {wattcycleStatusMessage && (
+              <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
+                {wattcycleStatusMessage}
+              </p>
+            )}
+
+            <div style={{ marginTop: theme.spacing.xxl }}>
+              <LightBlueHeading>Simulate a workout</LightBlueHeading>
+              <div style={{ marginTop: theme.spacing.md }}>
+                <StartActivityForm onStart={handleStart} busy={busy} />
+              </div>
+            </div>
+
             <button
               onClick={() => void handleEnd()}
               disabled={busy}
-              style={{ marginTop: theme.spacing.sm, fontSize: theme.typography.size.sm }}
+              style={{ marginTop: theme.spacing.lg, fontSize: theme.typography.size.sm }}
             >
               End workout
             </button>
           </>
         ) : (
           <>
-            <LightBlueHeading>Start a workout</LightBlueHeading>
-            <div style={{ marginTop: theme.spacing.xxl }}>
-              <StartActivityForm onStart={handleStart} busy={busy} />
+            <LightBlueHeading>Connect to a machine</LightBlueHeading>
+            <div style={{ marginTop: theme.spacing.md }}>
+              <StartMachineForm onStart={handleStartMachine} busy={busy} />
             </div>
-            <p style={{ marginTop: theme.spacing.xxl, fontSize: theme.typography.size.sm }}>
-              Or connect to a machine (stand-in for scanning, until that&apos;s built):
-            </p>
-            <StartMachineForm onStart={handleStartMachine} busy={busy} />
+            {wattcycleStatusMessage && (
+              <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm, marginTop: theme.spacing.xs }}>
+                {wattcycleStatusMessage}
+              </p>
+            )}
+
+            <div style={{ marginTop: theme.spacing.xxl }}>
+              <LightBlueHeading>Simulate a workout</LightBlueHeading>
+              <div style={{ marginTop: theme.spacing.md }}>
+                <StartActivityForm onStart={handleStart} busy={busy} />
+              </div>
+            </div>
           </>
         )}
       </section>

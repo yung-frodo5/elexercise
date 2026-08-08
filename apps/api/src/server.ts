@@ -6,6 +6,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { requireAuth } from "./middleware/auth.js";
+import { createMachineRouter } from "./routes/machines.js";
 import { createSessionRouter } from "./routes/sessions.js";
 import { createWorkoutRouter } from "./routes/workouts.js";
 import { SupabaseWorkoutRepository } from "./repositories/SupabaseWorkoutRepository.js";
@@ -26,6 +27,7 @@ app.use(express.json());
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 app.use("/api", requireAuth, createSessionRouter(repo));
 app.use("/api", requireAuth, createWorkoutRouter(repo));
+app.use("/api", requireAuth, createMachineRouter(repo));
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, () => {

@@ -82,15 +82,22 @@ authenticate directly against Supabase and pass the resulting JWT as
 `Authorization: Bearer <token>` on every request. `apps/api/src/middleware/auth.ts`
 verifies that token and resolves it to a user id before any route handler runs.
 
-There's no real hardware telemetry pipeline yet, so the API fills
-`power_samples` with **simulated** data instead: while a session is
-`in_progress`, `apps/api/src/services/fakePowerSimulator.ts` writes one fake
-`PowerSample` every 500ms (via `apps/api/src/services/fakePowerProfile.ts`,
-which shapes plausible power curves per activity — steadier for cardio,
-spike-and-decay reps for strength), stopping the moment that session stops
-being `in_progress`. Everything with "fake" in its name is this simulation
-only; `WorkoutRepository.insertPowerSample` itself is a plain storage write
-that a future real-telemetry ingestion path would reuse unchanged.
+Most machines have no real hardware telemetry, so the API fills their
+`power_samples` with **simulated** data: while a session is `in_progress`,
+`apps/api/src/services/fakePowerSimulator.ts` writes one fake `PowerSample`
+every 500ms (via `apps/api/src/services/fakePowerProfile.ts`, which shapes
+plausible power curves per activity — steadier for cardio, spike-and-decay
+reps for strength), stopping the moment that session stops being
+`in_progress`. Everything with "fake" in its name is this simulation only.
+
+Machines with a `machines.ble_device_name` set are the exception: the web
+app connects to them directly over Bluetooth (Web Bluetooth API,
+`apps/web/lib/wattcycle/` and `apps/web/lib/useWattcycleSession.ts`) from
+the "Connect to a machine" flow on the Track page, and writes **real**
+`power_samples` straight from the browser using the logged-in user's own
+session (RLS-scoped by session ownership, not the service-role key) — see
+`apps/api/src/routes/sessions.ts` for how session-start skips the fake
+simulator for these machines instead.
 
 ## Visual design tokens
 

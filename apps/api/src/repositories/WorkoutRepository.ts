@@ -58,6 +58,12 @@ export interface WorkoutRepository {
   // telemetry simulator today and, eventually, by real hardware ingestion —
   // this method itself has no idea which one called it.
   insertPowerSample(sessionId: string, tMs: number, powerW: number): Promise<void>;
+
+  // Called only from the authenticated power-samples route -- unlike
+  // insertPowerSample, the caller (and its powerW value) is untrusted, so
+  // this verifies the session belongs to userId and is still in_progress,
+  // and bounds-checks powerW, before writing.
+  recordPowerSample(userId: string, sessionId: string, tMs: number, powerW: number): Promise<void>;
 }
 
 export class MachineNotFoundError extends Error {

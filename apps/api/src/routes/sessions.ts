@@ -15,9 +15,17 @@ export function createSessionRouter(repo: WorkoutRepository): Router {
     try {
       const { closedSessionIds, ...result } = await repo.startMachineSession(req.userId!, scanToken);
       for (const id of closedSessionIds ?? []) stopFakePowerGeneration(id);
-      startFakePowerGeneration(result.session.id, result.session.activityType, (tMs, powerW) =>
-        repo.insertPowerSample(result.session.id, tMs, powerW)
-      );
+
+      // Machines with a real BLE mapping get their power_samples written by
+      // the browser (Web Bluetooth) instead — starting the fake simulator
+      // too would interleave simulated samples into the same session.
+      const machine = await repo.getMachineByScanToken(scanToken);
+      if (!machine?.bleDeviceName) {
+        startFakePowerGeneration(result.session.id, result.session.activityType, (tMs, powerW) =>
+          repo.insertPowerSample(result.session.id, tMs, powerW)
+        );
+      }
+
       res.status(201).json(result);
     } catch (err) {
       if (err instanceof MachineNotFoundError) return res.status(404).json({ error: err.message });
@@ -36,6 +44,23 @@ export function createSessionRouter(repo: WorkoutRepository): Router {
       );
       res.status(201).json(result);
     } catch (err) {
+      res.status(400).json({ error: (err as Error).message });
+    }
+  });
+
+  router.post("/sessions/:id/power-samples", async (req, res) => {
+    const { tMs, powerW } = req.body as { tMs?: number; powerW?: number };
+    if (typeof tMs !== "number" || !Number.isFinite(tMs)) {
+      return res.status(400).json({ error: "tMs is required" });
+    }
+    if (typeof powerW !== "number" || !Number.isFinite(powerW)) {
+      return res.status(400).json({ error: "powerW is required" });
+    }
+    try {
+      await repo.recordPowerSample(req.userId!, req.params.id, tMs, powerW);
+      res.status(201).end();
+    } catch (err) {
+      if (err instanceof SessionNotFoundError) return res.status(404).json({ error: err.message });
       res.status(400).json({ error: (err as Error).message });
     }
   });

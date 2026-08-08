@@ -1,4 +1,4 @@
-import type { Workout, WorkoutWithSessions, Session as WorkoutSession } from "@exercise-tracker/shared-types";
+import type { Machine, Workout, WorkoutWithSessions, Session as WorkoutSession } from "@exercise-tracker/shared-types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -46,6 +46,18 @@ export async function startManualSession(
   return res.json();
 }
 
+// Looked up before starting a session -- lets the caller check
+// machine.bleDeviceName and attempt a Web Bluetooth connection first,
+// without creating a workout/session until that actually succeeds.
+export async function getMachineByScanToken(accessToken: string, scanToken: string): Promise<Machine> {
+  const res = await fetch(`${API_URL}/api/machines/${encodeURIComponent(scanToken)}`, {
+    headers: authHeaders(accessToken),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Machine not found (${res.status})`);
+  return res.json();
+}
+
 // scanToken is what identifies a machine (matches machines.scan_token —
 // what a real QR/NFC scan would read). Manual entry stands in for that
 // until real scanning is built.
@@ -60,6 +72,24 @@ export async function startMachineSession(
   });
   if (!res.ok) throw new Error(`Failed to connect to machine (${res.status})`);
   return res.json();
+}
+
+// Records one real telemetry point for a BLE-tracked session -- the API
+// validates ownership, that the session is still in_progress, and that
+// powerW is a plausible value before writing it (see
+// apps/api/src/repositories/SupabaseWorkoutRepository.ts recordPowerSample).
+export async function postPowerSample(
+  accessToken: string,
+  sessionId: string,
+  tMs: number,
+  powerW: number
+): Promise<void> {
+  const res = await fetch(`${API_URL}/api/sessions/${sessionId}/power-samples`, {
+    method: "POST",
+    headers: { ...authHeaders(accessToken), "Content-Type": "application/json" },
+    body: JSON.stringify({ tMs, powerW }),
+  });
+  if (!res.ok) throw new Error(`Failed to record power sample (${res.status})`);
 }
 
 export async function endSession(accessToken: string, id: string): Promise<WorkoutSession> {

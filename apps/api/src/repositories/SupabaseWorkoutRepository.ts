@@ -27,6 +27,7 @@ interface MachineRow {
   scan_token: string;
   status: Machine["status"];
   last_seen_at: string | null;
+  ble_device_name: string | null;
 }
 
 interface WorkoutRow {
@@ -63,6 +64,7 @@ function rowToMachine(row: MachineRow): Machine {
     scanToken: row.scan_token,
     status: row.status,
     lastSeenAt: row.last_seen_at ?? undefined,
+    bleDeviceName: row.ble_device_name ?? undefined,
   };
 }
 
@@ -557,5 +559,29 @@ export class SupabaseWorkoutRepository implements WorkoutRepository {
       .from("power_samples")
       .insert({ session_id: sessionId, t_ms: tMs, power_w: powerW });
     if (error) throw error;
+  }
+
+  // Same ownership check as endSession, plus a status filter -- an
+  // untrusted caller shouldn't be able to append telemetry to a session
+  // that isn't theirs, or one that's already closed. powerW is also
+  // bounds-checked here: this repository's data feeds avg/peak/energy
+  // stats that directly drive elexir and badge awards, so an implausible
+  // value can't be allowed through no matter how it's disguised.
+  async recordPowerSample(userId: string, sessionId: string, tMs: number, powerW: number): Promise<void> {
+    const { data: owned, error } = await this.client
+      .from("sessions")
+      .select("id, workouts!inner(user_id)")
+      .eq("id", sessionId)
+      .eq("workouts.user_id", userId)
+      .eq("status", "in_progress")
+      .maybeSingle();
+    if (error) throw error;
+    if (!owned) throw new SessionNotFoundError(sessionId);
+
+    if (!Number.isFinite(powerW) || powerW < 0 || powerW > 5000) {
+      throw new Error("powerW out of range");
+    }
+
+    await this.insertPowerSample(sessionId, tMs, powerW);
   }
 }

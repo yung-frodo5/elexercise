@@ -2,6 +2,8 @@
 
 import type { Session } from "@exercise-tracker/shared-types";
 import { theme } from "@exercise-tracker/design-tokens";
+import { SessionStatusPill } from "../ui/SessionStatusPill";
+import { CompletedSessionRow } from "./CompletedSessionRow";
 
 export function SessionList({
   sessions,
@@ -13,19 +15,34 @@ export function SessionList({
   busy?: boolean;
 }) {
   return (
-    <ul style={{ fontSize: theme.typography.size.sm }}>
-      {sessions.map((s) => (
-        <li key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span>
-            {s.activityType} — {s.status}
-          </span>
-          {onStop && s.status === "in_progress" && (
-            <button onClick={() => onStop(s.id)} disabled={busy}>
-              Stop
-            </button>
-          )}
-        </li>
-      ))}
+    <ul
+      style={{
+        fontSize: theme.typography.size.sm,
+        listStyle: "none",
+        margin: 0,
+        padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing.xs,
+      }}
+    >
+      {sessions.map((s) =>
+        s.status === "in_progress" ? (
+          <li key={s.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span>{s.activityType}</span>
+            <SessionStatusPill status={s.status} />
+            {onStop && (
+              <button onClick={() => onStop(s.id)} disabled={busy}>
+                Stop
+              </button>
+            )}
+          </li>
+        ) : (
+          <li key={s.id}>
+            <CompletedSessionRow session={s} />
+          </li>
+        )
+      )}
     </ul>
   );
 }

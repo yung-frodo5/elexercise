@@ -14,6 +14,7 @@ export interface Machine {
   scanToken: string;
   status: MachineStatus;
   lastSeenAt?: string; // ISO 8601 timestamp
+  bleDeviceName?: string; // exact BLE advertised name, for Web Bluetooth connect
 }
 
 export type WorkoutStatus = "in_progress" | "completed";

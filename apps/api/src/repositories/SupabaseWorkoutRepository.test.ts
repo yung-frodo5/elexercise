@@ -207,6 +207,46 @@ describeIfConfigured("SupabaseWorkoutRepository", () => {
     expect(ended.details).toBeUndefined();
   });
 
+  it("records a power sample for an owned, in-progress session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await repo.recordPowerSample(userId, session.id, 500, 210);
+
+    const { data, error } = await admin
+      .from("power_samples")
+      .select("t_ms, power_w")
+      .eq("session_id", session.id)
+      .single();
+    if (error) throw error;
+    expect(data).toEqual({ t_ms: 500, power_w: 210 });
+  });
+
+  it("throws SessionNotFoundError recording a power sample for another user's session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await expect(repo.recordPowerSample(otherUserId, session.id, 500, 210)).rejects.toThrow(
+      SessionNotFoundError
+    );
+  });
+
+  it("throws SessionNotFoundError recording a power sample for an already-completed session", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await repo.endSession(userId, session.id);
+    await expect(repo.recordPowerSample(userId, session.id, 500, 210)).rejects.toThrow(
+      SessionNotFoundError
+    );
+  });
+
+  it("rejects a negative power sample value", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await expect(repo.recordPowerSample(userId, session.id, 500, -1)).rejects.toThrow("powerW out of range");
+  });
+
+  it("rejects an implausibly large power sample value", async () => {
+    const { session } = await repo.startManualSession(userId, "run");
+    await expect(repo.recordPowerSample(userId, session.id, 500, 5001)).rejects.toThrow(
+      "powerW out of range"
+    );
+  });
+
   it("computes avg/peak/energy/duration when ending a session with recorded power samples", async () => {
     const { session } = await repo.startManualSession(userId, "run");
     await repo.insertPowerSample(session.id, 0, 100);

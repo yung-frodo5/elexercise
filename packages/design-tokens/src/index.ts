@@ -3,6 +3,7 @@ export { spacing } from "./spacing";
 export { typography } from "./typography";
 export { icons } from "./icons";
 export { radii } from "./radii";
+export { pill } from "./pill";
 export { withAlpha } from "./withAlpha";
 export { webThemedColors, generateThemeCss } from "./webTheme";
 
@@ -12,6 +13,7 @@ import { spacing } from "./spacing";
 import { typography } from "./typography";
 import { icons } from "./icons";
 import { radii } from "./radii";
+import { pill } from "./pill";
 
 export const theme = {
   colors: {
@@ -25,4 +27,5 @@ export const theme = {
   typography,
   icons,
   radii,
+  pill,
 };
