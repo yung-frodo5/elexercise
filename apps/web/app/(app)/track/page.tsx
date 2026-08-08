@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Workout, WorkoutWithSessions } from "@exercise-tracker/shared-types";
 import { theme } from "@exercise-tracker/design-tokens";
 import { useSupabaseSession } from "../../../lib/useSession";
@@ -38,14 +38,19 @@ function LightBlueHeading({ children }: { children: ReactNode }) {
 
 export default function TrackPage() {
   const { session } = useSupabaseSession();
-  const { currentWorkout: currentWorkoutSummary, loading: summariesLoading, refresh: refreshSummaries } =
+  const { currentWorkout: currentWorkoutSummary, initialLoading: initialSummariesLoading, refresh: refreshSummaries } =
     useWorkoutSummaries();
   const wattcycle = useWattcycleSession(session?.access_token);
 
   const [currentWorkout, setCurrentWorkout] = useState<WorkoutWithSessions | null>(null);
-  const [detailLoading, setDetailLoading] = useState(true);
+  // True only until the first hydration settles -- later hydrations
+  // (triggered by an action changing currentWorkoutSummary) update
+  // currentWorkout silently instead of re-blanking the page. See
+  // WorkoutSummaryContext's matching initialLoading/hasLoadedOnceRef.
+  const [initialDetailLoading, setInitialDetailLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasLoadedDetailOnceRef = useRef(false);
 
   // Hydrates full session detail (exercises/sets) for whichever current-workout
   // summary the shared context currently holds -- the summary itself is
@@ -55,7 +60,6 @@ export default function TrackPage() {
   const loadDetail = useCallback(
     async (summary: Workout | null) => {
       if (!session) return;
-      setDetailLoading(true);
       try {
         setCurrentWorkout(summary ? await getWorkout(session.access_token, summary.id) : null);
       } catch {
@@ -64,16 +68,19 @@ export default function TrackPage() {
         // error, so the page still shows something reviewable.
         setCurrentWorkout(null);
       } finally {
-        setDetailLoading(false);
+        if (!hasLoadedDetailOnceRef.current) {
+          hasLoadedDetailOnceRef.current = true;
+          setInitialDetailLoading(false);
+        }
       }
     },
     [session]
   );
 
   useEffect(() => {
-    if (summariesLoading) return;
+    if (initialSummariesLoading) return;
     void loadDetail(currentWorkoutSummary);
-  }, [summariesLoading, currentWorkoutSummary, loadDetail]);
+  }, [initialSummariesLoading, currentWorkoutSummary, loadDetail]);
 
   async function handleStart(activityType: string) {
     if (!session) return;
@@ -146,8 +153,11 @@ export default function TrackPage() {
   // The API can take 20-30s to respond on a cold start (Render free tier);
   // without a loading gate that whole window would render as "no workouts" /
   // "start a workout" -- indistinguishable from a genuinely empty account,
-  // which reads as broken/missing features rather than slow.
-  if (summariesLoading || detailLoading) {
+  // which reads as broken/missing features rather than slow. Only gates the
+  // very first load -- initialSummariesLoading/initialDetailLoading never
+  // flip back to true on a later background refresh, so starting/stopping/
+  // ending a session updates the view in place instead of blanking it.
+  if (initialSummariesLoading || initialDetailLoading) {
     return (
       <main style={{ padding: theme.spacing.xl }}>
         <p style={{ fontSize: theme.typography.size.sm }}>Loading your workouts…</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import type { Workout } from "@exercise-tracker/shared-types";
 import { getCurrentWorkout, listWorkouts } from "./api";
@@ -8,7 +8,11 @@ import { getCurrentWorkout, listWorkouts } from "./api";
 type WorkoutSummaryState = {
   workouts: Workout[];
   currentWorkout: Workout | null;
-  loading: boolean;
+  // True only until the very first refresh() settles -- never flips back
+  // to true on later calls, so an action-triggered background refresh
+  // (e.g. starting/stopping a session) doesn't blank out already-rendered
+  // consumers (see track/page.tsx) while it's in flight.
+  initialLoading: boolean;
   workoutsError: string | null;
   currentWorkoutError: string | null;
   refresh: () => Promise<void>;
@@ -25,12 +29,16 @@ const WorkoutSummaryContext = createContext<WorkoutSummaryState | null>(null);
 export function WorkoutSummaryProvider({ session, children }: { session: Session; children: ReactNode }) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [workoutsError, setWorkoutsError] = useState<string | null>(null);
   const [currentWorkoutError, setCurrentWorkoutError] = useState<string | null>(null);
+  // Guards the initialLoading -> false transition so it only ever happens
+  // once, on the first settle -- refresh() itself no longer flips a loading
+  // flag back to true on later calls, which is what caused Track to blank
+  // its whole view on every start/stop/end action.
+  const hasLoadedOnceRef = useRef(false);
 
   const refresh = useCallback(async () => {
-    setLoading(true);
     // Settled independently -- Track only needs currentWorkout and Workout
     // Log only needs workouts, so one endpoint failing (e.g. a stale token
     // racing a refresh) shouldn't blank out data the other page can still use.
@@ -55,7 +63,10 @@ export function WorkoutSummaryProvider({ session, children }: { session: Session
       );
     }
 
-    setLoading(false);
+    if (!hasLoadedOnceRef.current) {
+      hasLoadedOnceRef.current = true;
+      setInitialLoading(false);
+    }
   }, [session.access_token]);
 
   useEffect(() => {
@@ -64,7 +75,7 @@ export function WorkoutSummaryProvider({ session, children }: { session: Session
 
   return (
     <WorkoutSummaryContext.Provider
-      value={{ workouts, currentWorkout, loading, workoutsError, currentWorkoutError, refresh }}
+      value={{ workouts, currentWorkout, initialLoading, workoutsError, currentWorkoutError, refresh }}
     >
       {children}
     </WorkoutSummaryContext.Provider>

@@ -79,7 +79,7 @@ const PLACEHOLDER_WORKOUTS: WorkoutWithSessions[] = [
 ];
 
 export function useHistoryWorkouts(authSession: AuthSession | null) {
-  const { workouts: summaries, loading: summariesLoading, workoutsError: summariesError } = useWorkoutSummaries();
+  const { workouts: summaries, initialLoading: summariesLoading, workoutsError: summariesError } = useWorkoutSummaries();
   const [workouts, setWorkouts] = useState<WorkoutWithSessions[]>([]);
   const [hydrating, setHydrating] = useState(true);
   const [error, setError] = useState<string | null>(null);
