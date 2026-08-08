@@ -2,6 +2,7 @@ import type { Article } from "./types";
 import { landingArticle } from "./landing";
 import { powerGenerationWorthItArticle } from "./powerGenerationWorthIt";
 import { howMuchPowerArticle } from "./howMuchPower";
+import { thePsychologicalBridgeArticle } from "./thePsychologicalBridge";
 
 // Registry of published Articles-tab entries, in listing order. `landingArticle`
 // also backs the home page's hover popup, which renders its own excerpt of
@@ -9,7 +10,12 @@ import { howMuchPowerArticle } from "./howMuchPower";
 // places is expected, not a duplication to clean up.
 // Adding a new article: author it in its own `src/<name>.ts` file, then add
 // it here.
-export const articles: Article[] = [landingArticle, powerGenerationWorthItArticle, howMuchPowerArticle];
+export const articles: Article[] = [
+  landingArticle,
+  powerGenerationWorthItArticle,
+  howMuchPowerArticle,
+  thePsychologicalBridgeArticle,
+];
 
 export function getArticleBySlug(slug: string): Article | undefined {
   return articles.find((article) => article.slug === slug);

@@ -60,9 +60,11 @@ duplication, not an intentional split.
   article never needs a new page file. Current entries: "What is
   elexercise?" (`landingArticle` — also excerpted on the home page's hover
   popup), "Is It Cheaper?" (slug `is-the-power-generation-worth-it`, unchanged
-  from the article's original title), and "How Much Power?", the latter two
-  by Noah Korotzer. The Articles route itself is web-only, though the
-  underlying article data is shared with mobile.
+  from the article's original title), "How Much Power?", and "The
+  Psychological Bridge: From Exercise to Climate Action" (slug
+  `the-psychological-bridge`) — the first three by Noah Korotzer solo, the
+  last co-authored with Eric Ingram. The Articles route itself is web-only,
+  though the underlying article data is shared with mobile.
 - **Workout history with power charts** — mobile's `HistoryScreen.tsx` uses
   `packages/workout-history`; web's `history/page.tsx` has its own parallel
   implementation (see the `packages/workout-history` note above).
