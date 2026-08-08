@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { GraphicKey } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
@@ -9,7 +8,6 @@ import { SoftPanel } from "../components/ui/SoftPanel";
 import { FramedImage } from "../components/content/FramedImage";
 import { graphicAssets } from "../lib/content/graphicAssets";
 import { HEADER_HEIGHT } from "../lib/layoutConstants";
-import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 
 // ContentPanel publishes its own responsive geometry as custom properties on
 // .content-panel-home (see the comment there): the combined horizontal
@@ -19,7 +17,6 @@ import { FOOTER_HEIGHT } from "../components/nav/SiteFooter";
 // fallbacks are ContentPanel's desktop home values and only apply if this
 // page ever renders outside ContentPanel.
 const CONTENT_INSET = `var(--elex-content-inset, calc(0.5in + ${theme.spacing.xxl}px))`;
-const CONTENT_TOP_OFFSET = `var(--elex-content-top-offset, calc(0.5in + ${theme.spacing.xxl}px))`;
 
 // Fluid scales for the definition below. Two independent axes, because a
 // viewport can be cramped in either one and a width-only breakpoint sees
@@ -47,20 +44,6 @@ const SECTION_PADDING_TOP = `clamp(${theme.spacing.sm}px, 3svh, ${theme.spacing.
 // resolves against that element's content box -- which its own padding
 // defines. Circular. Everything INSIDE the container uses cqi instead.
 const SECTION_PADDING_X = `clamp(${theme.spacing.md}px, 4vw, ${theme.spacing.xxl}px)`;
-
-// The fixed header/footer (reserved via padding in layout.tsx) and
-// ContentPanel's own top offset all eat into the viewport before this
-// section's own box even starts -- a plain "80vh" doesn't know about any of
-// that, so on a typical screen the scroll indicator at this section's
-// bottom ends up below the fold. This computes the actual height available
-// in the first-load viewport instead.
-// svh, not vh: on a mobile browser, vh resolves to the LARGE viewport (URL
-// bar hidden), which is taller than what's actually on screen at load, so
-// it over-reserved and pushed the fold down. svh is the load-time viewport
-// and is stable (doesn't reflow as the URL bar hides while scrolling),
-// which is what "the definition exactly fills the first-load viewport"
-// (see below) actually wants.
-const DEFINITION_SECTION_HEIGHT = `calc(100svh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px - ${CONTENT_TOP_OFFSET})`;
 
 interface LandingLink {
   href: string;
@@ -133,29 +116,8 @@ const LANDING_LINKS: LandingLink[] = [
 ];
 
 const ARTICLES_SECTION_ID = "landing-articles";
-// A full viewport per click overshot past the next card instead of just
-// revealing it -- 0.7 keeps some of the previous card on screen as context.
-const PAGE_DOWN_SCROLL_FRACTION = 0.7;
-// Small buffer, not an exact >= check -- fractional-pixel scroll math
-// (subpixel zoom, some mobile browsers) can leave scrollY a hair short of
-// the true max, which would otherwise never satisfy an exact equality.
-const BOTTOM_SCROLL_BUFFER_PX = 4;
 
 export default function LandingPage() {
-  const [isAtBottom, setIsAtBottom] = useState(false);
-
-  useEffect(() => {
-    function checkIsAtBottom() {
-      const scrolledToBottom =
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_SCROLL_BUFFER_PX;
-      setIsAtBottom(scrolledToBottom);
-    }
-
-    checkIsAtBottom();
-    window.addEventListener("scroll", checkIsAtBottom, { passive: true });
-    return () => window.removeEventListener("scroll", checkIsAtBottom);
-  }, []);
-
   return (
     <>
       {/* A real <style> rule is needed for the mobile media query below,
@@ -186,13 +148,6 @@ export default function LandingPage() {
            regardless of width) is now a fluid clamp() in the inline styles
            below -- which is why none of it needs !important anymore. */
         .definition-section { container-type: inline-size; }
-        /* Decorative and aria-hidden. On a viewport this short the
-           definition already visibly runs past the fold, so the affordance
-           is redundant, and a fixed element pinned near the bottom would
-           sit on top of the text. */
-        @media (max-height: 480px) {
-          .scroll-indicator { display: none; }
-        }
         /* Below the row/column breakpoint, every card stacks in DOM order
            (image, then text) regardless of its alternating side -- the
            image-left vs. image-right choice only applies once there's room
@@ -229,23 +184,23 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Its own full-viewport-height section, not just top padding on the
-          shared one below -- on load, this is the only thing on screen
-          (a "clean display of the definition only"); the article cards
-          start exactly at the bottom of the viewport, so they're only
-          reachable by actually scrolling, not just visible tucked under a
-          large top margin. */}
       <section
         className="definition-section"
         style={{
-          minHeight: DEFINITION_SECTION_HEIGHT,
+          position: "relative",
           paddingTop: SECTION_PADDING_TOP,
+          // 4x paddingTop, not a minHeight-driven flex leftover -- flex-start
+          // plus a viewport-filling minHeight would send ALL leftover space
+          // below the definition, so this is a real, explicit paddingBottom
+          // instead of relying on box height. calc(4 * ...) rather than a
+          // hand-multiplied clamp() so it stays exactly proportional to
+          // SECTION_PADDING_TOP at every viewport size. Also doubles as room
+          // for the scroll indicator button below, absolutely positioned at
+          // this section's bottom edge -- right above the cards section that
+          // immediately follows it in the DOM.
+          paddingBottom: `calc(4 * ${SECTION_PADDING_TOP})`,
           paddingLeft: SECTION_PADDING_X,
           paddingRight: SECTION_PADDING_X,
-          // flex-start (not center) -- the definition sits close to the
-          // top, and the leftover space (now larger, since it's no longer
-          // split evenly above/below) collects below it, where the scroll
-          // indicator lives.
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -316,38 +271,31 @@ export default function LandingPage() {
           </div>
         </div>
 
-      </section>
-
-      {/* position: fixed, not a flex child relying on the section's
-          remaining space -- the definition's own rendered height varies
-          with viewport size/font metrics, and on a short-enough screen it
-          can exceed the section's calculated height and push a
-          flow-positioned indicator below the fold regardless of that
-          calculation. Fixed to the viewport instead guarantees it's always
-          visible on load. Pinned just above the fixed footer, not
-          overlapping it. Hidden once the page is scrolled to the bottom,
-          where "scroll down" no longer makes sense. */}
-      {!isAtBottom && (
+        {/* Anchored to this section's own bottom edge (position: relative
+            on the section above), not the viewport -- it always sits right
+            above the cards section that follows in the DOM, regardless of
+            scroll position, instead of floating over whatever's currently
+            on screen. */}
         <button
           type="button"
           className="scroll-indicator"
           aria-label="Scroll to articles"
           onClick={() => {
-            const articlesSection = document.getElementById(ARTICLES_SECTION_ID);
-            // First click (still above the articles section): jump straight
-            // to it. Once already there, jumping again would be a no-op --
-            // page down by a viewport instead, so repeated clicks keep
-            // advancing through the article cards below.
-            if (articlesSection && window.scrollY < articlesSection.offsetTop) {
-              articlesSection.scrollIntoView({ behavior: "smooth", block: "start" });
-            } else {
-              window.scrollBy({ top: window.innerHeight * PAGE_DOWN_SCROLL_FRACTION, behavior: "smooth" });
-            }
+            const section = document.getElementById(ARTICLES_SECTION_ID);
+            if (!section) return;
+            // Not scrollIntoView({block: "start"}) -- that aligns the
+            // section's top with the viewport's own top edge (y=0), which
+            // is exactly where the fixed header sits regardless of scroll
+            // position, hiding the section's top behind it. Offsetting by
+            // HEADER_HEIGHT lands the section's top just below the header
+            // instead.
+            const targetY = section.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+            window.scrollTo({ top: targetY, behavior: "smooth" });
           }}
           style={{
-            position: "fixed",
+            position: "absolute",
             left: "50%",
-            bottom: FOOTER_HEIGHT + theme.spacing.md,
+            bottom: theme.spacing.md,
             transform: "translateX(-50%)",
             fontSize: theme.typography.size.xl,
             color: theme.colors.themed.controlOnChrome,
@@ -355,12 +303,11 @@ export default function LandingPage() {
             border: "none",
             cursor: "pointer",
             padding: 0,
-            zIndex: 40,
           }}
         >
           ⌄
         </button>
-      )}
+      </section>
 
       <section
         id={ARTICLES_SECTION_ID}
@@ -401,7 +348,13 @@ export default function LandingPage() {
             const imagePosition = index % 2 === 0 ? "right" : "left";
             return (
               <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
-                <SoftPanel style={{ padding: theme.spacing.lg }}>
+                {/* backgroundColor override -- SoftPanel defaults to a
+                    static (always-light) surface, but these cards need to
+                    flip with the theme. themed.canvasBg (not a new color)
+                    so a dark-mode card matches the page's own dark-navy
+                    canvas exactly; text below pairs with themed.navy to
+                    match, same as body text elsewhere on the canvas. */}
+                <SoftPanel style={{ padding: theme.spacing.lg, backgroundColor: theme.colors.themed.canvasBg }}>
                   <div className={`landing-card-row landing-card-row--${imagePosition}`}>
                     {image && (
                       <div className="landing-card-image">
@@ -412,7 +365,7 @@ export default function LandingPage() {
                       <p
                         style={{
                           margin: 0,
-                          color: theme.colors.static.ink,
+                          color: theme.colors.themed.navy,
                           fontWeight: theme.typography.weight.semibold,
                           fontSize: theme.typography.size.lg,
                         }}
@@ -422,7 +375,7 @@ export default function LandingPage() {
                       <div
                         style={{
                           marginTop: theme.spacing.sm,
-                          color: theme.colors.static.ink,
+                          color: theme.colors.themed.navy,
                           fontSize: theme.typography.size.sm,
                           lineHeight: 1.5,
                         }}

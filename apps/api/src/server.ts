@@ -6,6 +6,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { requireAuth } from "./middleware/auth.js";
+import { createAccessCodeRouter } from "./routes/accessCode.js";
 import { createMachineRouter } from "./routes/machines.js";
 import { createSessionRouter } from "./routes/sessions.js";
 import { createWorkoutRouter } from "./routes/workouts.js";
@@ -25,6 +26,7 @@ app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
+app.use("/api", createAccessCodeRouter());
 app.use("/api", requireAuth, createSessionRouter(repo));
 app.use("/api", requireAuth, createWorkoutRouter(repo));
 app.use("/api", requireAuth, createMachineRouter(repo));

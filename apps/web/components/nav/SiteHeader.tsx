@@ -8,6 +8,7 @@ import { theme, withAlpha } from "@exercise-tracker/design-tokens";
 import { supabase } from "../../lib/supabase";
 import { useSupabaseSession } from "../../lib/useSession";
 import { useProfile } from "../../lib/useProfile";
+import { AccessCodeModal } from "../auth/AccessCodeModal";
 import { LoginModal } from "../auth/LoginModal";
 import { LevelProgress } from "../profile/LevelProgress";
 import { AvatarCircle } from "../profile/AvatarCircle";
@@ -32,6 +33,7 @@ export function SiteHeader() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [accessCodeOpen, setAccessCodeOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   // Accordion -- at most one of the three expandable sections open at once.
   const [expandedSection, setExpandedSection] = useState<"social" | "exercise" | "resources" | null>(null);
@@ -233,17 +235,51 @@ export function SiteHeader() {
           display: "flex",
           alignItems: "center",
           gap: theme.spacing.xs,
-          color: theme.colors.themed.brandAccent,
-          fontSize: theme.typography.size.lg,
-          fontWeight: theme.typography.weight.bold,
-          fontFamily: "'Clash Display', sans-serif",
           textDecoration: "none",
           gridColumn: 2,
           justifySelf: "center",
         }}
       >
         <Image src={logo} alt="" width={44} height={44} />
-        <span className="site-header-wordmark-text">elexercise!</span>
+        {/* The flex item is this outer span, not the wordmark text itself --
+            its paddingBottom reserves flow height for the tagline line
+            (so the icon's alignItems: center centers against the full
+            two-line block, not just "elexercise!" alone) without adding any
+            width, so it can't shift the icon+wordmark's screen-centered
+            position. The tagline itself is still positioned absolutely
+            against the *inner* wordmark-text span specifically (left-aligned
+            with "elexercise!"'s own left edge, directly below it) -- the
+            outer padding doesn't move that anchor. */}
+        <span style={{ paddingBottom: theme.typography.size.xxs }}>
+          <span
+            className="site-header-wordmark-text"
+            style={{
+              position: "relative",
+              color: theme.colors.themed.brandAccent,
+              fontSize: theme.typography.size.lg,
+              fontWeight: theme.typography.weight.bold,
+              fontFamily: "'Clash Display', sans-serif",
+            }}
+          >
+            elexercise!
+            <span
+              className="site-header-tagline"
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                lineHeight: 1,
+                color: theme.colors.navy,
+                opacity: 0.75,
+                fontSize: theme.typography.size.xxs,
+                fontWeight: theme.typography.weight.medium,
+                whiteSpace: "nowrap",
+              }}
+            >
+              a digital whitepaper
+            </span>
+          </span>
+        </span>
       </Link>
 
       <div
@@ -326,7 +362,14 @@ export function SiteHeader() {
             ) : (
               <button
                 type="button"
-                onClick={() => setLoginOpen(true)}
+                aria-label="Log in"
+                onClick={() => {
+                  if (sessionStorage.getItem("accessCodeVerified") === "true") {
+                    setLoginOpen(true);
+                  } else {
+                    setAccessCodeOpen(true);
+                  }
+                }}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -340,7 +383,7 @@ export function SiteHeader() {
                   fontSize: theme.typography.size.md,
                 }}
               >
-                <span>Log in</span>
+                <span>{theme.icons.login}</span>
               </button>
             )}
           </>
@@ -348,6 +391,14 @@ export function SiteHeader() {
         </div>
       </div>
 
+      <AccessCodeModal
+        open={accessCodeOpen}
+        onClose={() => setAccessCodeOpen(false)}
+        onVerified={() => {
+          setAccessCodeOpen(false);
+          setLoginOpen(true);
+        }}
+      />
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       </header>
     </>
