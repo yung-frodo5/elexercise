@@ -241,37 +241,43 @@ export function SiteHeader() {
         }}
       >
         <Image src={logo} alt="" width={44} height={44} />
-        {/* position: relative on the wordmark text itself (not a wrapper)
-            -- the tagline below is positioned absolutely against exactly
-            this box, so it's left-aligned with "elexercise!"'s own left
-            edge and, being out of flow, never widens this flex item. That
-            keeps the icon+wordmark centering (gridColumn 2, justifySelf
-            center on the Link) exactly as it was before the tagline
-            existed, regardless of the tagline's own width. */}
-        <span
-          className="site-header-wordmark-text"
-          style={{
-            position: "relative",
-            color: theme.colors.themed.brandAccent,
-            fontSize: theme.typography.size.lg,
-            fontWeight: theme.typography.weight.bold,
-            fontFamily: "'Clash Display', sans-serif",
-          }}
-        >
-          elexercise!
+        {/* The flex item is this outer span, not the wordmark text itself --
+            its paddingBottom reserves flow height for the tagline line
+            (so the icon's alignItems: center centers against the full
+            two-line block, not just "elexercise!" alone) without adding any
+            width, so it can't shift the icon+wordmark's screen-centered
+            position. The tagline itself is still positioned absolutely
+            against the *inner* wordmark-text span specifically (left-aligned
+            with "elexercise!"'s own left edge, directly below it) -- the
+            outer padding doesn't move that anchor. */}
+        <span style={{ paddingBottom: theme.typography.size.xxs }}>
           <span
-            className="site-header-tagline"
+            className="site-header-wordmark-text"
             style={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              color: theme.colors.navy,
-              opacity: 0.75,
-              fontSize: theme.typography.size.xxs,
-              whiteSpace: "nowrap",
+              position: "relative",
+              color: theme.colors.themed.brandAccent,
+              fontSize: theme.typography.size.lg,
+              fontWeight: theme.typography.weight.bold,
+              fontFamily: "'Clash Display', sans-serif",
             }}
           >
-            a multimedia whitepaper
+            elexercise!
+            <span
+              className="site-header-tagline"
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                lineHeight: 1,
+                color: theme.colors.navy,
+                opacity: 0.75,
+                fontSize: theme.typography.size.xxs,
+                fontWeight: theme.typography.weight.medium,
+                whiteSpace: "nowrap",
+              }}
+            >
+              a multimedia whitepaper
+            </span>
           </span>
         </span>
       </Link>
