@@ -217,15 +217,15 @@ export default function LandingPage() {
         className="definition-section"
         style={{
           paddingTop: SECTION_PADDING_TOP,
-          // 2x paddingTop, not a minHeight-driven flex leftover -- flex-start
+          // 4x paddingTop, not a minHeight-driven flex leftover -- flex-start
           // plus a viewport-filling minHeight would send ALL leftover space
           // below the definition, so this is a real, explicit paddingBottom
-          // instead of relying on box height. calc(2 * ...) rather than a
-          // hand-doubled clamp() so it stays exactly proportional to
+          // instead of relying on box height. calc(4 * ...) rather than a
+          // hand-multiplied clamp() so it stays exactly proportional to
           // SECTION_PADDING_TOP at every viewport size. The scroll indicator
           // is unaffected either way -- it's position: fixed to the
           // viewport (see below), not a flex child of this section.
-          paddingBottom: `calc(2 * ${SECTION_PADDING_TOP})`,
+          paddingBottom: `calc(4 * ${SECTION_PADDING_TOP})`,
           paddingLeft: SECTION_PADDING_X,
           paddingRight: SECTION_PADDING_X,
           display: "flex",
