@@ -235,17 +235,45 @@ export function SiteHeader() {
           display: "flex",
           alignItems: "center",
           gap: theme.spacing.xs,
-          color: theme.colors.themed.brandAccent,
-          fontSize: theme.typography.size.lg,
-          fontWeight: theme.typography.weight.bold,
-          fontFamily: "'Clash Display', sans-serif",
           textDecoration: "none",
           gridColumn: 2,
           justifySelf: "center",
         }}
       >
         <Image src={logo} alt="" width={44} height={44} />
-        <span className="site-header-wordmark-text">elexercise!</span>
+        {/* position: relative on the wordmark text itself (not a wrapper)
+            -- the tagline below is positioned absolutely against exactly
+            this box, so it's left-aligned with "elexercise!"'s own left
+            edge and, being out of flow, never widens this flex item. That
+            keeps the icon+wordmark centering (gridColumn 2, justifySelf
+            center on the Link) exactly as it was before the tagline
+            existed, regardless of the tagline's own width. */}
+        <span
+          className="site-header-wordmark-text"
+          style={{
+            position: "relative",
+            color: theme.colors.themed.brandAccent,
+            fontSize: theme.typography.size.lg,
+            fontWeight: theme.typography.weight.bold,
+            fontFamily: "'Clash Display', sans-serif",
+          }}
+        >
+          elexercise!
+          <span
+            className="site-header-tagline"
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              color: theme.colors.navy,
+              opacity: 0.75,
+              fontSize: theme.typography.size.xxs,
+              whiteSpace: "nowrap",
+            }}
+          >
+            a multimedia whitepaper by Noah Korotzer
+          </span>
+        </span>
       </Link>
 
       <div
