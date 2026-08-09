@@ -140,7 +140,7 @@ cites academic sources, as "The Psychological Bridge" does.
 string-literal union in `src/types.ts`) — this package never stores or knows
 about a binary image or a URL. Each app:
 1. Stores its own actual image file under `apps/<app>/assets/...` (e.g.
-   `apps/web/assets/images/what-is-elexercise.svg`,
+   `apps/web/assets/images/what-is-elexercise.gif`,
    `apps/mobile/assets/landing/what-is-elexercise.png`).
 2. Maps every `GraphicKey` to that file in
    `apps/<app>/lib/content/graphicAssets.ts`, typed `Record<GraphicKey, ...>`

@@ -75,7 +75,7 @@ const LANDING_LINKS: LandingLink[] = [
     ),
     graphicKey: "what-is-elexercise-diagram",
     imageAlt:
-      "Diagram of a gym designed as a community resilience hub, with rooftop solar panels, exercise equipment, bicycle parking, EV charging, and backup power.",
+      "Animated diagram of a person doing a squat exercise connected to a generator, which charges a battery that powers a microinverter, a grow light, and small devices like a phone.",
   },
   {
     href: "/resources/articles/how-much-power",

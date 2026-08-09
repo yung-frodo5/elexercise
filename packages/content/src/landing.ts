@@ -65,7 +65,7 @@ export const landingArticle: Article = {
       type: "graphic",
       key: "what-is-elexercise-diagram",
       alt:
-        "A gym design concept: a sketch of a prototypical gym with rooftop solar panels and exercise equipment, alongside an infographic showing how such a facility could double as a community resilience hub with bicycle parking, EV charging, community gardens, and backup power.",
+        "Animated diagram of a person doing a squat exercise connected to a generator, which charges a battery that powers a microinverter, a grow light, and small devices like a phone.",
     },
   ],
 };
