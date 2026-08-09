@@ -2,13 +2,26 @@
 
 import { useMemo } from "react";
 import { theme } from "@exercise-tracker/design-tokens";
+import type { PowerSamplePoint } from "@exercise-tracker/workout-history";
 import { usePowerSamples } from "../../lib/usePowerSamples";
 import { formatDuration } from "../../lib/format";
 import { StatTile } from "./StatTile";
 import { PowerChart } from "./PowerChart";
 
-export function LivePowerChart({ sessionId, activityType }: { sessionId: string; activityType: string }) {
-  const { samples, loading, error } = usePowerSamples(sessionId);
+export function LivePowerChart({
+  sessionId,
+  activityType,
+  liveSamples,
+}: {
+  sessionId: string;
+  activityType: string;
+  // When provided (a BLE-connected session whose browser tab already has the
+  // readings locally), used directly instead of waiting on the server
+  // round-trip + Realtime subscription that `usePowerSamples` otherwise uses.
+  liveSamples?: PowerSamplePoint[];
+}) {
+  const { samples: fetchedSamples, loading, error } = usePowerSamples(liveSamples ? null : sessionId);
+  const samples = liveSamples ?? fetchedSamples;
 
   const stats = useMemo(() => {
     if (samples.length === 0) return null;
