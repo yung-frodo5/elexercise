@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import type { PowerSamplePoint } from "@exercise-tracker/workout-history";
 import { endSession, getMachineByScanToken, postPowerSample, startMachineSession } from "./api";
 import { WattcycleBleClient } from "./wattcycle/bleClient";
 
@@ -12,6 +13,7 @@ export function useWattcycleSession(accessToken: string | undefined) {
   const [status, setStatus] = useState<WattcycleStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [samples, setSamples] = useState<PowerSamplePoint[]>([]);
 
   const clientRef = useRef<WattcycleBleClient | null>(null);
   const runningRef = useRef(false);
@@ -30,6 +32,11 @@ export function useWattcycleSession(accessToken: string | undefined) {
         if (data) {
           const powerW = Math.abs(data.moduleVoltage * data.current);
           const tMs = Math.round(performance.now() - streamStart);
+          // Update local state before the network round-trip so the "Current
+          // workout" screen (fed these samples directly, see track/page.tsx)
+          // reflects the reading immediately instead of waiting on the
+          // POST + Realtime-subscription round-trip through the server.
+          setSamples((prev) => [...prev, { tMs, powerW }]);
           await postPowerSample(token, sid, tMs, powerW);
         }
       } catch (err) {
@@ -43,6 +50,7 @@ export function useWattcycleSession(accessToken: string | undefined) {
     async (scanToken: string) => {
       if (!accessToken) return;
       setError(null);
+      setSamples([]);
       setStatus("looking-up");
 
       let client: WattcycleBleClient | null = null;
@@ -109,5 +117,5 @@ export function useWattcycleSession(accessToken: string | undefined) {
     }
   }, [accessToken, stopPolling]);
 
-  return { status, error, sessionId, connect, stop };
+  return { status, error, sessionId, samples, connect, stop };
 }

@@ -170,6 +170,11 @@ export default function TrackPage() {
 
   const inProgressSession = currentWorkout?.sessions.find((s) => s.status === "in_progress");
 
+  // True while this browser tab is itself the source of this session's power
+  // readings (BLE-connected), rather than a simulated session whose samples
+  // only exist server-side -- see LivePowerChart's `liveSamples` prop.
+  const isWattcycleLive = wattcycle.status === "streaming" && wattcycle.sessionId === inProgressSession?.id;
+
   const wattcycleStatusMessage: string | null =
     wattcycle.status === "looking-up"
       ? "Looking up machine…"
@@ -208,7 +213,11 @@ export default function TrackPage() {
               }}
             >
               {inProgressSession ? (
-                <LivePowerChart sessionId={inProgressSession.id} activityType={inProgressSession.activityType} />
+                <LivePowerChart
+                  sessionId={inProgressSession.id}
+                  activityType={inProgressSession.activityType}
+                  liveSamples={isWattcycleLive ? wattcycle.samples : undefined}
+                />
               ) : (
                 <p style={{ color: theme.colors.navy, fontSize: theme.typography.size.sm }}>
                   No active session — start one to see live power.
