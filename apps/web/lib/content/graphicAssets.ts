@@ -4,7 +4,7 @@ import type { Crop } from "../../components/content/FramedImage";
 // Next's built-in next-image-loader webpack rule turns this import's default
 // export into a StaticImageData object ({ src, width, height, ... }), not a
 // plain URL string — hence the `.src` access at each call site.
-import whatIsElexerciseDiagram from "../../assets/images/what-is-elexercise.svg";
+import whatIsElexerciseDiagram from "../../assets/images/what-is-elexercise.gif";
 import powerGenerationPixiiMachine from "../../assets/images/power-generation-pixii-machine.png";
 import powerGenerationBikeCompHomeUsage from "../../assets/images/power-generation-bike-comp-home-usage.svg";
 import powerGenerationBikeCompNoCarbonPrice from "../../assets/images/power-generation-bike-comp-no-carbon-price.svg";
