@@ -15,7 +15,36 @@ const pillButtonStyle: CSSProperties = {
   fontSize: theme.typography.size.sm,
   cursor: "pointer",
   width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: theme.spacing.xs,
 };
+
+const spinnerStyle: CSSProperties = {
+  width: 14,
+  height: 14,
+  borderRadius: "50%",
+  border: "2px solid rgba(255, 255, 255, 0.4)",
+  borderTopColor: "#FFFFFF",
+  animation: "elexAccessCodeSpin 0.8s linear infinite",
+};
+
+const KEYFRAMES_ID = "elex-access-code-keyframes";
+
+function ensureKeyframes() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(KEYFRAMES_ID)) return;
+  const style = document.createElement("style");
+  style.id = KEYFRAMES_ID;
+  style.textContent = `
+    @keyframes elexAccessCodeSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 export function AccessCodeModal({
   open,
@@ -31,6 +60,7 @@ export function AccessCodeModal({
   const [submitting, setSubmitting] = useState(false);
 
   if (!open) return null;
+  ensureKeyframes();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -115,6 +145,7 @@ export function AccessCodeModal({
             value={code}
             onChange={(e) => setCode(e.target.value)}
             autoFocus
+            disabled={submitting}
           />
           {error && (
             <p style={{ color: theme.colors.static.errorInkOnDarkPanel, fontSize: theme.typography.size.sm }}>
@@ -122,7 +153,14 @@ export function AccessCodeModal({
             </p>
           )}
           <button type="submit" style={pillButtonStyle} disabled={submitting}>
-            Continue
+            {submitting ? (
+              <>
+                <span style={spinnerStyle} />
+                Checking…
+              </>
+            ) : (
+              "Continue"
+            )}
           </button>
         </form>
       </div>
