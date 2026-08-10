@@ -293,6 +293,15 @@ A few things that trip people up:
   password is a Resend API key: it lives in Bitwarden and in your local
   (gitignored) `.env` as `RESEND_SMTP_PASSWORD`, read via `env()` at push
   time — never committed.
+- **`supabase/config.toml` is the source of truth for Supabase project
+  settings — treat the Supabase dashboard as read-only for anything the file
+  covers** (auth, redirect URLs, SMTP, providers, rate limits). Change those
+  in `config.toml` via a PR, not in the console. On merge to `main`, the
+  `Supabase config push` GitHub Action (`.github/workflows/supabase-config.yml`)
+  runs `supabase config push` and applies the file to production — and it
+  overwrites any drift, so a dashboard edit will be silently reverted on the
+  next push. Secret *values* and provider app registration still live outside
+  the file (Bitwarden / dashboard).
 
 ## Before opening a PR
 

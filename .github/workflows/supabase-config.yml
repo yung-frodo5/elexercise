@@ -1,10 +1,9 @@
-name: Supabase config push
+name: Manually Promote Supabase Settings
 
+# Settings are deliberate, not auto-deployed: config.toml holds environment
+# specific values (e.g. site_url / redirect URLs) and config push overwrites
+# remote drift with no rollback. Run this by hand after reviewing drift.
 on:
-  push:
-    branches: [main]
-    paths:
-      - supabase/config.toml
   workflow_dispatch: {}
 
 concurrency:
@@ -14,6 +13,9 @@ concurrency:
 jobs:
   push:
     runs-on: ubuntu-latest
+    # Requires manual approval via the "production" environment (configure
+    # required reviewers in repo Settings -> Environments).
+    environment: production
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}

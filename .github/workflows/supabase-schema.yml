@@ -1,0 +1,39 @@
+name: Auto-Promote Supabase DB Schema
+
+# Applies supabase/migrations/** to the linked production project on merge to
+# main. Gated behind the "production" environment so a human approves before
+# any schema change lands. Migrations are forward-only and not auto-reverted,
+# so review the SQL in the PR before approving.
+on:
+  push:
+    branches: [main]
+    paths:
+      - supabase/migrations/**
+  workflow_dispatch: {}
+
+concurrency:
+  group: supabase-db-push
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    # Requires manual approval via the "production" environment (configure
+    # required reviewers in repo Settings -> Environments).
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Push migrations
+        run: supabase db push
