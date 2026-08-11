@@ -4,7 +4,7 @@ export const thePsychologicalBridgeArticle: Article = {
   slug: "the-psychological-bridge",
   title: "The Psychological Bridge: From Exercise to Climate Action",
   authors: [{ name: "Noah Korotzer" }, { name: "Eric Ingram" }],
-  lastUpdated: "August 8th, 2026",
+  lastUpdated: "August 10th, 2026",
   style: "technical",
   body: [
     {
@@ -15,23 +15,22 @@ export const thePsychologicalBridgeArticle: Article = {
         [
           {
             text:
-              "Climate anxiety does not necessarily translate into climate action, largely because ",
+              "Studies show that climate anxiety does not consistently translate into climate action. Not only is affective distress a poor predictor of behavioral engagement, but these individual behaviors and efforts are often ",
           },
-          { text: "individual effort feels disconnected from any tangible outcome", bold: true },
-          { text: " and because " },
-          { text: "affective distress is a poor predictor of behavioral engagement", bold: true },
+          { text: "disconnected from real, tangible outcomes.", bold: true },
           {
             text:
-              " in climate psychology. In this article, we propose “elexercise” as a concrete intervention that helps close the gap by attaching a real, measurably productive output to a workout. Drawing on parallel literatures in exercise psychology and climate psychology, we show how ",
+              " In this article we discuss “elexercise”, a concrete mechanism that aims to close the gap by attaching a measurable output of climate action to each workout. Drawing on parallel literatures in exercise and climate psychology, we propose elexercise as a way to ",
           },
+          { text: "strengthen an individual's self-efficacy and environmental identity,", bold: true },
+          { text: " as well as " },
           {
-            text:
-              "elexercise can strengthen individual self-efficacy and environmental identity while also tapping the more powerful mechanisms of collective efficacy and group-based action",
+            text: "harness the more powerful mechanisms of collective efficacy and group-based action",
             bold: true,
           },
           {
             text:
-              ", which climate psychology identifies as the strongest predictors of sustained engagement. We consider how such a system could be designed for equitable access and we address the psychological risks the design must guard against. We conclude that elexercise could be an effective way to treat anticipatory climate anxiety by reducing barriers to action and connecting individual effort to collective impact.",
+              ", the strongest predictors of sustained climate engagement. We consider how an elexercise-based gym or system at large could be designed for equitable access and also address the psychological risks elexercise must guard against. We conclude that elexercise could be an effective way to treat climate anxiety by reducing barriers to action and connecting individual efforts to collective impact.",
           },
         ],
       ],
@@ -45,7 +44,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Systematic reviews of climate anxiety describe three distinct pathways by which people are affected: direct exposure to acute events like heatwaves, slower indirect disruptions to food security, livelihoods, and social systems, and, increasingly, a purely anticipatory pathway driven by awareness and media exposure rather than lived experience.",
+            "Systematic reviews of climate anxiety describe three distinct pathways by which people are affected: direct exposure to acute weather events like heatwaves or flash floods, indirect exposure through disruptions to societal systems such as the global food chain and workforce, and, increasingly, a purely anticipatory pathway driven by awareness and media exposure rather than lived experience.",
           footnote: 1,
         },
         { text: "", footnote: 2 },
@@ -70,7 +69,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " Critically, the strongest predictor of that last component—real behavior change—is not how anxious or impaired someone feels but instead trait-level environmental identity, followed by direct personal experience. Affective distress and functional impairment, the symptoms we most associate with “climate anxiety,” are seemingly unrelated to whether or not someone takes action. This somewhat counterintuitive finding suggests that those most committed to climate action are not the most worried or even the most directly impacted, but rather, those who feel the greatest connection to the environment and hold climate justice as a strong personal value.",
+            " Critically, the strongest predictor of that last component—real behavior change—is not how anxious or impaired someone feels but instead trait-level environmental identity, followed by direct personal experience. Affective distress and functional impairment, the symptoms we most associate with “climate anxiety,” are seemingly unrelated to whether or not someone takes action. This somewhat counterintuitive finding suggests that those most committed to climate action are not the most worried or even the most directly impacted, but rather, those who feel the greatest connection to our environment and hold climate justice as a strong personal value.",
         },
       ],
     },
@@ -79,12 +78,12 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Barriers to action cluster around a few consistent themes: low perceived individual efficacy, a sense that one's own effort is a rounding error against a planetary-scale problem, and a socioeconomic gradient in which privilege buys both awareness and indifference while disadvantage brings direct exposure without the bandwidth to act on it.",
+            "However, the scale and severity of climate change demands widespread, committed action. Barriers to action cluster around a few consistent themes: low perceived individual efficacy, a sense that one's own effort is a rounding error against a planetary problem, and a socioeconomic gradient in which privilege buys both awareness and indifference while disadvantage brings direct exposure without the bandwidth to act on it.",
           footnote: 4,
         },
         {
           text:
-            " Political betrayal, or the sense that institutions have failed to act despite decades of warning, compounds this by eroding the sense of personal agency.",
+            " Political betrayal, or the sense that institutions have failed to act despite decades of warning, compounds this by eroding hope and one's sense of agency.",
         },
       ],
     },
@@ -93,12 +92,12 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Furthermore, one must ask the question: should we strive to treat mild climate anxiety in a clinical sense? Anxiety is a response to an environmental danger stimulus; climate change is a very real environmental danger. ",
+            "Further, one might ask: should we strive to treat climate anxiety as a distinct clinical pathology? Anxiety is a response to an environmental danger stimulus, and climate change is a very real environmental danger. ",
         },
-        { text: "The goal is not necessarily to insulate people against feeling any level of concern", bold: true },
+        { text: "The goal is not to insulate people against feeling any level of concern", bold: true },
         {
           text:
-            ", for we cannot solve this problem by numbing it away. Rather, we propose that the best treatment for anticipatory climate anxiety is to reduce the barriers to climate action and connect individuals to broader, collective efforts.",
+            ", for we cannot solve this problem by numbing it away. Rather, we propose that the best treatment for climate anxiety is to reduce the barriers to climate action and connect individuals to broader, collective efforts with measurable impacts that people can identify with and relate to.",
         },
       ],
     },
@@ -107,7 +106,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "This article explores a specific, concrete intervention that sits at the intersection of two well-studied psychological literatures: the psychology of exercise and the psychology of climate anxiety and action. We explore whether combining them can act as a force multiplier that empowers people to not only mitigate their climate anxiety but also take real climate action.",
+            "We explore a specific, concrete intervention that sits at the intersection of two well-studied literatures: the psychology of exercise and the psychology of climate anxiety and action. We discuss whether combining them can act as a force multiplier that empowers people to mitigate their climate anxiety by taking real climate action.",
         },
       ],
     },
@@ -188,7 +187,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Climate psychology draws a closely related distinction between self-efficacy (can I personally do something) and response efficacy (will what I do actually matter).",
+            "Climate psychology draws a similar distinction between self-efficacy (can I personally do something) and response efficacy (will what I do actually matter).",
           footnote: 7,
         },
         {
@@ -203,7 +202,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Elexercise offers a structural fix by harnessing the well-established efficacy-building mechanism of exercise and attaching climate response efficacy directly to it.",
+            "Elexercise offers a structural fix by harnessing the well-established efficacy-building mechanism of exercise, and attaching climate response efficacy directly to it.",
           bold: true,
         },
         {
@@ -226,7 +225,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " poses a natural design question: is elexercise better positioned as a “climate-minded business for gym people” or a “gym for climate-minded people”? Environmentally identified individuals will likely be the earliest and most durable adopters, self-selecting into a space that lets them enact an identity they already hold. But there is also an open question about whether repeated participation in a visibly impactful, socially reinforced activity can ",
+            " poses a natural design question: is elexercise better positioned as a “climate-minded business for gym people” or a “gym for climate-minded people”? Individuals who strongly identify with the environment will likely be the earliest and most durable adopters, self-selecting into a space that lets them act in accordance with an identity they already hold. But it is worth considering whether repeated participation in a visibly impactful, socially reinforced activity can ",
         },
         { text: "cultivate", italic: true },
         {
@@ -269,18 +268,21 @@ export const thePsychologicalBridgeArticle: Article = {
         { text: "Women", bold: true },
         { text: " show consistently higher climate worry than men even after controlling for baseline mental health,", footnote: 4 },
         {
+          text: " a pattern that is well-replicated.",
+        },
+        {
           text:
-            " a pattern that is well-replicated: the Climate Change Worry Scale alone accounts for roughly a fifth of the variance in worry scores by gender and political orientation.",
+            " In developing the Climate Change Worry Scale, gender and political orientation accounted for roughly 20% of the variance in an individual's worry score.",
           footnote: 9,
         },
         {
           text:
-            " Their reported exercise motivators, meanwhile, skew toward social factors and tension release rather than the fitness-and-health framing that motivates men.",
+            " Additionally, women's reported exercise motivators skew toward social factors and tension release rather than the fitness-and-health framing that motivates men.",
           footnote: 8,
         },
         {
           text:
-            " That combination—heightened climate concern plus a motivational profile centered on social connection—suggests elexercise's community and shared-purpose framing may resonate especially strongly.",
+            " That combination—heightened climate concern plus a motivational profile centered on social connection—suggests elexercise's community and shared-purpose framing may resonate especially strongly for women.",
         },
       ],
     },
@@ -289,23 +291,23 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         { text: "Youth", bold: true },
         {
-          text: ", meanwhile, sit at another collision point: a developmental stage prone to new mental health onset during saturated exposure to climate messaging",
+          text: ", meanwhile, sit at another collision point, as this is a population prone to new mental health onset due to their development stage, while being raised in an era of overly saturated media exposure to climate messaging",
           footnote: 1,
         },
         { text: "", footnote: 2 },
         {
           text:
-            " and a documented preference among younger cohorts for more creative, novel, and multilevel forms of action compared with older adults, who tend towards a narrower, more conventional set of behaviors that are less visibly impactful (e.g. recycling, unplugging appliances) or have higher barriers to entry (e.g. switching to an electric vehicle, installing rooftop solar).",
+            ". Younger cohorts express a strong preference for more creative, novel, and multilevel forms of action compared with older adults, who gravitate towards a narrower, more conventional set of behaviors that are less visibly impactful (e.g. recycling; unplugging appliances) or have higher barriers to entry (e.g. switching to an electric vehicle; installing rooftop solar).",
           footnote: 10,
         },
         {
           text:
-            " Worry itself tracks this developmental window closely—cross-sectional data show climate worry climbing from age 15 through 25 before leveling off, with pandemic-era young adults already predisposed to elevated baseline levels entering that window.",
+            " Worry itself tracks this developmental window closely—cross-sectional data shows that climate worry climbs from age 15 through 25 before leveling off, with pandemic-era young adults already predisposed to elevated baseline levels before entering this critical window.",
           footnote: 4,
         },
         {
           text:
-            " A genuinely novel format like elexercise may have disproportionate appeal to a generation looking for ways to act that don't map onto their parents' protest-or-consumer-choice playbook.",
+            " A genuinely novel form of climate action like elexercise may have disproportionate appeal to a generation looking for ways to act that don't map onto their parents' protest-or-consumer-choice playbook.",
         },
       ],
     },
@@ -322,7 +324,7 @@ export const thePsychologicalBridgeArticle: Article = {
         { text: "collective", italic: true },
         {
           text:
-            " efficacy rather than individual efficacy, which matters because individual cost frequently outweighs individual benefit, and individual efficacy for a planetary-scale problem is (appropriately) perceived as low.",
+            " efficacy rather than individual efficacy, which matters because individual costs frequently outweigh individual benefit, and individual efficacy for a planetary-scale problem is (appropriately) perceived as low.",
           footnote: 11,
         },
         {
@@ -351,11 +353,11 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Exercise's existing social infrastructure could therefore be quite an asset. Group fitness, team sports, and gym communities are already default social activities for a large share of participants; elexercise doesn't need to invent communal exercise, it needs to channel an existing social behavior toward a shared, visible, group-level output. Imagine if a workout class or gym cohort could actively see its combined power and energy generation, translated directly into offset carbon emissions, the same way an individual sees their own heart rate or calorie count on a treadmill. Given that neighborhood-level social capital and “arenas for joined action” are specifically identified in the literature as levers for strengthening collective climate intention,",
+            "Exercise's existing social infrastructure could therefore be quite an asset. Group fitness, team sports, and gym communities are already default social activities for a large share of participants; elexercise doesn't need to invent communal exercise, it needs to channel an existing social behavior toward a shared, visible, group-level output. Imagine if a workout class or gym cohort could actively see its combined power and energy generation, translated directly into carbon emissions offset in the same way an individual sees their own HR or calorie count on a treadmill. Given that neighborhood-level social capital and “arenas for joined action” are specifically identified as levers for strengthening collective climate intention,",
           footnote: 13,
         },
         {
-          text: " a physical, recurring, socially embedded space like a gym, which already produces tangible amounts of work, power, and energy that goes unused, is an ideal candidate to present itself as an arena for collective climate action.",
+          text: " a physical, recurring, socially embedded space like a gym, which already produces tangible amounts of ‘work/power/energy’ that goes unused, is an ideal candidate to present itself as an arena for collective climate action.",
           bold: true,
         },
       ],
@@ -369,7 +371,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "The socioeconomic dimension of eco-anxiety research is unambiguous: privilege buys awareness and the resources to act on it, but also correlates with indifference; disadvantage brings the most direct exposure and least access to information or bandwidth to engage.",
+            "The socioeconomic dimension of eco-anxiety research is unambiguous: privilege buys access to knowledge that improves awareness, as well as the resources to act on it. However privilege also correlates with indifference; meanwhile, the socioeconomically disadvantaged tend to experience the most direct exposure while not having the information, physical means, or mental bandwidth to engage in action.",
           footnote: 4,
         },
         {
@@ -383,7 +385,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "The more promising framing, drawn directly from this concern, is to treat elexercise less as a standalone product and more as one component of a multidomain resilience hub. By bundling elexercise with things lower-resource communities urgently need, such as education programming or access to affordable, healthy food, the idealized resilience hub may serve as a low-cost social safety net, collectively funded and operated by the power of exercise. Positioned this way, elexercise doesn't compete with someone's hierarchy of needs; it rides alongside services that meet those needs and lends them an additional, tangible climate and fitness benefit. Gyms already have many of the components necessary for resilience hubs: space, water, medical equipment, bathroom capacity (including showers), strong HVAC systems, and locations near the populations they serve.",
+            "The more promising framing, drawn directly from this concern, is to treat elexercise less as a standalone product and more as one component of a multidomain resilience hub. By bundling elexercise with things lower-resource communities urgently need (e.g., education programming, access to affordable and healthy food, etc.), the idealized resilience hub may serve as a low cost social safety net, collectively funded and operated by the power of exercise. Positioned this way, elexercise doesn't compete with someone's hierarchy of needs—it rides alongside services that meet those needs and lends them an additional, tangible climate and fitness benefit. Gyms already have many components that are necessary for resilience hubs: space, water, medical equipment, bathroom capacity (including showers), strong HVAC systems, and locations near populace.",
           footnote: 18,
         },
         {
@@ -402,7 +404,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " A gym or network of gyms could plausibly play an analogous “guiding” role at the community level—modeling a behavior, building local capacity, and creating a peer-to-peer influence effect—while individual members take on the “follower” role of extending that behavior into their own lives through what they learn on-site.",
+            " A gym, or network of gyms expanding horizontally across the country, could plausibly play an analogous “guiding” role at the community level—modeling a behavior, building local capacity, and creating a peer-to-peer influence effect—while individual members take on the “follower” role of extending that behavior into their own lives through what they learn on-site.",
         },
       ],
     },
@@ -445,7 +447,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " Gamification elements (leaderboards, badges, visible progress tiers) can be motivating for some or a source of comparison-driven distress for others, especially if paired with maladaptive perfectionism—a pattern of unattainable goals and inability to feel satisfied regardless of performance—which has been identified as a mechanistic link between problematic exercise, body image concerns, and disordered eating.",
+            " Gamification elements (leaderboards, badges, visible progress tiers) can be motivating for some or a source of comparison-driven distress for others. This is especially true when paired with maladaptive perfectionism—a pattern of unattainable goals and inability to feel satisfied regardless of performance—which has been identified as a mechanistic link between problematic exercise, body image concerns, and disordered eating.",
           footnote: 17,
         },
       ],
@@ -456,7 +458,7 @@ export const thePsychologicalBridgeArticle: Article = {
         { text: "Climate-impact framing itself as a harm vector.", bold: true },
         {
           text:
-            " Perhaps the least obvious risk is in how the climate benefit is communicated. If messaging implies that meaningful climate reversal is achievable through personal effort, it could set an unattainable bar that effectively extends maladaptive perfectionism to environmental impact. On the flip side, demonstrating the relative weak power of an individual's exercise could create a depressing or paralyzing effect, reducing continued engagement.",
+            " Perhaps the least obvious risk is in how the climate benefit is communicated. If messaging implies that meaningful climate reversal is achievable through personal effort, it could set an unattainable bar that effectively extends maladaptive perfectionism to environmental impact. On the flip side, it is also possible that demonstrating the relative weak power of an individual's exercise could create a depressing or paralyzing effect, thereby reducing continued engagement.",
         },
       ],
     },
@@ -475,14 +477,14 @@ export const thePsychologicalBridgeArticle: Article = {
         [
           {
             text:
-              "Create climate messaging that is honest and focused on local, marginal, additive impact—“helping” as a collective rather than “fixing” as an individual.",
+              "Create climate messaging that is honest and focused on local, marginal, additive impact; “helping” as a collective rather than “fixing” as an individual.",
           },
         ],
         [{ text: "Allow people to opt out of the gamified incentive structures." }],
         [
           {
             text:
-              "Connect people to active mitigation resources, such as therapy. Group-based therapy within a community of like-minded people could be especially beneficial.",
+              "Connect people to active mitigation resources, such as therapy. Group-based therapy within the community of like minded people could be especially beneficial.",
           },
         ],
       ],
