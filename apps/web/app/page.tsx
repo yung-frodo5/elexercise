@@ -130,6 +130,24 @@ const LANDING_LINKS: LandingLink[] = [
       </>
     ),
   },
+  {
+    href: "/resources/articles/life-cycle-analysis",
+    title: "Understanding the Environmental Footprint",
+    description: (
+      <>
+        A Life Cycle Assessment of elexercise equipment shows that{" "}
+        <strong>it can potentially be carbon negative</strong>, depending on how it&apos;s produced and used. Raw
+        materials for the battery and rack drive most of the impact, while energy generated, grid carbon intensity,
+        and equipment lifespan determine how much of that can be offset over time.
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+    graphicKey: "life-cycle-baseline-gwp-chart",
+    imageAlt:
+      "Stacked bar chart showing global warming potential contributions by component for the squat rack system under baseline assumptions.",
+  },
 ];
 
 const ARTICLES_SECTION_ID = "landing-articles";

@@ -20,4 +20,8 @@ export const graphicAssets: Record<GraphicKey, ImageSourcePropType> = {
   "power-generation-bike-comp-hi": require("../../assets/articles/power-generation-bike-comp-hi.png"),
   "power-generation-treadmill-comp": require("../../assets/articles/power-generation-treadmill-comp.png"),
   "how-much-power-preview": require("../../assets/articles/how-much-power-preview.png"),
+  "life-cycle-stages-diagram": require("../../assets/articles/life-cycle-stages-diagram.png"),
+  "life-cycle-baseline-gwp-chart": require("../../assets/articles/life-cycle-baseline-gwp-chart.png"),
+  "life-cycle-power-sensitivity-chart": require("../../assets/articles/life-cycle-power-sensitivity-chart.png"),
+  "life-cycle-carbon-intensity-sensitivity-chart": require("../../assets/articles/life-cycle-carbon-intensity-sensitivity-chart.png"),
 };

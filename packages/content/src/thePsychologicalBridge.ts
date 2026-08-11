@@ -5,6 +5,7 @@ export const thePsychologicalBridgeArticle: Article = {
   title: "The Psychological Bridge: From Exercise to Climate Action",
   authors: [{ name: "Noah Korotzer" }, { name: "Eric Ingram" }],
   lastUpdated: "August 8th, 2026",
+  style: "technical",
   body: [
     {
       type: "callout",

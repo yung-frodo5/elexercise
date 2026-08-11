@@ -5,7 +5,11 @@ import { RichText } from "./RichText";
 import { ExternalLink } from "../ui/ExternalLink";
 import { HEADER_HEIGHT } from "../../lib/layoutConstants";
 
-export function ArticleTable({ table }: { table: Table }) {
+// "Technical"-style articles (see Article.style) render in a serif face
+// instead of the site's default, for a more academic/research-paper look.
+const TECHNICAL_FONT_FAMILY = "'Times New Roman', Times, serif";
+
+export function ArticleTable({ table, textColor = theme.colors.themed.navy }: { table: Table; textColor?: string }) {
   return (
     <div>
       {table.heading && (
@@ -15,7 +19,7 @@ export function ArticleTable({ table }: { table: Table }) {
             marginBottom: theme.spacing.sm,
             fontWeight: theme.typography.weight.bold,
             fontSize: theme.typography.size.sm,
-            color: theme.colors.themed.navy,
+            color: textColor,
           }}
         >
           {table.heading}
@@ -27,7 +31,7 @@ export function ArticleTable({ table }: { table: Table }) {
           borderCollapse: "collapse",
           border: `1px solid ${theme.colors.static.accentPanelBg}`,
           fontSize: theme.typography.size.sm,
-          color: theme.colors.themed.navy,
+          color: textColor,
         }}
       >
         <thead>
@@ -91,12 +95,24 @@ export function ArticleHeader({
   titleSize?: "md" | "xl";
   align?: "left" | "center";
 }) {
+  const technical = article.style === "technical";
+  const textColor = technical ? theme.colors.themed.technicalText : theme.colors.themed.navy;
   return (
     <>
       <h2
         style={{
           margin: 0,
-          color: theme.colors.themed.navy,
+          color: textColor,
+          // Set directly on every element here rather than once on a shared
+          // ancestor -- ArticleHeader's root is a Fragment, and its caller
+          // (the article page) renders it as ArticleBody's sibling, not its
+          // parent, so there's no common wrapper to inherit from. On top of
+          // that, h2 specifically needs its own explicit value regardless:
+          // the global `h1, h2, h3 { font-family: 'Clash Display' }` rule
+          // (apps/web/app/layout.tsx) isn't !important, so a same-element
+          // override wins, but an ancestor's fontFamily wouldn't (h2 has its
+          // own, non-inherited rule for that property).
+          fontFamily: technical ? TECHNICAL_FONT_FAMILY : undefined,
           fontSize: theme.typography.size[titleSize],
           textAlign: align,
           lineHeight: 1.5,
@@ -108,7 +124,8 @@ export function ArticleHeader({
         style={{
           marginTop: theme.spacing.xs,
           marginBottom: 0,
-          color: theme.colors.themed.navy,
+          color: textColor,
+          fontFamily: technical ? TECHNICAL_FONT_FAMILY : undefined,
           fontSize: theme.typography.size.sm,
           textAlign: align,
           lineHeight: 1.5,
@@ -121,7 +138,8 @@ export function ArticleHeader({
           style={{
             marginTop: theme.spacing.xs,
             marginBottom: 0,
-            color: theme.colors.themed.navy,
+            color: textColor,
+            fontFamily: technical ? TECHNICAL_FONT_FAMILY : undefined,
             fontSize: theme.typography.size.sm,
             textAlign: align,
             lineHeight: 1.5,
@@ -135,12 +153,16 @@ export function ArticleHeader({
 }
 
 export function ArticleBody({ article }: { article: Article }) {
+  const technical = article.style === "technical";
+  const textColor = technical ? theme.colors.themed.technicalText : theme.colors.themed.navy;
   return (
-    // line-height set once here (inherited by every paragraph/list/reference
-    // below) rather than per element -- footnote markers render as <sup>,
-    // which otherwise inflates just its own line's height inconsistently
-    // against the rest of the article.
-    <div style={{ lineHeight: 1.5 }}>
+    // line-height and (for technical articles) fontFamily set once here --
+    // inherited by every paragraph/subtitle/subheading/list/table/graphic-
+    // caption/reference below, none of which set their own font-family --
+    // rather than repeated per element. line-height specifically: footnote
+    // markers render as <sup>, which otherwise inflates just its own line's
+    // height inconsistently against the rest of the article.
+    <div style={{ lineHeight: 1.5, fontFamily: technical ? TECHNICAL_FONT_FAMILY : undefined }}>
       {article.body.map((block, index) => {
         switch (block.type) {
           case "paragraph":
@@ -149,7 +171,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.themed.navy,
+                  color: textColor,
                   fontSize: theme.typography.size.sm,
                 }}
               >
@@ -162,7 +184,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.themed.navy,
+                  color: textColor,
                   fontSize: theme.typography.size.lg,
                 }}
               >
@@ -175,7 +197,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 key={index}
                 style={{
                   marginTop: theme.spacing.xl,
-                  color: theme.colors.themed.navy,
+                  color: textColor,
                   fontSize: theme.typography.size.md,
                   fontWeight: theme.typography.weight.semibold,
                 }}
@@ -186,7 +208,7 @@ export function ArticleBody({ article }: { article: Article }) {
           case "graphic":
             return (
               <div key={index} style={{ marginTop: theme.spacing.xl }}>
-                <Graphic graphic={block} />
+                <Graphic graphic={block} textColor={textColor} />
               </div>
             );
           case "list":
@@ -197,7 +219,7 @@ export function ArticleBody({ article }: { article: Article }) {
                   marginTop: theme.spacing.xl,
                   marginBottom: 0,
                   paddingLeft: theme.spacing.lg,
-                  color: theme.colors.themed.navy,
+                  color: textColor,
                   fontSize: theme.typography.size.sm,
                 }}
               >
@@ -267,7 +289,7 @@ export function ArticleBody({ article }: { article: Article }) {
           case "table":
             return (
               <div key={index} style={{ marginTop: theme.spacing.xl }}>
-                <ArticleTable table={block} />
+                <ArticleTable table={block} textColor={textColor} />
               </div>
             );
           default: {
@@ -278,14 +300,14 @@ export function ArticleBody({ article }: { article: Article }) {
       })}
       {article.references && article.references.length > 0 && (
         <div style={{ marginTop: theme.spacing.xl }}>
-          <p style={{ margin: 0, color: theme.colors.themed.navy, fontSize: theme.typography.size.lg }}>References</p>
+          <p style={{ margin: 0, color: textColor, fontSize: theme.typography.size.lg }}>References</p>
           <ul
             style={{
               listStyle: "none",
               marginTop: theme.spacing.sm,
               marginBottom: 0,
               padding: 0,
-              color: theme.colors.themed.navy,
+              color: textColor,
               fontSize: theme.typography.size.sm,
             }}
           >
@@ -317,7 +339,9 @@ export function ArticleBody({ article }: { article: Article }) {
 
 export function ArticleView({ article }: { article: Article }) {
   return (
-    <article>
+    <article
+      style={{ fontFamily: article.style === "technical" ? TECHNICAL_FONT_FAMILY : undefined }}
+    >
       <ArticleHeader article={article} />
       <ArticleBody article={article} />
     </article>
