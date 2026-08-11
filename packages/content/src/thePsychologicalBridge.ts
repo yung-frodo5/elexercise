@@ -70,7 +70,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " Critically, the strongest predictor of that last component—real behavior change—is not how anxious or impaired someone feels but instead trait-level environmental identity, followed by direct personal experience. Affective distress and functional impairment, the symptoms we most associate with “climate anxiety,” are seemingly unrelated to whether or not someone takes action.",
+            " Critically, the strongest predictor of that last component—real behavior change—is not how anxious or impaired someone feels but instead trait-level environmental identity, followed by direct personal experience. Affective distress and functional impairment, the symptoms we most associate with “climate anxiety,” are seemingly unrelated to whether or not someone takes action. This somewhat counterintuitive finding suggests that those most committed to climate action are not the most worried or even the most directly impacted, but rather, those who feel the greatest connection to the environment and hold climate justice as a strong personal value.",
         },
       ],
     },
@@ -140,7 +140,7 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "A conventional workout produces effort that is metabolized and dissipated as heat; nothing external is created beyond the first-order effect of improved personal health. Elexercise closes that loop by creating a second-order output with social and environmental value. In doing so, it directly answers the climate anxiety literature's most stubborn finding: awareness and worry don't reliably translate into behavior because individual effort feels disconnected from any tangible outcome. The wattage from elexercise is not a policy promise or a distant emissions target, it is a number that goes up because a person just did tangibly useful work.",
+            "Effort from conventional workouts produces energy that is metabolized, dissipated as heat, and transferred into equipment; nothing external is created beyond the first-order effect of improved personal health. Elexercise closes that loop by creating a second-order output with social and environmental value. In doing so, it directly answers the climate anxiety literature's most stubborn finding: awareness and worry don't reliably translate into behavior because individual effort feels disconnected from any tangible outcome. The wattage from elexercise is not a policy promise or a distant emissions target, it is a number that goes up because a person just did tangibly useful work.",
         },
       ],
     },
@@ -295,7 +295,7 @@ export const thePsychologicalBridgeArticle: Article = {
         { text: "", footnote: 2 },
         {
           text:
-            " and a documented preference among younger cohorts for more creative, novel, and multilevel forms of action compared with older adults, who tend towards a narrower, more conventional set of behaviors.",
+            " and a documented preference among younger cohorts for more creative, novel, and multilevel forms of action compared with older adults, who tend towards a narrower, more conventional set of behaviors that are less visibly impactful (e.g. recycling, unplugging appliances) or have higher barriers to entry (e.g. switching to an electric vehicle, installing rooftop solar).",
           footnote: 10,
         },
         {
@@ -351,11 +351,11 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "Exercise's existing social infrastructure could therefore be quite an asset. Group fitness, team sports, and gym communities are already default social activities for a large share of participants; elexercise doesn't need to invent communal exercise, it needs to channel an existing social behavior toward a shared, visible, group-level output. Imagine if a workout class or gym cohort could actively see its combined impact in the same way an individual sees their own rep count. Given that neighborhood-level social capital and “arenas for joined action” are specifically identified in the literature as levers for strengthening collective climate intention,",
+            "Exercise's existing social infrastructure could therefore be quite an asset. Group fitness, team sports, and gym communities are already default social activities for a large share of participants; elexercise doesn't need to invent communal exercise, it needs to channel an existing social behavior toward a shared, visible, group-level output. Imagine if a workout class or gym cohort could actively see its combined power and energy generation, translated directly into offset carbon emissions, the same way an individual sees their own heart rate or calorie count on a treadmill. Given that neighborhood-level social capital and “arenas for joined action” are specifically identified in the literature as levers for strengthening collective climate intention,",
           footnote: 13,
         },
         {
-          text: " a physical, recurring, socially embedded space like a gym is an ideal candidate to present itself as an arena for collective climate action.",
+          text: " a physical, recurring, socially embedded space like a gym, which already produces tangible amounts of work, power, and energy that goes unused, is an ideal candidate to present itself as an arena for collective climate action.",
           bold: true,
         },
       ],
@@ -374,7 +374,7 @@ export const thePsychologicalBridgeArticle: Article = {
         },
         {
           text:
-            " A climate-minded gym pitched purely as a fitness amenity risks reinforcing these effects, reaching only those with the schedule flexibility and disposable time to prioritize it.",
+            " A climate-minded gym pitched purely as a fitness amenity risks reinforcing these effects, reaching only those with the schedule flexibility and disposable income to prioritize it.",
         },
       ],
     },
@@ -383,7 +383,12 @@ export const thePsychologicalBridgeArticle: Article = {
       content: [
         {
           text:
-            "The more promising framing, drawn directly from this concern, is to treat elexercise less as a standalone product and more as one component of a multidomain resilience hub, bundling exercise with things that lower-resource communities more urgently need such as childcare, education programming, or access to affordable food. Positioned this way, elexercise doesn't compete with someone's hierarchy of needs; it rides alongside services that are already meeting those needs, and lends them an additional, tangible climate and fitness benefit.",
+            "The more promising framing, drawn directly from this concern, is to treat elexercise less as a standalone product and more as one component of a multidomain resilience hub. By bundling elexercise with things lower-resource communities urgently need, such as education programming or access to affordable, healthy food, the idealized resilience hub may serve as a low-cost social safety net, collectively funded and operated by the power of exercise. Positioned this way, elexercise doesn't compete with someone's hierarchy of needs; it rides alongside services that meet those needs and lends them an additional, tangible climate and fitness benefit. Gyms already have many of the components necessary for resilience hubs: space, water, medical equipment, bathroom capacity (including showers), strong HVAC systems, and locations near the populations they serve.",
+          footnote: 18,
+        },
+        {
+          text: " With backup power generation and storage, gyms could be the ideal facility to provide community resilience during emergencies.",
+          bold: true,
         },
       ],
     },
@@ -451,7 +456,7 @@ export const thePsychologicalBridgeArticle: Article = {
         { text: "Climate-impact framing itself as a harm vector.", bold: true },
         {
           text:
-            " Perhaps the least obvious risk is in how the climate benefit is communicated. If messaging implies that meaningful climate reversal is achievable through personal effort, it could set an unattainable bar that effectively extends maladaptive perfectionism to environmental impact. It's possible that demonstrating the relative weak power of an individual's exercise could create a depressing or paralyzing effect.",
+            " Perhaps the least obvious risk is in how the climate benefit is communicated. If messaging implies that meaningful climate reversal is achievable through personal effort, it could set an unattainable bar that effectively extends maladaptive perfectionism to environmental impact. On the flip side, demonstrating the relative weak power of an individual's exercise could create a depressing or paralyzing effect, reducing continued engagement.",
         },
       ],
     },
@@ -469,11 +474,17 @@ export const thePsychologicalBridgeArticle: Article = {
         ],
         [
           {
-            text: "Create climate messaging honest and focused on local, marginal, additive impact; “helping” rather than “fixing”.",
+            text:
+              "Create climate messaging that is honest and focused on local, marginal, additive impact—“helping” as a collective rather than “fixing” as an individual.",
           },
         ],
         [{ text: "Allow people to opt out of the gamified incentive structures." }],
-        [{ text: "Connect people to active mitigation resources, such as therapy." }],
+        [
+          {
+            text:
+              "Connect people to active mitigation resources, such as therapy. Group-based therapy within a community of like-minded people could be especially beneficial.",
+          },
+        ],
       ],
     },
     {
@@ -653,6 +664,12 @@ export const thePsychologicalBridgeArticle: Article = {
       id: 17,
       citation: "Edwards, C. D., et al. (2024). A perfect storm for athletes. Advances in Psychiatry and Behavioral Health.",
       url: "https://doi.org/10.1016/j.ypsc.2024.04.001",
+    },
+    {
+      id: 18,
+      citation:
+        "Farley, A., Belnap, H., & Parvania, M. (2024). Resilience hubs: Bolstering the grid and empowering communities. IEEE Power and Energy Magazine, 22(4), 38–48.",
+      url: "https://doi.org/10.1109/MPE.2024.3412876",
     },
   ],
 };
