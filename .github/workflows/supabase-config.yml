@@ -1,0 +1,42 @@
+name: Manually Promote Supabase Settings
+
+# Settings are deliberate, not auto-deployed: config.toml holds environment
+# specific values (e.g. site_url / redirect URLs) and config push overwrites
+# remote drift with no rollback. Run this by hand after reviewing drift.
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: supabase-config-push
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    # Requires manual approval via the "production" environment (configure
+    # required reviewers in repo Settings -> Environments).
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      # Required by the currently-enabled [auth.email.smtp] section.
+      RESEND_SMTP_PASSWORD: ${{ secrets.RESEND_SMTP_PASSWORD }}
+      # Referenced by disabled sections. Mapped so config.toml parses cleanly;
+      # a missing secret resolves to "" (harmless while the section is off).
+      # Set the real value in repo secrets before enabling the section.
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN: ${{ secrets.SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN }}
+      SUPABASE_AUTH_EXTERNAL_APPLE_SECRET: ${{ secrets.SUPABASE_AUTH_EXTERNAL_APPLE_SECRET }}
+      S3_HOST: ${{ secrets.S3_HOST }}
+      S3_REGION: ${{ secrets.S3_REGION }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push config to linked project
+        run: supabase config push --project-ref "$SUPABASE_PROJECT_ID"
