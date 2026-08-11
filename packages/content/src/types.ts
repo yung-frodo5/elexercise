@@ -61,7 +61,11 @@ export type GraphicKey =
   | "power-generation-bike-comp-ca"
   | "power-generation-bike-comp-hi"
   | "power-generation-treadmill-comp"
-  | "how-much-power-preview";
+  | "how-much-power-preview"
+  | "life-cycle-stages-diagram"
+  | "life-cycle-baseline-gwp-chart"
+  | "life-cycle-power-sensitivity-chart"
+  | "life-cycle-carbon-intensity-sensitivity-chart";
 
 export interface Graphic {
   type: "graphic";
@@ -142,4 +146,10 @@ export interface Article {
   lastUpdated?: string;
   body: ArticleBodyBlock[];
   references?: Reference[];
+  // Opt-in visual treatment for technical/research-style articles: renders
+  // body copy in a serif typeface with plain black/white text (see
+  // themedColors.technicalText) instead of the brand navy every other
+  // article uses, for a more academic look. Web-only -- apps/mobile ignores
+  // this field and renders every article the same way.
+  style?: "technical";
 }

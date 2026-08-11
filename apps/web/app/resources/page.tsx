@@ -26,6 +26,8 @@ const ARTICLE_DESCRIPTIONS: Record<string, string> = {
   "how-much-power": "Scaling workout electricity from one person to one gym to the whole planet.",
   "the-psychological-bridge":
     "Exploring the psychological synergies to identify opportunities for improving self-efficacy and collective success.",
+  "life-cycle-analysis":
+    "A Life Cycle Assessment of elexercise equipment's carbon footprint, from raw materials to end of life.",
 };
 
 const cell = {

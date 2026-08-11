@@ -71,6 +71,10 @@ export const themedColors = {
   // edits, instead of silently freezing at their light value the moment
   // this object took over generating the CSS.
   navy: { light: "#0033A0", dark: "#FFFFFF" },
+  // Plain black/white body text for "technical"-style articles (research
+  // papers, see packages/content's Article.style), instead of the brand
+  // navy every other themed.navy call site uses.
+  technicalText: { light: "#000000", dark: "#FFFFFF" },
   // Inline links and footnote markers inside article content.
   link: { light: "#386641", dark: "#8FD18F" },
   // The wordmark, "Log in" link, and profile-name text/heading green.

@@ -4,7 +4,15 @@ import { graphicAssets, graphicCrops } from "../../lib/content/graphicAssets";
 import { FramedImage } from "./FramedImage";
 import { RichText } from "./RichText";
 
-export function Graphic({ graphic, maxWidth }: { graphic: GraphicBlock; maxWidth?: number }) {
+export function Graphic({
+  graphic,
+  maxWidth,
+  textColor = theme.colors.themed.navy,
+}: {
+  graphic: GraphicBlock;
+  maxWidth?: number;
+  textColor?: string;
+}) {
   const image = graphicAssets[graphic.key];
   const crop = graphicCrops[graphic.key];
   return (
@@ -25,7 +33,7 @@ export function Graphic({ graphic, maxWidth }: { graphic: GraphicBlock; maxWidth
             marginBottom: 0,
             fontSize: theme.typography.size.xxs,
             fontStyle: "italic",
-            color: theme.colors.themed.navy,
+            color: textColor,
             textAlign: "center",
           }}
         >

@@ -12,6 +12,10 @@ import powerGenerationBikeCompCa from "../../assets/images/power-generation-bike
 import powerGenerationBikeCompHi from "../../assets/images/power-generation-bike-comp-hi.svg";
 import powerGenerationTreadmillComp from "../../assets/images/power-generation-treadmill-comp.svg";
 import howMuchPowerPreview from "../../assets/images/how-much-power-preview.png";
+import lifeCycleStagesDiagram from "../../assets/images/life-cycle-stages-diagram.png";
+import lifeCycleBaselineGwpChart from "../../assets/images/life-cycle-baseline-gwp-chart.png";
+import lifeCyclePowerSensitivityChart from "../../assets/images/life-cycle-power-sensitivity-chart.png";
+import lifeCycleCarbonIntensitySensitivityChart from "../../assets/images/life-cycle-carbon-intensity-sensitivity-chart.png";
 
 // Each app owns its own image files and maps the shared package's logical
 // GraphicKey to them here — packages/content never sees the binary. Typing
@@ -26,6 +30,10 @@ export const graphicAssets: Record<GraphicKey, StaticImageData> = {
   "power-generation-bike-comp-hi": powerGenerationBikeCompHi,
   "power-generation-treadmill-comp": powerGenerationTreadmillComp,
   "how-much-power-preview": howMuchPowerPreview,
+  "life-cycle-stages-diagram": lifeCycleStagesDiagram,
+  "life-cycle-baseline-gwp-chart": lifeCycleBaselineGwpChart,
+  "life-cycle-power-sensitivity-chart": lifeCyclePowerSensitivityChart,
+  "life-cycle-carbon-intensity-sensitivity-chart": lifeCycleCarbonIntensitySensitivityChart,
 };
 
 // Optional per-asset crop (in the source image's native pixel space) for

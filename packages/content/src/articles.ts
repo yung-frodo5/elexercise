@@ -3,6 +3,7 @@ import { landingArticle } from "./landing";
 import { powerGenerationWorthItArticle } from "./powerGenerationWorthIt";
 import { howMuchPowerArticle } from "./howMuchPower";
 import { thePsychologicalBridgeArticle } from "./thePsychologicalBridge";
+import { lifeCycleAnalysisArticle } from "./lifeCycleAnalysis";
 
 // Registry of published Articles-tab entries, in listing order. `landingArticle`
 // also backs the home page's hover popup, which renders its own excerpt of
@@ -15,6 +16,7 @@ export const articles: Article[] = [
   powerGenerationWorthItArticle,
   howMuchPowerArticle,
   thePsychologicalBridgeArticle,
+  lifeCycleAnalysisArticle,
 ];
 
 export function getArticleBySlug(slug: string): Article | undefined {
