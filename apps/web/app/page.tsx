@@ -144,9 +144,9 @@ const LANDING_LINKS: LandingLink[] = [
         <strong>Read more &gt;&gt;</strong>
       </>
     ),
-    graphicKey: "life-cycle-baseline-gwp-chart",
+    graphicKey: "life-cycle-power-sensitivity-chart",
     imageAlt:
-      "Stacked bar chart showing global warming potential contributions by component for the squat rack system under baseline assumptions.",
+      "Line chart showing global warming potential over 10 years at 20, 30, and 50 watt-hours generated per workout, each reaching carbon negativity at a different year.",
   },
 ];
 
