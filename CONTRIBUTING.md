@@ -287,6 +287,12 @@ A few things that trip people up:
 - Production secrets (Supabase service-role key, etc.) live only in the
   Vercel/Render dashboards. Never commit real values — `.env.example` files
   should stay placeholder-only.
+- Supabase auth emails (signup confirmation, password reset, etc.) are sent
+  via **Resend** SMTP, configured in `supabase/config.toml` under
+  `[auth.email.smtp]` and applied with `supabase config push`. The SMTP
+  password is a Resend API key: it lives in Bitwarden and in your local
+  (gitignored) `.env` as `RESEND_SMTP_PASSWORD`, read via `env()` at push
+  time — never committed.
 
 ## Before opening a PR
 
