@@ -65,7 +65,8 @@ export type GraphicKey =
   | "life-cycle-stages-diagram"
   | "life-cycle-baseline-gwp-chart"
   | "life-cycle-power-sensitivity-chart"
-  | "life-cycle-carbon-intensity-sensitivity-chart";
+  | "life-cycle-carbon-intensity-sensitivity-chart"
+  | "training-with-power-velocity-comparison";
 
 export interface Graphic {
   type: "graphic";

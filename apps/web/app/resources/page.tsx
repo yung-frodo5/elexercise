@@ -28,6 +28,8 @@ const ARTICLE_DESCRIPTIONS: Record<string, string> = {
     "Exploring the psychological synergies to identify opportunities for improving self-efficacy and collective success.",
   "life-cycle-analysis":
     "A Life Cycle Assessment of elexercise equipment's carbon footprint, from raw materials to end of life.",
+  "training-with-power":
+    "Why measuring bar speed and power, not just weight on the bar, builds more explosive, sport-transferable athletes.",
 };
 
 const cell = {

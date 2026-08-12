@@ -24,4 +24,5 @@ export const graphicAssets: Record<GraphicKey, ImageSourcePropType> = {
   "life-cycle-baseline-gwp-chart": require("../../assets/articles/life-cycle-baseline-gwp-chart.png"),
   "life-cycle-power-sensitivity-chart": require("../../assets/articles/life-cycle-power-sensitivity-chart.png"),
   "life-cycle-carbon-intensity-sensitivity-chart": require("../../assets/articles/life-cycle-carbon-intensity-sensitivity-chart.png"),
+  "training-with-power-velocity-comparison": require("../../assets/articles/training-with-power-velocity-comparison.png"),
 };
