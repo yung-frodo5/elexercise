@@ -17,4 +17,5 @@ export { powerGenerationWorthItArticle } from "./powerGenerationWorthIt";
 export { howMuchPowerArticle } from "./howMuchPower";
 export { thePsychologicalBridgeArticle } from "./thePsychologicalBridge";
 export { lifeCycleAnalysisArticle } from "./lifeCycleAnalysis";
+export { trainingWithPowerArticle } from "./trainingWithPower";
 export { articles, getArticleBySlug } from "./articles";

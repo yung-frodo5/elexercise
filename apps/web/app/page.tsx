@@ -148,6 +148,25 @@ const LANDING_LINKS: LandingLink[] = [
     imageAlt:
       "Line chart showing global warming potential over 10 years at 20, 30, and 50 watt-hours generated per workout, each reaching carbon negativity at a different year.",
   },
+  {
+    href: "/resources/articles/training-with-power",
+    title: "The Importance of Training With Power",
+    description: (
+      <>
+        The weight on the bar tells you what you attempted. How fast you moved it tells you what you actually
+        achieved. Most people focus only on weight -- AKA force -- but disregard the velocity component of power, but{" "}
+        <strong>training to be powerful builds the acceleration that actually shows up in your sport</strong>.
+        Here&rsquo;s the part that should change how people train: explosiveness is something that can be developed,
+        like a skill.
+        <br />
+        <br />
+        <strong>Read more &gt;&gt;</strong>
+      </>
+    ),
+    graphicKey: "training-with-power-velocity-comparison",
+    imageAlt:
+      "Side-by-side photos of the same squat rep with a velocity tracker on the barbell, labeled 'Normal' with a red X on the left and 'Powerful' with a green checkmark on the right.",
+  },
 ];
 
 const ARTICLES_SECTION_ID = "landing-articles";
@@ -199,7 +218,7 @@ export default function LandingPage() {
           flex-direction: column;
           gap: ${theme.spacing.lg}px;
         }
-        .landing-card-image { width: 100%; max-width: 480px; }
+        .landing-card-image { width: 100%; max-width: 480px; display: flex; justify-content: center; }
         .landing-card-text { width: 100%; }
         @container (min-width: 720px) {
           .landing-card-row { flex-direction: row; align-items: center; }

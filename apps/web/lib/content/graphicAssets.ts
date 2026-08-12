@@ -16,6 +16,7 @@ import lifeCycleStagesDiagram from "../../assets/images/life-cycle-stages-diagra
 import lifeCycleBaselineGwpChart from "../../assets/images/life-cycle-baseline-gwp-chart.png";
 import lifeCyclePowerSensitivityChart from "../../assets/images/life-cycle-power-sensitivity-chart.png";
 import lifeCycleCarbonIntensitySensitivityChart from "../../assets/images/life-cycle-carbon-intensity-sensitivity-chart.png";
+import trainingWithPowerVelocityComparison from "../../assets/images/training-with-power-velocity-comparison.gif";
 
 // Each app owns its own image files and maps the shared package's logical
 // GraphicKey to them here — packages/content never sees the binary. Typing
@@ -34,6 +35,7 @@ export const graphicAssets: Record<GraphicKey, StaticImageData> = {
   "life-cycle-baseline-gwp-chart": lifeCycleBaselineGwpChart,
   "life-cycle-power-sensitivity-chart": lifeCyclePowerSensitivityChart,
   "life-cycle-carbon-intensity-sensitivity-chart": lifeCycleCarbonIntensitySensitivityChart,
+  "training-with-power-velocity-comparison": trainingWithPowerVelocityComparison,
 };
 
 // Optional per-asset crop (in the source image's native pixel space) for
