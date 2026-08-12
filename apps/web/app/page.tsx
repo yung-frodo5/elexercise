@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { StaticImageData } from "next/image";
 import type { GraphicKey } from "@exercise-tracker/content";
 import { theme } from "@exercise-tracker/design-tokens";
 import { SoftPanel } from "../components/ui/SoftPanel";
 import { FramedImage } from "../components/content/FramedImage";
 import { graphicAssets } from "../lib/content/graphicAssets";
 import { HEADER_HEIGHT } from "../lib/layoutConstants";
+// Web-only, decorative landing card image -- not part of the article's own
+// content, so it doesn't go through packages/content's GraphicKey/Graphic
+// model (see CONTRIBUTING.md "Content changes"). Not yet confirmed for mobile.
+import thePsychologicalBridgeLandingImage from "../assets/images/the-psychological-bridge.svg";
 
 // ContentPanel publishes its own responsive geometry as custom properties on
 // .content-panel-home (see the comment there): the combined horizontal
@@ -50,8 +55,13 @@ interface LandingLink {
   title: string;
   description: ReactNode;
   // Preview image shown alongside the title/description -- omitted for
-  // resources that don't have one yet.
+  // resources that don't have one yet. `graphicKey` looks up a graphic
+  // that's shared with the article itself (and mobile) via packages/content;
+  // `image` is for a web-only decorative image that isn't part of the
+  // article's own content (see the CONTRIBUTING.md exception). At most one
+  // should be set per entry.
   graphicKey?: GraphicKey;
+  image?: StaticImageData;
   imageAlt?: string;
 }
 
@@ -129,6 +139,9 @@ const LANDING_LINKS: LandingLink[] = [
         <strong>Read more &gt;&gt;</strong>
       </>
     ),
+    image: thePsychologicalBridgeLandingImage,
+    imageAlt:
+      "Diagram showing that rising climate anxiety doesn't lead to climate action, while exercise has high self-efficacy and response-efficacy, bridging to a thriving, sustainable community.",
   },
   {
     href: "/resources/articles/life-cycle-analysis",
@@ -396,7 +409,7 @@ export default function LandingPage() {
           }}
         >
           {LANDING_LINKS.map((link, index) => {
-            const image = link.graphicKey ? graphicAssets[link.graphicKey] : undefined;
+            const image = link.image ?? (link.graphicKey ? graphicAssets[link.graphicKey] : undefined);
             // Alternate the image side by position so the page feels dynamic
             // rather than reading a manual per-card flag.
             const imagePosition = index % 2 === 0 ? "right" : "left";
